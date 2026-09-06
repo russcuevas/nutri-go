@@ -30,7 +30,7 @@
                         Heading to: <span class="text-emerald-700">{{ $order->store->store_name }}</span>
                     </h3>
                     <p class="text-xs text-gray-500 font-medium">
-                        <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i> {{ $order->store->address_line }}, Brgy. {{ $order->store->barangay }}, Lipa City
+                        <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i> {{ $order->store->address_line ?? $order->store->barangay }}
                     </p>
                 @else
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -180,7 +180,7 @@
                 @endif
             </div>
             <h4 class="text-base font-black text-gray-900 font-heading">{{ $order->store->store_name }}</h4>
-            <p><i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> {{ $order->store->address_line }}, Brgy. {{ $order->store->barangay }}, Lipa</p>
+            <p><i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> {{ $order->store->address_line ?? $order->store->barangay }}</p>
             <p><i class="fa-solid fa-phone text-gray-400 mr-1"></i> {{ $order->store->phone }}</p>
         </div>
 

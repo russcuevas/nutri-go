@@ -9,6 +9,8 @@
     statusBadgeClass: '{{ $order->status_badge_class }}',
     orderNumber: '{{ $order->order_number }}',
     showCancelConfirm: false,
+    trackings: @js($initialTrackings),
+    rider: @js($initialRider),
     poll() {
         if (['delivered', 'cancelled', 'declined_by_store'].includes(this.status)) {
             return;
@@ -35,6 +37,13 @@
                 this.status = data.status;
                 this.statusLabel = data.status_label;
                 this.statusBadgeClass = data.status_badge_class;
+                if (data.trackings && data.trackings.length > 0) {
+                    this.trackings = data.trackings;
+                }
+                if (data.rider) {
+                    this.rider = data.rider;
+                }
+
                 if (data.is_rider_delivering && data.rider) {
                     if (window.updateRiderPosition) {
                         window.updateRiderPosition(data.rider.lat, data.rider.lng, data.rider.name);
@@ -47,7 +56,7 @@
             })
             .catch(err => console.log('Tracking poll error/ended.'));
     }
-}" x-init="setInterval(() => poll(), 3000)">
+}" x-init="setInterval(() => poll(), 2500)">
 
     <!-- Top Status Banner -->
     <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-card mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -163,15 +172,21 @@
                 <div id="live-tracking-map" class="w-full h-96 rounded-2xl border border-gray-200 shadow-inner z-0"></div>
 
                 <!-- Map Legend -->
-                <div class="flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-gray-600 pt-2 border-t border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-600"></span> Store ({{ $order->store->store_name }})
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs font-semibold text-gray-600 pt-3 border-t border-gray-100">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-600 shrink-0"></span>
+                        <span class="truncate">Store ({{ $order->store->store_name }})</span>
                     </div>
-                    <div x-show="['rider_assigned', 'rider_picked_up', 'on_the_way'].includes(status)" x-cloak class="flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 rounded-full bg-lime-500 shadow-glow"></span> Active Rider (GPS)
+                    <div x-show="['rider_assigned', 'rider_picked_up', 'on_the_way'].includes(status)" x-cloak class="flex items-center gap-2 min-w-0">
+                        <span class="w-3.5 h-3.5 rounded-full bg-lime-500 shadow-glow shrink-0 animate-pulse"></span>
+                        <span class="truncate">Active Rider (GPS)</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500"></span> Your Address: <span class="font-bold text-gray-800 truncate max-w-xs">{{ $order->delivery_address }}</span>
+                    <div class="flex items-start gap-2 min-w-0 sm:col-span-2 md:col-span-1">
+                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 shrink-0 mt-0.5"></span>
+                        <div class="min-w-0 flex-1">
+                            <span class="text-gray-500">Your Address:</span>
+                            <span class="font-bold text-gray-800 break-words block sm:inline">{{ $order->delivery_address }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,42 +261,57 @@
             
             <!-- Step Status Timeline -->
             <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-card space-y-4">
-                <h3 class="text-xs font-extrabold uppercase tracking-widest text-gray-900 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-nutri-600"></i> Delivery Journey
+                <h3 class="text-xs font-extrabold uppercase tracking-widest text-gray-900 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-nutri-600"></i> Delivery Journey
+                    </span>
+                    <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
+                    </span>
                 </h3>
 
                 <div class="space-y-4 border-l-2 border-nutri-200 ml-3 pl-4 text-xs">
-                    @foreach($order->trackings as $track)
+                    <template x-for="(track, idx) in trackings" :key="idx">
                         <div class="relative">
                             <span class="absolute -left-[23px] top-0 w-3 h-3 rounded-full bg-nutri-600 border-2 border-white"></span>
-                            <p class="font-bold text-gray-900">{{ $track->title }}</p>
-                            <p class="text-[11px] text-gray-500 mt-0.5">{{ $track->description }}</p>
-                            <span class="text-[10px] text-gray-400 font-semibold">{{ $track->created_at->format('h:i A') }}</span>
+                            <p class="font-bold text-gray-900" x-text="track.title"></p>
+                            <p class="text-[11px] text-gray-500 mt-0.5" x-text="track.description"></p>
+                            <span class="text-[10px] text-gray-400 font-semibold" x-text="track.time"></span>
                         </div>
-                    @endforeach
+                    </template>
                 </div>
             </div>
 
-            <!-- Assigned Rider Card (Only when assigned/on the way/delivered) -->
-            @if($order->rider && in_array($order->status, ['rider_assigned', 'rider_picked_up', 'on_the_way', 'delivered']))
+            <!-- Assigned Rider Card (Dynamic Real-Time update when assigned/on the way/delivered) -->
+            <template x-if="rider">
                 <div class="bg-white p-6 rounded-3xl border border-lime-200 shadow-card space-y-3">
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-lime-800">Your NutriRider</span>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-lime-100 text-lime-800 flex items-center justify-center text-lg font-black shadow-xs">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-lime-800 block">Your NutriRider</span>
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-lime-100 text-lime-800 flex items-center justify-center text-lg font-black shadow-xs shrink-0 mt-0.5">
                                 🛵
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-gray-900">{{ $order->rider->user->name }}</h4>
-                                <p class="text-[11px] text-gray-500">{{ $order->rider->vehicle_type }} • {{ $order->rider->plate_number }}</p>
+                            <div class="text-xs text-gray-600 space-y-1 pl-1 leading-relaxed">
+                                <div>
+                                    <span class="text-gray-500 font-semibold">Rider name:</span>
+                                    <span class="font-extrabold text-gray-900 text-sm ml-1" x-text="rider.name"></span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 font-semibold">Motorcycle:</span>
+                                    <span class="font-bold text-gray-800 ml-1" x-text="rider.vehicle"></span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 font-semibold">Plate number:</span>
+                                    <span class="font-mono font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 ml-1 inline-block" x-text="rider.plate"></span>
+                                </div>
                             </div>
                         </div>
-                        <a href="tel:{{ $order->rider->phone }}" class="p-2.5 rounded-xl bg-nutri-50 text-nutri-700 hover:bg-nutri-100 border border-nutri-200 transition">
+                        <a :href="'tel:' + rider.phone" class="p-2.5 rounded-xl bg-nutri-50 text-nutri-700 hover:bg-nutri-100 border border-nutri-200 transition shrink-0" title="Call Rider">
                             <i class="fa-solid fa-phone"></i>
                         </a>
                     </div>
                 </div>
-            @endif
+            </template>
 
             <!-- Order Items & Receipt Details -->
             <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-card space-y-3 text-xs">

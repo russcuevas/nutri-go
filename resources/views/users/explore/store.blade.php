@@ -26,7 +26,7 @@
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black font-heading tracking-tight text-gray-900">{{ $store->store_name }}</h1>
                     <p class="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                        <span><i class="fa-solid fa-location-dot text-nutri-600"></i> Brgy. {{ $store->barangay }}, Lipa City</span>
+                        <span><i class="fa-solid fa-location-dot text-nutri-600"></i> {{ $store->address_line ?? ('Brgy. ' . $store->barangay . ', Lipa City') }}</span>
                         <span>•</span>
                         <span><i class="fa-regular fa-clock text-gray-400"></i> {{ date('h:i A', strtotime($store->opening_time)) }} - {{ date('h:i A', strtotime($store->closing_time)) }}</span>
                     </p>
@@ -76,7 +76,7 @@
                                     @endif
                                 </div>
 
-                                <div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-lg bg-black/75 text-limey-300 text-[11px] font-bold backdrop-blur-md">
+                                <div class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-gray-900/90 text-white text-xs font-black backdrop-blur-md shadow-md flex items-center gap-1">
                                     🔥 {{ $item->calories }} kcal
                                 </div>
                             </div>

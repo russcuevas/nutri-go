@@ -34,7 +34,7 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 text-limey-300 text-[11px] font-bold">
+                        <div class="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-gray-900/90 text-white text-xs font-black shadow-md flex items-center gap-1">
                             🔥 {{ $product->calories }} kcal
                         </div>
                     </div>

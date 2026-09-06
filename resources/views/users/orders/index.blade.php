@@ -88,3 +88,15 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    @if($orders->whereNotIn('status', ['delivered', 'cancelled', 'declined_by_store'])->isNotEmpty())
+        setInterval(function() {
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        }, 8000);
+    @endif
+</script>
+@endpush

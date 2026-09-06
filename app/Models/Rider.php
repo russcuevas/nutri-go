@@ -17,6 +17,7 @@ class Rider extends Model
         'license_image',
         'phone',
         'barangay',
+        'address_line',
         'current_latitude',
         'current_longitude',
         'status',

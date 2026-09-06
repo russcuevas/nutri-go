@@ -35,7 +35,26 @@ class OrderTrackingController extends Controller
         $riderLat = $order->rider?->current_latitude ?? (($order->store->latitude + $order->delivery_latitude) / 2);
         $riderLng = $order->rider?->current_longitude ?? (($order->store->longitude + $order->delivery_longitude) / 2);
 
-        return view('users.orders.track', compact('order', 'riderLat', 'riderLng'));
+        $initialTrackings = $order->trackings->map(function($t) {
+            return [
+                'status' => $t->status,
+                'title' => $t->title,
+                'description' => $t->description,
+                'time' => $t->created_at->format('h:i A'),
+            ];
+        })->values()->toArray();
+
+        $initialRider = $order->rider ? [
+            'name' => $order->rider->user->name,
+            'phone' => $order->rider->phone,
+            'vehicle' => $order->rider->vehicle_type,
+            'plate' => $order->rider->plate_number,
+            'rating' => $order->rider->rating,
+            'lat' => $order->rider->current_latitude ?? $order->store->latitude,
+            'lng' => $order->rider->current_longitude ?? $order->store->longitude,
+        ] : null;
+
+        return view('users.orders.track', compact('order', 'riderLat', 'riderLng', 'initialTrackings', 'initialRider'));
     }
 
     public function statusPoll(string $orderNumber)

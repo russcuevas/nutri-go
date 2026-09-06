@@ -47,16 +47,22 @@ class RiderApprovalController extends Controller
 
     public function reject(Request $request, int $id)
     {
-        $rider = Rider::findOrFail($id);
-        $validated = $request->validate([
-            'rejection_reason' => 'required|string|max:500',
-        ]);
+        $rider = Rider::with('user')->findOrFail($id);
+        $riderName = $rider->user?->name ?? 'Rider';
+        $user = $rider->user;
 
-        $rider->update([
-            'status' => 'rejected',
-            'rejection_reason' => $validated['rejection_reason'],
-        ]);
+        // Clean up license image if exists
+        if ($rider->license_image && file_exists(storage_path('app/public/' . $rider->license_image))) {
+            @unlink(storage_path('app/public/' . $rider->license_image));
+        }
 
-        return back()->with('info', "Rider application for '{$rider->user->name}' rejected.");
+        // Deleting user cascades to rider and wallet
+        if ($user) {
+            $user->delete();
+        } else {
+            $rider->delete();
+        }
+
+        return back()->with('info', "Rider application for '{$riderName}' has been rejected and permanently deleted from the system.");
     }
 }

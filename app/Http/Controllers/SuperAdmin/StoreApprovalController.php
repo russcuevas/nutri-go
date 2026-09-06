@@ -47,15 +47,24 @@ class StoreApprovalController extends Controller
     public function reject(Request $request, int $id)
     {
         $store = Store::findOrFail($id);
-        $validated = $request->validate([
-            'rejection_reason' => 'required|string|max:500',
-        ]);
+        $storeName = $store->store_name;
+        $user = $store->user;
 
-        $store->update([
-            'status' => 'rejected',
-            'rejection_reason' => $validated['rejection_reason'],
-        ]);
+        // Clean up uploaded files if present
+        if ($store->logo && file_exists(public_path($store->logo))) {
+            @unlink(public_path($store->logo));
+        }
+        if ($store->gcash_qr && file_exists(public_path($store->gcash_qr))) {
+            @unlink(public_path($store->gcash_qr));
+        }
 
-        return back()->with('info', "Store '{$store->store_name}' has been rejected (Reason: {$validated['rejection_reason']}).");
+        // Deleting user will cascade delete the store and products
+        if ($user) {
+            $user->delete();
+        } else {
+            $store->delete();
+        }
+
+        return back()->with('info', "Store '{$storeName}' has been rejected and permanently deleted from the system.");
     }
 }

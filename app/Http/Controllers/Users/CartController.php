@@ -40,15 +40,24 @@ class CartController extends Controller
         $currentStoreId = session()->get('cart_store_id');
 
         if (!empty($cart) && $currentStoreId && $currentStoreId != $product->store_id) {
+            $existingStore = Store::find($currentStoreId);
+            $existingStoreName = $existingStore ? $existingStore->store_name : 'another store';
+
             if ($request->boolean('replace_cart')) {
                 $cart = [];
                 session()->put('cart_store_id', $product->store_id);
             } else {
-                return response()->json([
-                    'success' => false,
-                    'conflict' => true,
-                    'message' => "Your cart contains items from another store. Clear cart and add from {$product->store->store_name}?",
-                ], 409);
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'conflict' => true,
+                        'existing_store' => $existingStoreName,
+                        'new_store' => $product->store->store_name,
+                        'message' => "May active basket ka pa mula sa {$existingStoreName}. Nais mo bang palitan ito ng items mula sa {$product->store->store_name}?",
+                    ], 409);
+                }
+
+                return back()->with('error', "May active basket ka pa sa {$existingStoreName}. Bawat order ay para lamang sa 1 restaurant.");
             }
         }
 

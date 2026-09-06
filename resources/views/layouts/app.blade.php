@@ -166,11 +166,9 @@
                     @endphp
                     <a href="{{ route('users.cart.index') }}" class="relative p-2.5 rounded-xl text-nutri-900 bg-nutri-50 hover:bg-nutri-100 transition border border-nutri-200/80 shadow-sm group">
                         <i class="fa-solid fa-bag-shopping text-lg group-hover:scale-110 transition-transform"></i>
-                        @if($cartCount > 0)
-                            <span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[11px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow">
-                                {{ $cartCount }}
-                            </span>
-                        @endif
+                        <span id="navbar-cart-count" class="{{ $cartCount > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[11px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow transition-all duration-300 transform">
+                            {{ $cartCount }}
+                        </span>
                     </a>
 
                     @auth
@@ -253,7 +251,7 @@
     <!-- Modern NutriGo Footer -->
     <footer class="bg-nutri-900 text-white pt-16 pb-12 mt-20 border-t border-nutri-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-12 border-b border-white/10">
                 <!-- Col 1: Brand Info -->
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
@@ -292,28 +290,10 @@
                         <li><a href="{{ route('users.subscriptions.index') }}" class="hover:text-limey-400 transition flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> VIP Meal Prep Club</a></li>
                     </ul>
                 </div>
-
-                <!-- Col 4: Distance & Pricing Standard -->
-                <div class="space-y-3">
-                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-2 font-heading">Distance Pricing</h4>
-                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-nutri-200 space-y-1.5">
-                        <div class="flex justify-between">
-                            <span>Base Fare (First 1.5 km):</span>
-                            <span class="font-bold text-white">₱40.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Per succeeding KM:</span>
-                            <span class="font-bold text-white">₱10.00 / km</span>
-                        </div>
-                        <p class="text-[10px] text-nutri-300 pt-1 border-t border-white/10">
-                            Accurate point-to-point GPS calculation across all 72 Lipa City barangays.
-                        </p>
-                    </div>
-                </div>
             </div>
 
             <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-nutri-300 gap-4">
-                <p>&copy; {{ date('Y') }} NutriGo Philippines. Lipa City, Batangas. All rights reserved.</p>
+                <p>&copy; 2026 Nutrilink Technologies, All rights reserved.</p>
                 <div class="flex items-center gap-4">
                     <span>Designed for NutriGo Ecosystem</span>
                 </div>
@@ -331,11 +311,9 @@
         </a>
         <a href="{{ route('users.cart.index') }}" class="flex flex-col items-center text-[10px] font-bold relative {{ request()->routeIs('users.cart*') ? 'text-nutri-600' : 'text-gray-500' }}">
             <i class="fa-solid fa-bag-shopping text-lg mb-0.5"></i> Cart
-            @if($cartCount > 0)
-                <span class="absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center">
-                    {{ $cartCount }}
-                </span>
-            @endif
+            <span id="mobile-cart-count" class="{{ $cartCount > 0 ? '' : 'hidden' }} absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300 transform">
+                {{ $cartCount }}
+            </span>
         </a>
         <a href="{{ route('creators.index') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('creators*') ? 'text-nutri-600' : 'text-gray-500' }}">
             <i class="fa-solid fa-play text-lg mb-0.5"></i> Vlogs
@@ -344,6 +322,152 @@
             <i class="fa-solid fa-user text-lg mb-0.5"></i> {{ auth()->check() ? 'Orders' : 'Account' }}
         </a>
     </div>
+
+    <!-- Global AJAX Add-to-Cart & Multi-Store Conflict Handler -->
+    <script>
+        function updateNutriCartBadges(count) {
+            const badges = [
+                document.getElementById('navbar-cart-count'),
+                document.getElementById('mobile-cart-count')
+            ];
+
+            badges.forEach(badge => {
+                if (badge) {
+                    badge.innerText = count;
+                    if (count > 0) {
+                        badge.classList.remove('hidden');
+                        badge.classList.add('scale-125', 'bg-emerald-600');
+                        setTimeout(() => {
+                            badge.classList.remove('scale-125', 'bg-emerald-600');
+                        }, 350);
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('form');
+                if (!form) return;
+
+                const action = form.getAttribute('action') || '';
+                // Intercept any add-to-cart form submission
+                if (action.includes('/cart/add') || form.classList.contains('ajax-add-to-cart-form')) {
+                    e.preventDefault();
+
+                    const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+                    const originalContent = submitBtn ? submitBtn.innerHTML : '';
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                    }
+
+                    const executeAddToCart = (replaceCart = false) => {
+                        const formData = new FormData(form);
+                        if (replaceCart) {
+                            formData.append('replace_cart', '1');
+                        }
+
+                        fetch(action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(async response => {
+                            const data = await response.json();
+
+                            if (response.ok && data.success) {
+                                // Update badge without reloading
+                                updateNutriCartBadges(data.cart_count);
+
+                                // Button feedback
+                                if (submitBtn) {
+                                    submitBtn.innerHTML = '<i class="fa-solid fa-check text-lime-400"></i> Added';
+                                    setTimeout(() => {
+                                        submitBtn.innerHTML = originalContent;
+                                        submitBtn.disabled = false;
+                                    }, 1200);
+                                }
+
+                                if (window.nutriToast) {
+                                    window.nutriToast('success', data.message || 'Item added to basket!', 'Basket Updated');
+                                }
+                            } else if (response.status === 409 && data.conflict) {
+                                // Multi-Store Conflict Modal
+                                if (submitBtn) {
+                                    submitBtn.innerHTML = originalContent;
+                                    submitBtn.disabled = false;
+                                }
+
+                                if (window.Swal) {
+                                    Swal.fire({
+                                        title: 'Iba ang Restaurant?',
+                                        html: `
+                                            <div class="text-xs text-gray-600 text-left space-y-3 pt-2">
+                                                <p class="leading-relaxed">
+                                                    May active items ka pa sa basket mula sa <strong class="text-nutri-900 font-bold">${data.existing_store || 'ibang restaurant'}</strong>.
+                                                </p>
+                                                <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
+                                                    <i class="fa-solid fa-circle-exclamation text-amber-600 mr-1"></i>
+                                                    Bawat delivery sa Lipa City ay para lamang sa <b>1 restaurant kada order</b>.
+                                                </div>
+                                                <p class="leading-relaxed">
+                                                    Nais mo bang <b>burahin ang dating basket</b> para mag-order sa <strong class="text-nutri-900 font-bold">${data.new_store || 'bagong restaurant'}</strong>?
+                                                </p>
+                                            </div>
+                                        `,
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#0F4A2B',
+                                        cancelButtonColor: '#6B7280',
+                                        confirmButtonText: '<i class="fa-solid fa-rotate mr-1"></i> Oo, Palitan ang Basket',
+                                        cancelButtonText: 'Huwag, I-keep ang Dati',
+                                        reverseButtons: true,
+                                        customClass: {
+                                            popup: 'rounded-3xl p-6',
+                                            confirmButton: 'rounded-xl text-xs font-bold px-4 py-2.5 shadow-md',
+                                            cancelButton: 'rounded-xl text-xs font-bold px-4 py-2.5'
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            executeAddToCart(true);
+                                        }
+                                    });
+                                } else {
+                                    if (confirm(data.message || 'Clear previous store cart and add this item?')) {
+                                        executeAddToCart(true);
+                                    }
+                                }
+                            } else {
+                                if (submitBtn) {
+                                    submitBtn.innerHTML = originalContent;
+                                    submitBtn.disabled = false;
+                                }
+
+                                if (window.nutriToast) {
+                                    window.nutriToast('error', data.message || 'Hindi naidagdag sa basket.', 'Notice');
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Add to cart AJAX error:', err);
+                            if (submitBtn) {
+                                submitBtn.innerHTML = originalContent;
+                                submitBtn.disabled = false;
+                            }
+                        });
+                    };
+
+                    executeAddToCart(false);
+                }
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

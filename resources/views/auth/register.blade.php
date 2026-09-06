@@ -146,30 +146,19 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                        Lipa City Barangay <span class="text-emerald-600 font-normal">(Auto-detected)</span>
-                    </label>
-                    <select name="barangay" id="store_barangay_select" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white">
-                        <option value="">Select Barangay in Lipa</option>
-                        @foreach($barangays as $b)
-                            <option value="{{ $b }}">{{ $b }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Healthy Cuisine Category</label>
-                    <select name="health_category" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white">
-                        <option value="Organic & Salads">Organic & Salads</option>
-                        <option value="High-Protein & Gym Meals">High-Protein & Gym Meals</option>
-                        <option value="Keto & Low-Carb">Keto & Low-Carb</option>
-                        <option value="100% Plant-Based & Vegan">100% Plant-Based & Vegan</option>
-                        <option value="Cold-Pressed Juices & Detox">Cold-Pressed Juices & Detox</option>
-                        <option value="Supplements & Wellness">Supplements & Wellness</option>
-                        <option value="Diabetic & Low-Sodium">Diabetic & Low-Sodium</option>
-                    </select>
-                </div>
+            <input type="hidden" name="barangay" id="store_barangay_select" value="Poblacion Barangay 1">
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Healthy Cuisine Category</label>
+                <select name="health_category" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white">
+                    <option value="Organic & Salads">Organic & Salads</option>
+                    <option value="High-Protein & Gym Meals">High-Protein & Gym Meals</option>
+                    <option value="Keto & Low-Carb">Keto & Low-Carb</option>
+                    <option value="100% Plant-Based & Vegan">100% Plant-Based & Vegan</option>
+                    <option value="Cold-Pressed Juices & Detox">Cold-Pressed Juices & Detox</option>
+                    <option value="Supplements & Wellness">Supplements & Wellness</option>
+                    <option value="Diabetic & Low-Sodium">Diabetic & Low-Sodium</option>
+                </select>
             </div>
 
             <div>
@@ -193,9 +182,10 @@
                     </div>
                 </div>
 
-                <!-- GCash QR upload with preview -->
+                <!-- GCash QR upload with large preview -->
                 <div x-data="{
                     previewUrl: null,
+                    showZoom: false,
                     handleFile(e) {
                         const file = e.target.files[0];
                         if (file) {
@@ -210,30 +200,66 @@
                     <label class="block text-[11px] font-bold text-gray-700 uppercase">Upload GCash QR Code (Recommended)</label>
                     <input type="file" name="gcash_qr" x-ref="regQrInput" @change="handleFile($event)" accept="image/*" class="hidden">
 
-                    <div x-show="previewUrl" class="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-200">
-                        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-blue-200 bg-gray-50 shrink-0">
-                            <img :src="previewUrl" alt="GCash QR Preview" class="w-full h-full object-contain">
-                            <button type="button" @click="clearQr()" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-rose-700">
+                    <!-- Large Interactive QR Preview Card -->
+                    <div x-show="previewUrl" class="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 bg-white rounded-2xl border-2 border-blue-200 shadow-sm">
+                        <!-- Big QR Thumbnail with 'X' -->
+                        <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border-2 border-blue-300 bg-gray-50 shrink-0 shadow-inner group cursor-pointer" @click="showZoom = true" title="Click to Zoom QR">
+                            <img :src="previewUrl" alt="GCash QR Preview" class="w-full h-full object-contain p-2 bg-white">
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+                            </div>
+                            <button type="button" @click.stop="clearQr()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition" title="Remove QR (X)">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-                        <div class="space-y-1 text-xs">
-                            <p class="font-bold text-gray-800 text-[11px]">QR Preview Ready</p>
+
+                        <!-- Info & Action Buttons -->
+                        <div class="space-y-2.5 text-xs flex-1">
                             <div class="flex items-center gap-2">
-                                <button type="button" @click="$refs.regQrInput.click()" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">
-                                    Change
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-check"></i> GCash QR Ready
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-xs leading-relaxed">
+                                Ito ang malinaw na QR code na i-iiscan ng mga customers kapag nag-order at nag-GCash payment sila sa iyong tindahan.
+                            </p>
+                            <div class="flex flex-wrap items-center gap-2 pt-1">
+                                <button type="button" @click="$refs.regQrInput.click()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                    <i class="fa-solid fa-arrows-rotate"></i> Change QR Image
                                 </button>
-                                <button type="button" @click="clearQr()" class="px-2 py-1 rounded bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-200">
-                                    Remove (X)
+                                <button type="button" @click="clearQr()" class="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition border border-rose-200 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trash-can"></i> Remove (X)
                                 </button>
+                                <button type="button" @click="showZoom = true" class="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-expand"></i> View Full
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Zoom Lightbox Modal -->
+                        <div x-show="showZoom" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" @click.self="showZoom = false" @keydown.escape.window="showZoom = false">
+                            <div class="bg-white p-6 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+                                <button type="button" @click="showZoom = false" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center font-bold">
+                                    ✕
+                                </button>
+                                <h4 class="font-black text-gray-900 font-heading">GCash QR Preview</h4>
+                                <div class="w-64 h-64 mx-auto rounded-2xl overflow-hidden border border-gray-200 p-2 bg-white flex items-center justify-center shadow-inner">
+                                    <img :src="previewUrl" alt="GCash QR Zoom" class="max-w-full max-h-full object-contain">
+                                </div>
+                                <p class="text-xs text-gray-500">Customer scan preview</p>
                             </div>
                         </div>
                     </div>
 
-                    <div x-show="!previewUrl" @click="$refs.regQrInput.click()" class="p-4 rounded-xl border-2 border-dashed border-blue-300 bg-white hover:bg-blue-50/50 text-center cursor-pointer transition">
-                        <i class="fa-solid fa-cloud-arrow-up text-blue-500 text-lg mb-1"></i>
-                        <p class="text-xs font-bold text-blue-900">Click to select GCash QR image</p>
-                        <p class="text-[10px] text-gray-500">PNG, JPG up to 5MB</p>
+                    <!-- Empty Upload Dropzone -->
+                    <div x-show="!previewUrl" @click="$refs.regQrInput.click()" class="p-6 rounded-2xl border-2 border-dashed border-blue-300 bg-white hover:bg-blue-50/50 text-center cursor-pointer transition space-y-2 group">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-blue-900">Click to upload Store GCash QR code</p>
+                            <p class="text-[10px] text-gray-500">PNG, JPG up to 5MB (Malaking preview na madaling mabasa)</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -302,47 +328,14 @@
                     <input type="text" name="license_number" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="e.g. N02-23-123456">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                        Base Lipa Barangay <span class="text-lime-700 font-normal">(Auto-detected)</span>
-                    </label>
-                    <select name="barangay" id="rider_barangay_select" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white">
-                        <option value="">Select your Home Barangay</option>
-                        @foreach($barangays as $b)
-                            <option value="{{ $b }}">{{ $b }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <!-- Interactive Map Location Pinpoint for Rider Home Base -->
-            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <label class="block text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-map-pin text-lime-600 text-sm"></i> Rider Starting Location / Home Base
-                        </label>
-                        <p class="text-[11px] text-gray-500">Pin where you usually start or tap "Auto Location (GPS)"</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="window.useRiderGpsLocation()" id="btn-rider-gps"
-                                class="px-3 py-1.5 rounded-xl bg-lime-700 hover:bg-lime-800 text-white text-[11px] font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-crosshairs text-limey-300"></i> Auto Location (GPS)
-                        </button>
-                        <span id="rider_coords_badge" class="font-mono font-bold text-[10px] text-lime-900 bg-lime-100 px-2.5 py-1 rounded-lg border border-lime-200">
-                            13.9419, 121.1631
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Rider Leaflet Map Container -->
-                <div class="relative w-full h-56 rounded-xl overflow-hidden border border-gray-200 shadow-inner">
-                    <div id="rider-register-map" class="w-full h-full z-0"></div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Driver's License / ID Photo (Optional)</label>
+                    <input type="file" name="license_image" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-lime-600 file:text-white hover:file:bg-lime-700">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Driver's License / ID Photo (Optional)</label>
-                <input type="file" name="license_image" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-lime-600 file:text-white hover:file:bg-lime-700">
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Complete Home / Base Address in Lipa City</label>
+                <input type="text" name="address_line" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="e.g. 123 J.P. Laurel Highway, Brgy. Sabang, Lipa City">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -394,20 +387,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return closestName;
     }
 
-    // Lipa City Service Zone Polygon (Geofence Reference)
-    const lipaServicePolygon = [
-        [14.0000, 121.1300],
-        [13.9980, 121.1750],
-        [13.9920, 121.2150],
-        [13.9650, 121.2280],
-        [13.9250, 121.2150],
-        [13.8850, 121.1920],
-        [13.8900, 121.1650],
-        [13.9180, 121.1350],
-        [13.9550, 121.1380],
-        [14.0000, 121.1300]
-    ];
-
     // ==========================================
     // 1. STORE REGISTRATION MAP
     // ==========================================
@@ -420,14 +399,6 @@ document.addEventListener('DOMContentLoaded', function() {
         storeMap = L.map('store-register-map').setView([defaultLat, defaultLng], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
-        }).addTo(storeMap);
-
-        L.polygon(lipaServicePolygon, {
-            color: '#10B981',
-            weight: 2,
-            dashArray: '5, 5',
-            fillColor: '#22C55E',
-            fillOpacity: 0.05
         }).addTo(storeMap);
 
         const storeIcon = L.divIcon({
@@ -517,125 +488,13 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     };
 
-    // ==========================================
-    // 2. RIDER REGISTRATION MAP
-    // ==========================================
-    let riderMap = null;
-    let riderMarker = null;
-
-    function initRiderMap() {
-        if (riderMap || !document.getElementById('rider-register-map')) return;
-
-        riderMap = L.map('rider-register-map').setView([defaultLat, defaultLng], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(riderMap);
-
-        L.polygon(lipaServicePolygon, {
-            color: '#84CC16',
-            weight: 2,
-            dashArray: '5, 5',
-            fillColor: '#A3E635',
-            fillOpacity: 0.05
-        }).addTo(riderMap);
-
-        const riderIcon = L.divIcon({
-            html: '<div class="w-9 h-9 rounded-full bg-lime-700 text-white flex items-center justify-center shadow-xl border-2 border-white animate-bounce"><i class="fa-solid fa-motorcycle text-sm"></i></div>',
-            className: '',
-            iconSize: [36, 36],
-            iconAnchor: [18, 18]
-        });
-
-        riderMarker = L.marker([defaultLat, defaultLng], {
-            draggable: true,
-            icon: riderIcon
-        }).addTo(riderMap).bindPopup("<b>Rider Home Base</b><br>Drag pin to your starting location!").openPopup();
-
-        function updateRiderLocation(lat, lng) {
-            document.getElementById('rider_latitude').value = lat.toFixed(7);
-            document.getElementById('rider_longitude').value = lng.toFixed(7);
-            const badge = document.getElementById('rider_coords_badge');
-            if (badge) badge.innerText = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
-            const nearest = findNearestBarangay(lat, lng);
-            const select = document.getElementById('rider_barangay_select');
-            if (select) select.value = nearest;
-        }
-
-        riderMarker.on('dragend', function(e) {
-            const pos = riderMarker.getLatLng();
-            updateRiderLocation(pos.lat, pos.lng);
-        });
-
-        riderMap.on('click', function(e) {
-            riderMarker.setLatLng(e.latlng);
-            updateRiderLocation(e.latlng.lat, e.latlng.lng);
-        });
-
-        const riderSelect = document.getElementById('rider_barangay_select');
-        if (riderSelect) {
-            riderSelect.addEventListener('change', function() {
-                const b = riderSelect.value;
-                if (allBarangays[b]) {
-                    const coords = allBarangays[b];
-                    riderMarker.setLatLng([coords.lat, coords.lng]);
-                    riderMap.flyTo([coords.lat, coords.lng], 15);
-                    updateRiderLocation(coords.lat, coords.lng);
-                }
-            });
-        }
-    }
-
-    // Auto Location GPS for Rider
-    window.useRiderGpsLocation = function() {
-        const btn = document.getElementById('btn-rider-gps');
-        const origHtml = btn ? btn.innerHTML : '';
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Locating...';
-
-        if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser.");
-            if (btn) btn.innerHTML = origHtml;
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            function(pos) {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                if (riderMarker && riderMap) {
-                    riderMarker.setLatLng([lat, lng]);
-                    riderMap.flyTo([lat, lng], 16, { animate: true, duration: 1 });
-                    document.getElementById('rider_latitude').value = lat.toFixed(7);
-                    document.getElementById('rider_longitude').value = lng.toFixed(7);
-                    const badge = document.getElementById('rider_coords_badge');
-                    if (badge) badge.innerText = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                    const nearest = findNearestBarangay(lat, lng);
-                    const select = document.getElementById('rider_barangay_select');
-                    if (select) select.value = nearest;
-                }
-                if (btn) {
-                    btn.innerHTML = '<i class="fa-solid fa-circle-check text-limey-300"></i> Pinned!';
-                    setTimeout(() => { btn.innerHTML = origHtml; }, 2500);
-                }
-            },
-            function(err) {
-                alert("Could not detect GPS position. Please enable location permissions.");
-                if (btn) btn.innerHTML = origHtml;
-            },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-        );
-    };
-
-    // Initialize maps on demand / when tab active
+    // Initialize store map on demand / when tab active
     window.invalidateRegisterMaps = function() {
         if (!storeMap) initStoreMap();
-        if (!riderMap) initRiderMap();
         if (storeMap) storeMap.invalidateSize();
-        if (riderMap) riderMap.invalidateSize();
     };
 
     initStoreMap();
-    initRiderMap();
 });
 </script>
 @endpush

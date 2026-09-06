@@ -31,14 +31,19 @@
                                 {{ $s->status }}
                             </span>
                         </div>
-                        <p class="text-gray-600">
-                            Owner: <span class="font-semibold">{{ $s->user->name }}</span> ({{ $s->phone }}) • Brgy. <span class="font-bold text-nutri-800">{{ $s->barangay }}, Lipa</span>
-                        </p>
-                        <p class="text-gray-500">
-                            Category: <span class="font-semibold text-emerald-700">{{ $s->health_category }}</span> • Permit: {{ $s->business_permit_no ?? 'None' }}
+                        <p class="text-gray-600 leading-relaxed text-xs">
+                            <strong>Owner:</strong> <span class="font-semibold text-gray-900">{{ $s->user->name }}</span> ({{ $s->phone }})
+                            <br>
+                            <strong>Address:</strong> {{ $s->address_line ?? 'N/A' }} • Brgy. <span class="font-bold text-nutri-800">{{ $s->barangay }}, Lipa</span>
+                            <br>
+                            <strong>Category:</strong> <span class="font-semibold text-emerald-700">{{ $s->health_category }}</span> • <strong>Permit:</strong> {{ $s->business_permit_no ?? 'None' }}
+                            @if($s->gcash_number)
+                                <br>
+                                <strong>GCash:</strong> {{ $s->gcash_name }} ({{ $s->gcash_number }})
+                            @endif
                         </p>
                         @if($s->rejection_reason)
-                            <p class="text-rose-600 font-semibold italic">Rejection Reason: "{{ $s->rejection_reason }}"</p>
+                            <p class="text-rose-600 font-semibold italic pt-1">Rejection Reason: "{{ $s->rejection_reason }}"</p>
                         @endif
                     </div>
                 </div>
@@ -51,8 +56,8 @@
                     @endif
 
                     @if($s->status !== 'rejected')
-                        <button @click="openRejectModal = true" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition">
-                            <i class="fa-solid fa-ban mr-1"></i> Decline (Non-Healthy)
+                        <button @click="openRejectModal = true" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i> Reject & Delete
                         </button>
                     @endif
                 </div>
@@ -75,19 +80,23 @@
                     </div>
                 </div>
 
-                <!-- Reject Modal -->
+                <!-- Reject & Delete Modal -->
                 <div x-show="openRejectModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                     <div @click.outside="openRejectModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-                        <h4 class="font-black font-heading text-base text-gray-900">Decline Store: {{ $s->store_name }}</h4>
-                        <form action="{{ route('superadmin.stores.reject', $s->id) }}" method="POST" class="space-y-4 text-xs">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto text-xl border border-rose-100">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h4 class="font-black font-heading text-base text-gray-900 text-center">I-reject at I-delete ang {{ $s->store_name }}?</h4>
+                        <p class="text-xs text-gray-600 text-center leading-relaxed">
+                            Kapag na-reject, ang store na ito kasama ang kanyang user account ay <b>tuluyang mabubura sa database</b> at hindi na makakapasok sa system.
+                        </p>
+                        <form action="{{ route('superadmin.stores.reject', $s->id) }}" method="POST" class="space-y-3 pt-2">
                             @csrf
-                            <div>
-                                <label class="block font-bold text-gray-700 mb-1">Reason for Rejection *</label>
-                                <textarea name="rejection_reason" required rows="3" class="w-full p-3 rounded-xl border border-gray-200 text-xs" placeholder="e.g. Menu contains deep fried fast food which does not qualify as healthy food..."></textarea>
-                            </div>
                             <div class="flex gap-2">
-                                <button type="submit" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold">Decline Application</button>
-                                <button type="button" @click="openRejectModal = false" class="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 font-bold">Cancel</button>
+                                <button type="submit" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-trash-can"></i> Oo, I-reject & I-delete
+                                </button>
+                                <button type="button" @click="openRejectModal = false" class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition">Kanselahin</button>
                             </div>
                         </form>
                     </div>

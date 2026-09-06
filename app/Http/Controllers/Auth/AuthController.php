@@ -39,6 +39,32 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Your account has been deactivated. Please contact support.']);
             }
 
+            // Verify Store account approval status
+            if ($user->isStore()) {
+                $store = $user->store;
+                if (!$store || $store->status === 'pending') {
+                    Auth::logout();
+                    return back()->withErrors(['email' => 'Ang iyong Store account ay pending pa sa pagsusuri ng Super Admin. Mangyaring maghintay para sa approval bago makapag-login.'])->onlyInput('email');
+                } elseif ($store->status === 'rejected') {
+                    Auth::logout();
+                    $reason = $store->rejection_reason ? ": {$store->rejection_reason}" : ".";
+                    return back()->withErrors(['email' => 'Na-decline ang iyong Store registration' . $reason])->onlyInput('email');
+                }
+            }
+
+            // Verify Rider account approval status
+            if ($user->isRider()) {
+                $rider = $user->rider;
+                if (!$rider || $rider->status === 'pending') {
+                    Auth::logout();
+                    return back()->withErrors(['email' => 'Ang iyong Rider account ay pending pa sa pagsusuri ng Super Admin. Mangyaring maghintay para sa activation bago makapag-login.'])->onlyInput('email');
+                } elseif ($rider->status === 'rejected') {
+                    Auth::logout();
+                    $reason = $rider->rejection_reason ? ": {$rider->rejection_reason}" : ".";
+                    return back()->withErrors(['email' => 'Na-decline ang iyong Rider registration' . $reason])->onlyInput('email');
+                }
+            }
+
             return $this->redirectBasedOnRole($user);
         }
 
@@ -84,7 +110,7 @@ class AuthController extends Controller
             'phone' => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'store_name' => 'required|string|max:255',
-            'barangay' => 'required|string',
+            'barangay' => 'nullable|string',
             'address_line' => 'required|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
@@ -104,9 +130,9 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $fallbackCoords = LipaLocationService::getCoordinates($validated['barangay']);
-        $latitude = !empty($validated['latitude']) ? (float) $validated['latitude'] : $fallbackCoords['lat'];
-        $longitude = !empty($validated['longitude']) ? (float) $validated['longitude'] : $fallbackCoords['lng'];
+        $latitude = !empty($validated['latitude']) ? (float) $validated['latitude'] : 13.9419;
+        $longitude = !empty($validated['longitude']) ? (float) $validated['longitude'] : 121.1631;
+        $barangay = !empty($validated['barangay']) ? $validated['barangay'] : LipaLocationService::findNearestBarangay($latitude, $longitude);
 
         $logoPath = null;
         if ($request->hasFile('logo')) {
@@ -136,7 +162,7 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'store_name' => $validated['store_name'],
             'slug' => Str::slug($validated['store_name']) . '-' . rand(100, 999),
-            'barangay' => $validated['barangay'],
+            'barangay' => $barangay,
             'address_line' => $validated['address_line'],
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -150,8 +176,8 @@ class AuthController extends Controller
             'status' => 'pending', // Awaits Super Admin review
         ]);
 
-        Auth::login($user);
-        return redirect()->route('store.dashboard')->with('info', 'Your store application has been submitted! Our admin team is reviewing your healthy food verification credentials.');
+        // Do not auto login. Redirect to login page with clear pending approval notice.
+        return redirect()->route('login')->with('info', 'Matagumpay na naisumite ang iyong Store application! Sinusuri na ito ng Super Admin. Makakapag-login ka sa oras na ma-approve ang iyong account.');
     }
 
     public function registerRider(Request $request)
@@ -164,7 +190,8 @@ class AuthController extends Controller
             'vehicle_type' => 'required|string',
             'plate_number' => 'required|string|max:50',
             'license_number' => 'required|string|max:50',
-            'barangay' => 'required|string',
+            'address_line' => 'required|string|max:255',
+            'barangay' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'license_image' => 'nullable|image|max:3072',
@@ -178,9 +205,24 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $fallbackCoords = LipaLocationService::getCoordinates($validated['barangay']);
-        $latitude = !empty($validated['latitude']) ? (float) $validated['latitude'] : $fallbackCoords['lat'];
-        $longitude = !empty($validated['longitude']) ? (float) $validated['longitude'] : $fallbackCoords['lng'];
+        // Auto-detect barangay from address_line if not provided
+        $barangay = $validated['barangay'] ?? null;
+        if (empty($barangay)) {
+            $allBarangays = LipaLocationService::getBarangayList();
+            foreach ($allBarangays as $bName) {
+                if (stripos($validated['address_line'], $bName) !== false) {
+                    $barangay = $bName;
+                    break;
+                }
+            }
+            if (empty($barangay)) {
+                $barangay = 'Marawoy';
+            }
+        }
+
+        $fallbackCoords = LipaLocationService::getCoordinates($barangay);
+        $latitude = !empty($validated['latitude']) ? (float) $validated['latitude'] : ($fallbackCoords['lat'] ?? 13.9419);
+        $longitude = !empty($validated['longitude']) ? (float) $validated['longitude'] : ($fallbackCoords['lng'] ?? 121.1631);
 
         $licensePath = null;
         if ($request->hasFile('license_image')) {
@@ -194,7 +236,8 @@ class AuthController extends Controller
             'license_number' => $validated['license_number'],
             'license_image' => $licensePath,
             'phone' => $validated['phone'],
-            'barangay' => $validated['barangay'],
+            'barangay' => $barangay,
+            'address_line' => $validated['address_line'],
             'current_latitude' => $latitude,
             'current_longitude' => $longitude,
             'status' => 'pending',
@@ -208,8 +251,8 @@ class AuthController extends Controller
             'pending_payout' => 0.00,
         ]);
 
-        Auth::login($user);
-        return redirect()->route('riders.dashboard')->with('info', 'Your rider application has been submitted! Awaiting Admin verification before taking delivery trips.');
+        // Do not auto login. Redirect to login page with clear pending approval notice.
+        return redirect()->route('login')->with('info', 'Matagumpay na naisumite ang iyong Rider application! Sinusuri na ito ng Super Admin. Makakapag-login ka sa oras na ma-approve at ma-activate ang iyong account.');
     }
 
     public function logout(Request $request)

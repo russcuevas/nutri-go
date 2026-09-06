@@ -31,20 +31,14 @@
                     Discover verified organic restaurants, high-protein gym bowls, keto meals, certified supplements, and creator-led cooking vlogs delivered fast to your doorstep across Lipa.
                 </p>
 
-                <!-- Search & Barangay Quick Finder -->
+                <!-- Search & Quick Finder -->
                 <form action="{{ route('users.explore') }}" method="GET" class="p-2 sm:p-2.5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl flex flex-col sm:flex-row gap-2 max-w-xl mx-auto lg:mx-0">
-                    <div class="flex-1 flex items-center pl-3 pr-2 py-2 rounded-xl bg-white text-gray-900">
+                    <div class="flex-1 flex items-center pl-3 pr-2 py-2.5 rounded-xl bg-white text-gray-900">
                         <i class="fa-solid fa-magnifying-glass text-nutri-600 mr-2.5"></i>
-                        <input type="text" name="q" placeholder="Search salads, keto, calories, protein..." class="w-full text-xs sm:text-sm outline-none bg-transparent font-medium">
+                        <input type="text" name="q" placeholder="Search salads, keto, calories, protein, stores..." class="w-full text-xs sm:text-sm outline-none bg-transparent font-medium">
                     </div>
-                    <select name="barangay" class="px-3 py-2.5 rounded-xl bg-white text-gray-900 text-xs sm:text-sm font-semibold outline-none">
-                        <option value="">All Lipa Barangays</option>
-                        @foreach($barangays as $b)
-                            <option value="{{ $b }}">{{ $b }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="px-5 py-3 rounded-xl bg-limey-400 hover:bg-limey-500 text-nutri-950 font-extrabold text-sm shadow-md transition font-heading shrink-0">
-                        Search Food
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-limey-400 hover:bg-limey-500 text-nutri-950 font-extrabold text-sm shadow-md transition font-heading shrink-0 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search Lipa Food
                     </button>
                 </form>
 
@@ -244,15 +238,17 @@
                                 @endif
                             </div>
 
-                            <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-xl bg-nutri-900/90 text-limey-300 text-xs font-bold backdrop-blur-md">
+                            <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-xl bg-gray-900/90 text-white text-xs font-black backdrop-blur-md shadow-md flex items-center gap-1">
                                 🔥 {{ $item->calories }} kcal
                             </div>
                         </div>
 
                         <!-- Content -->
                         <div class="p-6">
-                            <div class="text-[11px] font-extrabold text-nutri-600 uppercase tracking-wider mb-1">
-                                {{ $item->store->store_name }} • <span class="text-gray-500 font-normal">Brgy. {{ $item->store->barangay }}</span>
+                            <div class="text-[11px] font-extrabold text-nutri-600 uppercase tracking-wider mb-1 leading-tight">
+                                {{ $item->store->store_name }}
+                                <br>
+                                <span class="text-[10px] text-gray-400 font-normal normal-case block truncate mt-0.5"><i class="fa-solid fa-location-dot text-[9px] text-gray-400 mr-0.5"></i>{{ $item->store->address_line ?? $item->store->barangay }}</span>
                             </div>
                             <h3 class="text-lg font-black text-gray-900 font-heading group-hover:text-nutri-600 transition">
                                 {{ $item->name }}
@@ -381,7 +377,7 @@
                     <h3 class="text-base font-black text-gray-900 font-heading group-hover:text-nutri-600 transition">
                         {{ $store->store_name }}
                     </h3>
-                    <p class="text-xs text-gray-500 mt-1">Brgy. {{ $store->barangay }}, Lipa</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ $store->address_line ?? ('Brgy. ' . $store->barangay . ', Lipa') }}</p>
                     <div class="flex items-center gap-1 text-xs font-bold text-amber-500 mt-2">
                         <i class="fa-solid fa-star"></i> {{ number_format($store->rating, 2) }} <span class="text-gray-400 font-normal">({{ $store->total_reviews }})</span>
                     </div>

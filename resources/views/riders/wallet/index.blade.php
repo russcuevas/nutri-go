@@ -277,7 +277,7 @@
                         <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
                             <span class="text-[10px] font-bold uppercase text-amber-800 tracking-wider block">Pickup Store</span>
                             <h5 class="font-black font-heading text-sm text-gray-900" x-text="selectedOrder.store ? selectedOrder.store.store_name : 'Store'"></h5>
-                            <p class="text-gray-600" x-text="(selectedOrder.store ? selectedOrder.store.address_line : '') + ', Brgy. ' + (selectedOrder.store ? selectedOrder.store.barangay : '') + ', Lipa City'"></p>
+                            <p class="text-gray-600" x-text="selectedOrder.store ? (selectedOrder.store.address_line || ('Brgy. ' + selectedOrder.store.barangay + ', Lipa')) : ''"></p>
                             <p class="text-gray-500 text-[11px]" x-show="selectedOrder.store && selectedOrder.store.phone">
                                 <i class="fa-solid fa-phone mr-1"></i> <span x-text="selectedOrder.store ? selectedOrder.store.phone : ''"></span>
                             </p>
