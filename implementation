@@ -1,0 +1,65 @@
+gagawa ako ng system laravel at ang database ay phpmyadmin
+
+DATABASE NAME: nutrigo_db
+
+tapos ito ang mga features
+
+Admin -> 
+taga accept ng mag reregister na healthy store 
+kapag may nag register na hindi healthy store decline lang nila
+tapos sa delivery riders na nag reregister kaya din nila iapproved or decline
+
+Store -> 
+mga healthy store ang mag reregister ng store nila para makita 
+sa app tapos yung mga store na yun sila mag lalagay ng mga ibebenta 
+nila na foods na makikita at maoorder nina users
+
+Delivery riders -> 
+pero dapat sila mag 
+sila yung mag dedelivery sa mga customers na naorder
+
+Users -> 
+natrack niya order status kung Pending, Waiting for rider, On the way, Completed
+viewers pwede omorder sa mga stores na naka register na 
+naapproved ng admin
+
+wala munang gcash payment pwede naman ito pero need muna i accept 
+ni (store for confirmation) accept or decline parang may proof si users na 
+iuupload muna reference number saka screenshot para makita na may sinend talaga 
+na pera tapos pag accept automatic mag aano na sa riders para pumunta na sa mga nag 
+orders tas dun na yung tracking
+
+
+Ito sana ang gusto kong process tapos dapat hindi mawala ito
+
+So ang system na to ay NutriGo tapos sakop lang niya is Lipa City area lang bawal na yung outside Lipa
+Healthy Food Search, 
+Healthy Food Categories, 
+Nutrition Information, 
+Healthy Choice Badge, 
+Healthy Alternative Recommendations, 
+Nearby Healthy Stores, 
+Cart & Checkout, 
+Order Tracking, 
+Ratings & Reviews, 
+Scheduled Delivery
+
+Customer orders — 
+You open the Nutrigo app or website, choose a restaurant or shop, 
+select items, enter the delivery address, and pay online uploading lang ng 
+payment proof accept or decline lang ng store 
+or choose cash on delivery if available.
+
+Restaurant receives the order — 
+Nutrigo sends the order to the restaurant, which accepts it and prepares the food.
+
+A rider is assigned — 
+The platform finds an available delivery rider, usually considering factors such as location and availability.
+
+Rider picks it up — 
+The rider goes to the restaurant and collects the prepared order.
+
+Delivery — 
+The rider follows the delivery information in the app and brings the order to the customer.
+
+Payment and fees — Nutrigo can earn money through restaurant commissions, delivery/service fees
