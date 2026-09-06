@@ -25,6 +25,11 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
+        $allStores = Store::where('status', 'approved')
+            ->withCount('products')
+            ->orderBy('rating', 'desc')
+            ->get();
+
         $healthyChoices = Product::where('is_healthy_choice', true)
             ->where('is_available', true)
             ->whereHas('store', function($q) {
@@ -50,6 +55,7 @@ class HomeController extends Controller
         return view('users.home.index', compact(
             'categories',
             'featuredStores',
+            'allStores',
             'healthyChoices',
             'creators',
             'featuredRecipes',
