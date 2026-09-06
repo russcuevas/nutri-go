@@ -162,7 +162,7 @@
                 <div class="flex items-center gap-3">
                     <!-- Cart Button -->
                     @php
-                        $cartCount = session()->has('cart') ? array_sum(array_column(session('cart'), 'quantity')) : 0;
+                        $cartCount = session()->has('cart') ? count(session('cart')) : 0;
                     @endphp
                     <a href="{{ route('users.cart.index') }}" class="relative p-2.5 rounded-xl text-nutri-900 bg-nutri-50 hover:bg-nutri-100 transition border border-nutri-200/80 shadow-sm group">
                         <i class="fa-solid fa-bag-shopping text-lg group-hover:scale-110 transition-transform"></i>
@@ -187,7 +187,7 @@
                                 <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
                             </button>
 
-                            <div x-show="open" @click.outside="open = false" x-transition
+                            <div x-show="open" x-cloak @click.outside="open = false" x-transition
                                  class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-nutri-100 py-2 z-50">
                                 <div class="px-4 py-2 border-b border-gray-100">
                                     <p class="text-xs font-bold text-gray-900">{{ auth()->user()->name }}</p>

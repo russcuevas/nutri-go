@@ -92,33 +92,195 @@
 
         <!-- Store GCash Direct Details -->
         <div class="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-4">
-            <h4 class="font-black uppercase tracking-wider text-blue-950">Store Direct GCash Payment Details</h4>
+            <div class="flex items-center justify-between">
+                <h4 class="font-black uppercase tracking-wider text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-qrcode text-blue-600"></i> Store Direct GCash Payment Details
+                </h4>
+                <span class="text-[10px] text-blue-700 bg-blue-100 font-bold px-2 py-0.5 rounded-full">For Customer Orders</span>
+            </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-bold text-gray-700 uppercase mb-1">GCash Account Name *</label>
-                    <input type="text" name="gcash_name" required value="{{ old('gcash_name', $store->gcash_name) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white">
+                    <input type="text" name="gcash_name" required value="{{ old('gcash_name', $store->gcash_name) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block font-bold text-gray-700 uppercase mb-1">GCash Account Number *</label>
-                    <input type="text" name="gcash_number" required value="{{ old('gcash_number', $store->gcash_number) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white font-mono">
+                    <input type="text" name="gcash_number" required value="{{ old('gcash_number', $store->gcash_number) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white font-mono outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
 
-            <div>
-                <label class="block font-bold text-gray-700 uppercase mb-1">Upload GCash QR Code Image</label>
-                <input type="file" name="gcash_qr" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white">
+            <!-- Interactive GCash QR Image Uploader with Instant Preview & Remove 'X' -->
+            <div x-data="{
+                previewUrl: '{{ $store->gcash_qr_url }}',
+                initialUrl: '{{ $store->gcash_qr_url }}',
+                isRemoved: false,
+                handleFile(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.previewUrl = URL.createObjectURL(file);
+                        this.isRemoved = false;
+                    }
+                },
+                removeQr() {
+                    this.previewUrl = null;
+                    this.isRemoved = true;
+                    if (this.$refs.qrFileInput) {
+                        this.$refs.qrFileInput.value = '';
+                    }
+                },
+                triggerUpload() {
+                    this.$refs.qrFileInput.click();
+                }
+            }" class="space-y-2 pt-2 border-t border-blue-100">
+                <label class="block font-bold text-gray-700 uppercase">GCash QR Code Image</label>
+                <input type="hidden" name="remove_gcash_qr" :value="isRemoved ? 1 : 0">
+                <input type="file" name="gcash_qr" x-ref="qrFileInput" @change="handleFile($event)" accept="image/*" class="hidden">
+
+                <!-- If Preview / QR Exists -->
+                <div x-show="previewUrl" class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl bg-white border border-blue-200 shadow-sm">
+                    <div class="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-blue-300 bg-gray-50 shrink-0 shadow-inner group">
+                        <img :src="previewUrl" alt="GCash QR Preview" class="w-full h-full object-contain p-1">
+                        <!-- 'X' Overlay button on image -->
+                        <button type="button" @click="removeQr()" 
+                                class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition"
+                                title="Remove QR Image (X)">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
+                                <i class="fa-solid fa-circle-check mr-1"></i> QR Ready
+                            </span>
+                            <span class="text-[11px] text-gray-500">Directly visible to customers upon GCash checkout</span>
+                        </div>
+                        <p class="text-gray-600">You can replace or remove this QR code image anytime.</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="triggerUpload()" 
+                                    class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-arrows-rotate"></i> Change / Replace QR
+                            </button>
+                            <button type="button" @click="removeQr()" 
+                                    class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 border border-rose-200">
+                                <i class="fa-solid fa-trash-can"></i> Remove (X)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- If No QR / Cleared -->
+                <div x-show="!previewUrl" 
+                     @click="triggerUpload()"
+                     class="p-6 rounded-2xl border-2 border-dashed border-blue-300 bg-white/80 hover:bg-white transition text-center cursor-pointer space-y-2 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-900">Click to upload Store GCash QR Code</p>
+                        <p class="text-[11px] text-gray-500">PNG, JPG, JPEG up to 5MB (Saved directly to public folder)</p>
+                    </div>
+                    <button type="button" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-qrcode"></i> Select GCash QR Image
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-bold text-gray-700 uppercase mb-1">Store Logo</label>
-                <input type="file" name="logo" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-nutri-900 file:text-white">
+            <!-- Store Logo Upload with Preview & X -->
+            <div x-data="{
+                previewUrl: '{{ $store->logo_url }}',
+                isRemoved: false,
+                handleFile(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.previewUrl = URL.createObjectURL(file);
+                        this.isRemoved = false;
+                    }
+                },
+                removeLogo() {
+                    this.previewUrl = null;
+                    this.isRemoved = true;
+                    if (this.$refs.logoInput) this.$refs.logoInput.value = '';
+                },
+                triggerUpload() {
+                    this.$refs.logoInput.click();
+                }
+            }" class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                <label class="block font-bold text-gray-700 uppercase">Store Logo</label>
+                <input type="hidden" name="remove_logo" :value="isRemoved ? 1 : 0">
+                <input type="file" name="logo" x-ref="logoInput" @change="handleFile($event)" accept="image/*" class="hidden">
+
+                <div x-show="previewUrl" class="flex items-center gap-3">
+                    <div class="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-300 bg-white shrink-0 shadow-sm">
+                        <img :src="previewUrl" alt="Logo Preview" class="w-full h-full object-cover">
+                        <button type="button" @click="removeLogo()" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-rose-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-1">
+                        <button type="button" @click="triggerUpload()" class="px-2.5 py-1 rounded-lg bg-nutri-900 text-white text-[11px] font-bold hover:bg-nutri-800 transition">
+                            Change Logo
+                        </button>
+                        <button type="button" @click="removeLogo()" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-200 hover:bg-rose-100 transition block">
+                            Remove (X)
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="!previewUrl" @click="triggerUpload()" class="p-4 rounded-xl border-2 border-dashed border-gray-300 bg-white hover:bg-gray-50 text-center cursor-pointer">
+                    <i class="fa-solid fa-image text-gray-400 text-lg mb-1"></i>
+                    <p class="text-[11px] font-bold text-gray-700">Upload Logo</p>
+                </div>
             </div>
-            <div>
-                <label class="block font-bold text-gray-700 uppercase mb-1">Store Banner</label>
-                <input type="file" name="banner" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-nutri-900 file:text-white">
+
+            <!-- Store Banner Upload with Preview & X -->
+            <div x-data="{
+                previewUrl: '{{ $store->banner_url }}',
+                isRemoved: false,
+                handleFile(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.previewUrl = URL.createObjectURL(file);
+                        this.isRemoved = false;
+                    }
+                },
+                removeBanner() {
+                    this.previewUrl = null;
+                    this.isRemoved = true;
+                    if (this.$refs.bannerInput) this.$refs.bannerInput.value = '';
+                },
+                triggerUpload() {
+                    this.$refs.bannerInput.click();
+                }
+            }" class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                <label class="block font-bold text-gray-700 uppercase">Store Banner</label>
+                <input type="hidden" name="remove_banner" :value="isRemoved ? 1 : 0">
+                <input type="file" name="banner" x-ref="bannerInput" @change="handleFile($event)" accept="image/*" class="hidden">
+
+                <div x-show="previewUrl" class="space-y-2">
+                    <div class="relative w-full h-20 rounded-xl overflow-hidden border border-gray-300 bg-white shadow-sm">
+                        <img :src="previewUrl" alt="Banner Preview" class="w-full h-full object-cover">
+                        <button type="button" @click="removeBanner()" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-rose-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="triggerUpload()" class="px-2.5 py-1 rounded-lg bg-nutri-900 text-white text-[11px] font-bold hover:bg-nutri-800 transition">
+                            Change Banner
+                        </button>
+                        <button type="button" @click="removeBanner()" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-200 hover:bg-rose-100 transition">
+                            Remove (X)
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="!previewUrl" @click="triggerUpload()" class="p-4 rounded-xl border-2 border-dashed border-gray-300 bg-white hover:bg-gray-50 text-center cursor-pointer">
+                    <i class="fa-solid fa-panorama text-gray-400 text-lg mb-1"></i>
+                    <p class="text-[11px] font-bold text-gray-700">Upload Banner</p>
+                </div>
             </div>
         </div>
 

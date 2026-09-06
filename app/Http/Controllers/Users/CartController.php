@@ -74,7 +74,7 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        $cartCount = array_sum(array_column($cart, 'quantity'));
+        $cartCount = count($cart);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

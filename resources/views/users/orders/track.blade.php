@@ -10,6 +10,9 @@
     orderNumber: '{{ $order->order_number }}',
     showCancelConfirm: false,
     poll() {
+        if (['delivered', 'cancelled', 'declined_by_store'].includes(this.status)) {
+            return;
+        }
         fetch(`{{ route('orders.status.poll', $order->order_number) }}`)
             .then(r => {
                 if (r.status === 404) {
@@ -55,21 +58,30 @@
                     {{ $order->status_label }}
                 </span>
             </div>
-            <p class="text-xs text-gray-500 mt-1">
-                Store: <span class="font-bold text-gray-800">{{ $order->store->store_name }}</span> • Address: <span class="font-bold text-gray-800">{{ $order->delivery_address }}</span>
+            <div class="text-xs text-gray-500 mt-1.5 leading-relaxed">
+                <span>Store: <strong class="text-gray-800">{{ $order->store->store_name }}</strong></span>
+                <br>
+                <span>Address: <strong class="text-gray-800">{{ $order->delivery_address }}</strong></span>
                 @if($order->delivery_landmark)
-                    • <span class="text-gray-600 font-medium">({{ $order->delivery_landmark }})</span>
+                    <br>
+                    <span class="text-gray-600">Landmark: <span class="font-medium text-gray-700">({{ $order->delivery_landmark }})</span></span>
                 @endif
-            </p>
+                @if($order->delivery_notes)
+                    <br>
+                    <span class="text-gray-500 italic">Notes: "{{ $order->delivery_notes }}"</span>
+                @endif
+            </div>
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- 1-Click Cancel Button when still pending store acceptance -->
-            <template x-if="status === 'pending_store'">
-                <button @click="showCancelConfirm = true" type="button" class="px-3.5 py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-xs shadow-xs transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-trash-can text-rose-500"></i> Cancel Order
-                </button>
-            </template>
+            <!-- 1-Click Cancel Button only when still pending store acceptance -->
+            @if($order->status === 'pending_store')
+                <template x-if="status === 'pending_store'">
+                    <button @click="showCancelConfirm = true" type="button" class="px-3.5 py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-xs shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-trash-can text-rose-500"></i> Cancel Order
+                    </button>
+                </template>
+            @endif
 
             <div class="px-4 py-2 rounded-2xl bg-nutri-50 border border-nutri-200 text-right">
                 <span class="text-[10px] text-gray-500 font-semibold uppercase">Estimated Arrival</span>
@@ -80,8 +92,9 @@
         </div>
     </div>
 
+    @if($order->status === 'pending_store')
     <!-- Notice Banner for Unaccepted / Pending Store Orders -->
-    <div x-show="status === 'pending_store'" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 p-4 rounded-3xl mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+    <div x-show="status === 'pending_store'" x-cloak class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 p-4 rounded-3xl mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
         <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
                 <i class="fa-solid fa-hourglass-half text-sm"></i>
@@ -119,6 +132,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 @php
     $isRiderActive = $order->rider_id && in_array($order->status, ['rider_assigned', 'rider_picked_up', 'on_the_way']);
@@ -153,7 +167,7 @@
                     <div class="flex items-center gap-2">
                         <span class="w-3.5 h-3.5 rounded-full bg-emerald-600"></span> Store ({{ $order->store->store_name }})
                     </div>
-                    <div x-show="['rider_assigned', 'rider_picked_up', 'on_the_way'].includes(status)" class="flex items-center gap-2">
+                    <div x-show="['rider_assigned', 'rider_picked_up', 'on_the_way'].includes(status)" x-cloak class="flex items-center gap-2">
                         <span class="w-3.5 h-3.5 rounded-full bg-lime-500 shadow-glow"></span> Active Rider (GPS)
                     </div>
                     <div class="flex items-center gap-2">

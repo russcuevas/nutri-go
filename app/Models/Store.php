@@ -73,7 +73,9 @@ class Store extends Model
     public function getLogoUrlAttribute()
     {
         if ($this->logo) {
-            return str_starts_with($this->logo, 'http') ? $this->logo : asset('storage/' . $this->logo);
+            if (str_starts_with($this->logo, 'http')) return $this->logo;
+            if (str_starts_with($this->logo, 'uploads/') || file_exists(public_path($this->logo))) return asset($this->logo);
+            return asset('storage/' . $this->logo);
         }
         return asset('images/nutrigo-logo.jpg');
     }
@@ -81,8 +83,25 @@ class Store extends Model
     public function getBannerUrlAttribute()
     {
         if ($this->banner) {
-            return str_starts_with($this->banner, 'http') ? $this->banner : asset('storage/' . $this->banner);
+            if (str_starts_with($this->banner, 'http')) return $this->banner;
+            if (str_starts_with($this->banner, 'uploads/') || file_exists(public_path($this->banner))) return asset($this->banner);
+            return asset('storage/' . $this->banner);
         }
         return 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1200&q=80';
+    }
+
+    public function getGcashQrUrlAttribute()
+    {
+        if ($this->gcash_qr) {
+            if (str_starts_with($this->gcash_qr, 'http')) return $this->gcash_qr;
+            if (str_starts_with($this->gcash_qr, 'uploads/') || file_exists(public_path($this->gcash_qr))) return asset($this->gcash_qr);
+            return asset('storage/' . $this->gcash_qr);
+        }
+        return null;
+    }
+
+    public function getGcashQrCodeAttribute()
+    {
+        return $this->gcash_qr_url;
     }
 }

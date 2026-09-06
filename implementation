@@ -1,65 +1,50 @@
-gagawa ako ng system laravel at ang database ay phpmyadmin
+Key Requirements & User Directives
+Brand Identity & Color Palette:
 
-DATABASE NAME: nutrigo_db
+Inspired directly by nutrigo-logo.jpg: Deep Forest Green (#0F4A2B), Vibrant Leaf Green (#16A34A / #22C55E), Fresh Lime (#84CC16), Clean Mint (#F0FDF4), and warm energetic accents.
+Interactive, animated landing page with premium design aesthetics (glassmorphism, micro-animations, interactive calorie/meal calculator).
+Multi-Role System & Workflows:
 
-tapos ito ang mga features
-
-Admin -> 
-taga accept ng mag reregister na healthy store 
-kapag may nag register na hindi healthy store decline lang nila
-tapos sa delivery riders na nag reregister kaya din nila iapproved or decline
-
-Store -> 
-mga healthy store ang mag reregister ng store nila para makita 
-sa app tapos yung mga store na yun sila mag lalagay ng mga ibebenta 
-nila na foods na makikita at maoorder nina users
-
-Delivery riders -> 
-pero dapat sila mag 
-sila yung mag dedelivery sa mga customers na naorder
-
-Users -> 
-natrack niya order status kung Pending, Waiting for rider, On the way, Completed
-viewers pwede omorder sa mga stores na naka register na 
-naapproved ng admin
-
-wala munang gcash payment pwede naman ito pero need muna i accept 
-ni (store for confirmation) accept or decline parang may proof si users na 
-iuupload muna reference number saka screenshot para makita na may sinend talaga 
-na pera tapos pag accept automatic mag aano na sa riders para pumunta na sa mga nag 
-orders tas dun na yung tracking
-
-
-Ito sana ang gusto kong process tapos dapat hindi mawala ito
-
-So ang system na to ay NutriGo tapos sakop lang niya is Lipa City area lang bawal na yung outside Lipa
-Healthy Food Search, 
-Healthy Food Categories, 
-Nutrition Information, 
-Healthy Choice Badge, 
-Healthy Alternative Recommendations, 
-Nearby Healthy Stores, 
-Cart & Checkout, 
-Order Tracking, 
-Ratings & Reviews, 
-Scheduled Delivery
-
-Customer orders — 
-You open the Nutrigo app or website, choose a restaurant or shop, 
-select items, enter the delivery address, and pay online uploading lang ng 
-payment proof accept or decline lang ng store 
-or choose cash on delivery if available.
-
-Restaurant receives the order — 
-Nutrigo sends the order to the restaurant, which accepts it and prepares the food.
-
-A rider is assigned — 
-The platform finds an available delivery rider, usually considering factors such as location and availability.
-
-Rider picks it up — 
-The rider goes to the restaurant and collects the prepared order.
-
-Delivery — 
-The rider follows the delivery information in the app and brings the order to the customer.
-
-Payment and fees — Nutrigo can earn money through restaurant commissions, delivery/service fees
+Super Admin:
+Approves/declines Healthy Store registrations (strict healthy vetting).
+Approves/declines Delivery Rider applications.
+Manages partner content creators/vloggers, supplement brands, and subscriptions.
+Platform analytics, commission rates, delivery fee settings.
+Healthy Store Portal:
+Register store with Lipa City barangay, business permit/health certification, GCash QR & account details.
+Manage menu items with Nutrition Information (Calories, Protein, Carbs, Fats), Healthy Choice Badges, dietary tags (Vegan, Keto, Diabetic-friendly, Gluten-free, High-protein, Low-carb), and Healthy Alternative Recommendations.
+Receive orders with Manual GCash Payment Verification (view uploaded screenshot & reference number) or COD.
+One-click Accept / Decline with reason -> Update order status to "Preparing" -> "Ready for Pickup".
+Delivery Rider Portal & In-App Wallet Payout System:
+Register with vehicle type, plate number, driver's license.
+Browse available Lipa City delivery requests ready for pickup.
+Active Order Limit: Maximum 3 active orders per rider per trip (Rider cannot accept a 4th order until one of the current 3 is marked 'Delivered' to ensure fast, fresh delivery).
+Accept delivery -> Navigate/View customer & store details in Lipa -> Mark "Picked Up" -> "On The Way" -> "Delivered" with delivery photo proof.
+In-App Rider Wallet & Automated Payout Engine:
+When order is marked Delivered, the Delivery Fee (Base Fare + Distance Gas Allowance) is instantly credited to the Rider's NutriGo Wallet.
+Rider dashboard displays Today's Earnings, Total Wallet Balance, and Trip History Ledger.
+GCash Payout Module: Rider can request a GCash cashout (Daily/Weekly) -> Super Admin reviews in Admin Payouts Queue, sends GCash, enters reference #, and marks completed.
+Accurate Distance & Fuel-Based Delivery Fee Engine (Grab / Foodpanda / Angkas Standard):
+Point-to-Point Distance Matrix: Every Lipa City Barangay and Store has pre-mapped geolocation coordinates (Lat/Long).
+Instant Transparent Fee Formula:
+Base Delivery Fare (first 1.5 km): e.g. ₱40.00 (covers booking & initial dispatch).
+Per Kilometer Gas & Travel Rate: e.g. ₱10.00 / km beyond 1.5 km.
+Formula: Fee = Base Fare + max(0, Distance_km - 1.5) * Rate_per_km
+Instant Real-Time Calculation: As soon as the customer picks their Lipa barangay or store, the exact distance (e.g. 3.2 km), estimated travel time (e.g. 14 mins), and exact fixed delivery fee (e.g. ₱57) are immediately calculated and shown—no confusing estimates or vague ranges!
+Admin Configurable: Base fare, base km, and rate per km can be adjusted anytime in the Super Admin Settings.
+User / Customer Experience & Interactive Map Suite:
+Interactive Checkout Map Pinning (Lipa City):
+Interactive Leaflet/OpenStreetMap centered on Lipa City.
+Customer drops pin or searches address -> Automatically captures exact latitude & longitude.
+Dedicated fields for Lipa Barangay, Street/House No., and Delivery Landmark & Rider Notes (e.g., "Beside green gate, in front of sari-sari store, doorbell 2x").
+Real-Time Live Map Order Tracking:
+Live Map view showing Store Pin (Green), Customer Pin (Orange/Target), and Live Animated Moving Rider Icon (Motorcycle with pulse).
+Route Polyline: Clear visible route line drawn connecting Store to Customer location.
+Dynamic Live ETA: Continuously calculating and updating estimated arrival time (e.g., "Arriving in 8 mins").
+Live status step tracker (Store Preparing -> Rider Picked Up -> On The Way -> Arrived -> Delivered).
+Rider Navigation Map:
+Rider view with exact turn-by-turn route path, exact Lat/Long coordinates, distance, customer landmark, and one-click Waze/Google Maps integration.
+Content Creators, Vlogger Partnerships & Meal Prep Subscriptions:
+Creator Vlogs & Cooking Hub: Watch partner health vloggers cook nutritious meals with direct "Order Ingredients" links to partner stores.
+Supplements Corner: Dedicated verified vendors for organic supplements, whey protein, herbal vitamins, superfoods.
+NutriGo VIP Subscription: Premium access tier for exclusive meal prep guides, custom calorie calculator, vlogger masterclasses, and delivery discounts.

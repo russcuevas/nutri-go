@@ -110,12 +110,26 @@ class AuthController extends Controller
 
         $logoPath = null;
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('stores/logos', 'public');
+            $file = $request->file('logo');
+            $filename = 'logo_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('uploads/stores/logos');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $logoPath = 'uploads/stores/logos/' . $filename;
         }
 
         $gcashQrPath = null;
         if ($request->hasFile('gcash_qr')) {
-            $gcashQrPath = $request->file('gcash_qr')->store('stores/gcash', 'public');
+            $file = $request->file('gcash_qr');
+            $filename = 'gcash_qr_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('uploads/stores/gcash');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $gcashQrPath = 'uploads/stores/gcash/' . $filename;
         }
 
         Store::create([

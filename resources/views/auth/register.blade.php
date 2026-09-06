@@ -184,17 +184,57 @@
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">GCash Account Name</label>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">GCash Account Name *</label>
                         <input type="text" name="gcash_name" required class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white" placeholder="e.g. Maria Teresa (Store Owner)">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">GCash Account Number</label>
-                        <input type="text" name="gcash_number" required class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white" placeholder="e.g. 09171234567">
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">GCash Account Number *</label>
+                        <input type="text" name="gcash_number" required class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white font-mono" placeholder="e.g. 09171234567">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">Upload GCash QR Code (Optional/Recommended)</label>
-                    <input type="file" name="gcash_qr" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+
+                <!-- GCash QR upload with preview -->
+                <div x-data="{
+                    previewUrl: null,
+                    handleFile(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            this.previewUrl = URL.createObjectURL(file);
+                        }
+                    },
+                    clearQr() {
+                        this.previewUrl = null;
+                        if (this.$refs.regQrInput) this.$refs.regQrInput.value = '';
+                    }
+                }" class="space-y-2">
+                    <label class="block text-[11px] font-bold text-gray-700 uppercase">Upload GCash QR Code (Recommended)</label>
+                    <input type="file" name="gcash_qr" x-ref="regQrInput" @change="handleFile($event)" accept="image/*" class="hidden">
+
+                    <div x-show="previewUrl" class="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-200">
+                        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-blue-200 bg-gray-50 shrink-0">
+                            <img :src="previewUrl" alt="GCash QR Preview" class="w-full h-full object-contain">
+                            <button type="button" @click="clearQr()" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-rose-700">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-1 text-xs">
+                            <p class="font-bold text-gray-800 text-[11px]">QR Preview Ready</p>
+                            <div class="flex items-center gap-2">
+                                <button type="button" @click="$refs.regQrInput.click()" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">
+                                    Change
+                                </button>
+                                <button type="button" @click="clearQr()" class="px-2 py-1 rounded bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-200">
+                                    Remove (X)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="!previewUrl" @click="$refs.regQrInput.click()" class="p-4 rounded-xl border-2 border-dashed border-blue-300 bg-white hover:bg-blue-50/50 text-center cursor-pointer transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-500 text-lg mb-1"></i>
+                        <p class="text-xs font-bold text-blue-900">Click to select GCash QR image</p>
+                        <p class="text-[10px] text-gray-500">PNG, JPG up to 5MB</p>
+                    </div>
                 </div>
             </div>
 

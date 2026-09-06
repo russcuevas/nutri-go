@@ -125,53 +125,8 @@
             </div>
         </div>
 
-        <!-- Right: Real-Time Lipa Distance Fee Calculator & Reviews -->
+        <!-- Right Column: Reviews -->
         <div class="lg:col-span-4 space-y-6">
-            <!-- Distance & Gas Fare Estimator -->
-            <div class="bg-white p-6 rounded-3xl border border-nutri-200 shadow-card space-y-4" x-data="{
-                barangay: 'Sabang',
-                distance: 2.8,
-                fee: 53,
-                time: 18,
-                calculate() {
-                    fetch(`{{ route('api.calculate.fee') }}?store_id={{ $store->id }}&barangay=${this.barangay}`)
-                        .then(r => r.json())
-                        .then(data => {
-                            this.distance = data.fee_breakdown.distance_km;
-                            this.fee = data.fee_breakdown.delivery_fee;
-                            this.time = data.fee_breakdown.estimated_time_mins;
-                        });
-                }
-            }" x-init="calculate()">
-                <h3 class="text-sm font-extrabold uppercase tracking-wider text-nutri-900 flex items-center gap-2">
-                    <i class="fa-solid fa-route text-nutri-600"></i> Lipa Distance Fee Calculator
-                </h3>
-                <p class="text-xs text-gray-500">Select your destination barangay to see exact point-to-point delivery fare & gas rate:</p>
-                
-                <div>
-                    <select x-model="barangay" @change="calculate()" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold outline-none focus:ring-2 focus:ring-nutri-500 bg-white">
-                        @foreach($barangays as $b)
-                            <option value="{{ $b }}">{{ $b }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="p-4 rounded-2xl bg-nutri-50 border border-nutri-200 space-y-2 text-xs">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Point-to-Point Distance:</span>
-                        <span class="font-bold text-gray-900" x-text="distance + ' km'"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Estimated Delivery Time:</span>
-                        <span class="font-bold text-gray-900" x-text="'~' + time + ' mins'"></span>
-                    </div>
-                    <div class="flex justify-between pt-2 border-t border-nutri-200 text-sm font-black text-nutri-950 font-heading">
-                        <span>Delivery Fare:</span>
-                        <span class="text-nutri-700" x-text="'₱' + fee + '.00'"></span>
-                    </div>
-                </div>
-            </div>
-
             <!-- Customer Health Reviews -->
             <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card space-y-4">
                 <h3 class="text-sm font-extrabold uppercase tracking-wider text-gray-900 flex items-center gap-2">

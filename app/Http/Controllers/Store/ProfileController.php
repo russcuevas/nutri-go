@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Store;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use App\Services\LipaLocationService;
 
 class ProfileController extends Controller
@@ -34,9 +35,9 @@ class ProfileController extends Controller
             'closing_time' => 'required',
             'gcash_name' => 'required|string',
             'gcash_number' => 'required|string',
-            'logo' => 'nullable|image|max:2048',
-            'banner' => 'nullable|image|max:3072',
-            'gcash_qr' => 'nullable|image|max:3072',
+            'logo' => 'nullable|image|max:3072',
+            'banner' => 'nullable|image|max:5120',
+            'gcash_qr' => 'nullable|image|max:5120',
         ]);
 
         $fallbackCoords = LipaLocationService::getCoordinates($validated['barangay']);
@@ -45,17 +46,44 @@ class ProfileController extends Controller
 
         $logoPath = $store->logo;
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('stores/logos', 'public');
+            $file = $request->file('logo');
+            $filename = 'logo_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('uploads/stores/logos');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $logoPath = 'uploads/stores/logos/' . $filename;
+        } elseif ($request->boolean('remove_logo')) {
+            $logoPath = null;
         }
 
         $bannerPath = $store->banner;
         if ($request->hasFile('banner')) {
-            $bannerPath = $request->file('banner')->store('stores/banners', 'public');
+            $file = $request->file('banner');
+            $filename = 'banner_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('uploads/stores/banners');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $bannerPath = 'uploads/stores/banners/' . $filename;
+        } elseif ($request->boolean('remove_banner')) {
+            $bannerPath = null;
         }
 
         $gcashQrPath = $store->gcash_qr;
         if ($request->hasFile('gcash_qr')) {
-            $gcashQrPath = $request->file('gcash_qr')->store('stores/gcash', 'public');
+            $file = $request->file('gcash_qr');
+            $filename = 'gcash_qr_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('uploads/stores/gcash');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $gcashQrPath = 'uploads/stores/gcash/' . $filename;
+        } elseif ($request->boolean('remove_gcash_qr')) {
+            $gcashQrPath = null;
         }
 
         $store->update([

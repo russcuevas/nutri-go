@@ -34,9 +34,21 @@
                                 </button>
                             </form>
                         @endif
-                        <a href="{{ route('users.orders.track', $order->order_number) }}" class="px-4 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-location-crosshairs text-limey-400"></i> Live GPS Map
-                        </a>
+                        @if($order->status === 'delivered')
+                            @if($order->review)
+                                <a href="{{ route('users.orders.track', $order->order_number) }}" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-star text-white text-xs"></i> Rated ({{ $order->review->store_rating }}★)
+                                </a>
+                            @else
+                                <a href="{{ route('users.orders.track', $order->order_number) }}" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-star text-white text-xs"></i> Rate Order
+                                </a>
+                            @endif
+                        @else
+                            <a href="{{ route('users.orders.track', $order->order_number) }}" class="px-4 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-crosshairs text-limey-400"></i> Live GPS Map
+                            </a>
+                        @endif
                     </div>
                 </div>
 

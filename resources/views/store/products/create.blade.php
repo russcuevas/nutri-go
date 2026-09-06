@@ -130,9 +130,47 @@
                 </label>
             </div>
 
-            <div>
-                <label class="block font-bold text-gray-700 uppercase mb-1">Food Image</label>
-                <input type="file" name="image" accept="image/*" class="w-full text-[11px] text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-nutri-900 file:text-white">
+            <div x-data="{
+                previewUrl: null,
+                handleFile(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.previewUrl = URL.createObjectURL(file);
+                    }
+                },
+                clearImage() {
+                    this.previewUrl = null;
+                    if (this.$refs.productImageInput) this.$refs.productImageInput.value = '';
+                }
+            }" class="space-y-2">
+                <label class="block font-bold text-gray-700 uppercase">Food Image</label>
+                <input type="file" name="image" x-ref="productImageInput" @change="handleFile($event)" accept="image/*" class="hidden">
+
+                <div x-show="previewUrl" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <div class="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-300 bg-white shrink-0 shadow-sm">
+                        <img :src="previewUrl" alt="Product Preview" class="w-full h-full object-cover">
+                        <button type="button" @click="clearImage()" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] shadow hover:bg-rose-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-1 text-xs">
+                        <p class="font-bold text-gray-800 text-[11px]">Image Selected</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="$refs.productImageInput.click()" class="px-2 py-1 rounded bg-nutri-900 text-white text-[10px] font-bold">
+                                Change
+                            </button>
+                            <button type="button" @click="clearImage()" class="px-2 py-1 rounded bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-200">
+                                Remove (X)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="!previewUrl" @click="$refs.productImageInput.click()" class="p-4 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-white text-center cursor-pointer transition">
+                    <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-lg mb-1"></i>
+                    <p class="text-xs font-bold text-gray-800">Click to upload food photo</p>
+                    <p class="text-[10px] text-gray-500">JPG, PNG up to 3MB</p>
+                </div>
             </div>
         </div>
 
