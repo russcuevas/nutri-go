@@ -21,29 +21,59 @@
 
     <div class="divide-y divide-gray-100">
         @forelse($stores as $s)
-            <div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4" x-data="{ openApproveModal: false, openRejectModal: false }">
-                <div class="flex items-start gap-4">
-                    <img src="{{ $s->logo_url }}" alt="{{ $s->store_name }}" class="w-14 h-14 rounded-2xl object-cover bg-gray-50 border shrink-0">
-                    <div class="space-y-1 text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-gray-900 text-sm">{{ $s->store_name }}</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase {{ $s->status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ($s->status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
+            <div class="py-4 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:bg-gray-50/50 px-2 rounded-2xl transition" x-data="{ openApproveModal: false, openRejectModal: false }">
+                <div class="flex items-start gap-4 min-w-0">
+                    <img src="{{ $s->logo_url }}" alt="{{ $s->store_name }}" class="w-14 h-14 rounded-2xl object-cover bg-gray-50 border border-gray-100 shadow-2xs shrink-0">
+                    <div class="space-y-1.5 min-w-0">
+                        <!-- Line 1: Store Name & Status -->
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <span class="font-bold text-gray-900 text-sm sm:text-base leading-snug">{{ $s->store_name }}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ $s->status === 'approved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : ($s->status === 'rejected' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-amber-100 text-amber-800 border border-amber-200') }}">
                                 {{ $s->status }}
                             </span>
                         </div>
-                        <p class="text-gray-600 leading-relaxed text-xs">
-                            <strong>Owner:</strong> <span class="font-semibold text-gray-900">{{ $s->user->name }}</span> ({{ $s->phone }})
-                            <br>
-                            <strong>Address:</strong> {{ $s->address_line ?? 'N/A' }} • Brgy. <span class="font-bold text-nutri-800">{{ $s->barangay }}, Lipa</span>
-                            <br>
-                            <strong>Category:</strong> <span class="font-semibold text-emerald-700">{{ $s->health_category }}</span> • <strong>Permit:</strong> {{ $s->business_permit_no ?? 'None' }}
-                            @if($s->gcash_number)
-                                <br>
-                                <strong>GCash:</strong> {{ $s->gcash_name }} ({{ $s->gcash_number }})
+
+                        <!-- Line 2: Owner, Category & Permit Badges -->
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <span class="inline-flex items-center gap-1.5 font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg text-[11px]">
+                                <i class="fa-solid fa-user-tie text-[10px] text-nutri-700"></i>
+                                {{ $s->user->name }} ({{ $s->phone }})
+                            </span>
+
+                            <span class="inline-flex items-center gap-1.5 text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-lg text-[11px] font-semibold">
+                                <i class="fa-solid fa-leaf text-[10px] text-emerald-600"></i>
+                                {{ $s->health_category }}
+                            </span>
+
+                            @if($s->business_permit_no)
+                                <span class="inline-flex items-center gap-1.5 text-gray-700 bg-gray-50 border border-gray-200/70 px-2.5 py-1 rounded-lg text-[11px]">
+                                    <i class="fa-solid fa-file-invoice text-[10px] text-gray-400"></i>
+                                    Permit: <span class="font-mono font-bold text-gray-800">{{ $s->business_permit_no }}</span>
+                                </span>
                             @endif
-                        </p>
+
+                            @if($s->gcash_number)
+                                <span class="inline-flex items-center gap-1.5 text-blue-700 bg-blue-50 border border-blue-200/60 px-2.5 py-1 rounded-lg text-[11px]">
+                                    <i class="fa-solid fa-wallet text-[10px] text-blue-500"></i>
+                                    GCash: {{ $s->gcash_name }} ({{ $s->gcash_number }})
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Line 3: Address -->
+                        @if($s->address_line)
+                            <div class="text-[11px] text-gray-500 flex items-center gap-1.5 pt-0.5">
+                                <i class="fa-solid fa-location-dot text-rose-500 text-xs shrink-0"></i>
+                                <span>{{ $s->address_line }}</span>
+                            </div>
+                        @endif
+
+                        <!-- Line 4: Rejection Reason if any -->
                         @if($s->rejection_reason)
-                            <p class="text-rose-600 font-semibold italic pt-1">Rejection Reason: "{{ $s->rejection_reason }}"</p>
+                            <div class="text-[11px] text-rose-700 bg-rose-50 border border-rose-200/60 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5 mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
+                                <span>Rejection Reason: "{{ $s->rejection_reason }}"</span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -63,7 +93,7 @@
                 </div>
 
                 <!-- Approve Modal -->
-                <div x-show="openApproveModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                <div x-show="openApproveModal" x-cloak x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                     <div @click.outside="openApproveModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
                         <h4 class="font-black font-heading text-base text-gray-900">Approve Healthy Store: {{ $s->store_name }}</h4>
                         <form action="{{ route('superadmin.stores.approve', $s->id) }}" method="POST" class="space-y-4 text-xs">
@@ -81,7 +111,7 @@
                 </div>
 
                 <!-- Reject & Delete Modal -->
-                <div x-show="openRejectModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                <div x-show="openRejectModal" x-cloak x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                     <div @click.outside="openRejectModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
                         <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto text-xl border border-rose-100">
                             <i class="fa-solid fa-triangle-exclamation"></i>

@@ -109,4 +109,38 @@ class CreatorManagerController extends Controller
 
         return back()->with('success', 'Recipe & Cooking Vlog published successfully!');
     }
+
+    public function destroyRecipe($id)
+    {
+        $recipe = RecipeAndVlog::findOrFail($id);
+
+        if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
+        }
+
+        $recipe->delete();
+
+        return back()->with('success', 'Recipe & Cooking Vlog deleted successfully!');
+    }
+
+    public function destroyCreator($id)
+    {
+        $creator = Creator::findOrFail($id);
+
+        if ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($creator->avatar);
+        }
+
+        // Also delete their recipes' thumbnails and records
+        foreach ($creator->recipes as $recipe) {
+            if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
+            }
+            $recipe->delete();
+        }
+
+        $creator->delete();
+
+        return back()->with('success', 'Partner Creator and associated recipes deleted successfully!');
+    }
 }

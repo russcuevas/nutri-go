@@ -174,13 +174,22 @@
                     @auth
                         <!-- Authenticated User Menu -->
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-nutri-50 transition border border-transparent hover:border-nutri-200">
-                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-nutri-600 to-limey-500 flex items-center justify-center text-white font-bold text-sm shadow">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            <button @click="open = !open" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-nutri-50 transition border border-transparent hover:border-nutri-200 cursor-pointer">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-nutri-600 to-limey-500 flex items-center justify-center text-white font-bold text-sm shadow overflow-hidden shrink-0">
+                                    @if(auth()->user()->avatar_url)
+                                        <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    @endif
                                 </div>
                                 <div class="text-left hidden sm:block">
                                     <p class="text-xs font-bold text-gray-900 truncate max-w-[120px]">{{ auth()->user()->name }}</p>
-                                    <p class="text-[10px] uppercase font-extrabold text-nutri-600">{{ auth()->user()->role }}</p>
+                                    <p class="text-[10px] uppercase font-extrabold text-nutri-600 flex items-center gap-1">
+                                        @if(auth()->user()->isVipSubscriber())
+                                            <span class="text-amber-500 font-bold">👑 VIP</span> • 
+                                        @endif
+                                        <span>{{ auth()->user()->role }}</span>
+                                    </p>
                                 </div>
                                 <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
                             </button>
@@ -206,6 +215,10 @@
                                     </a>
                                 @endif
 
+                                <a href="{{ route('users.profile.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-nutri-50 hover:text-nutri-900 transition">
+                                    <i class="fa-solid fa-user-pen text-nutri-600"></i> My Profile & Account
+                                </a>
+
                                 <a href="{{ route('users.orders.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-nutri-50 transition">
                                     <i class="fa-solid fa-receipt text-nutri-600"></i> My Orders & Live Tracking
                                 </a>
@@ -217,7 +230,7 @@
                                 <div class="border-t border-gray-100 mt-1">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
+                                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
                                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
                                         </button>
                                     </form>

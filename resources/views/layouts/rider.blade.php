@@ -53,10 +53,10 @@
 
     <!-- Rider Top Navbar -->
     <header class="bg-nutri-900 text-white sticky top-0 z-40 shadow-md">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <!-- Rider Brand -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 shadow">
+                <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 shadow shrink-0">
                     <img src="{{ asset('images/nutrigo-logo.jpg') }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
@@ -73,9 +73,9 @@
                 $rider = auth()->user()->rider; 
                 $wallet = $rider?->wallet;
             @endphp
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <!-- Wallet Balance Pill -->
-                <a href="{{ route('riders.wallet.index') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition text-xs">
+                <a href="{{ route('riders.wallet.index') }}" class="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition text-xs">
                     <i class="fa-solid fa-wallet text-limey-400"></i>
                     <span class="font-extrabold text-limey-300">₱{{ number_format($wallet->balance ?? 0, 2) }}</span>
                 </a>
@@ -84,7 +84,7 @@
                 @if($rider)
                     <form method="POST" action="{{ route('riders.toggle.duty') }}">
                         @csrf
-                        <button type="submit" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 {{ $rider->is_online ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-600 hover:bg-gray-500 text-gray-200' }}">
+                        <button type="submit" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer {{ $rider->is_online ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-600 hover:bg-gray-500 text-gray-200' }}">
                             <span class="w-2 h-2 rounded-full {{ $rider->is_online ? 'bg-white animate-ping' : 'bg-gray-400' }}"></span>
                             <span>{{ $rider->is_online ? 'Online' : 'Offline' }}</span>
                         </button>
@@ -96,18 +96,18 @@
 
     <!-- Rider Sub-Nav Links -->
     <div class="bg-nutri-950 text-white border-b border-nutri-800 text-xs font-semibold py-2 px-4">
-        <div class="max-w-5xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="{{ route('riders.dashboard') }}" class="{{ request()->routeIs('riders.dashboard') ? 'text-limey-400 font-bold' : 'text-gray-300 hover:text-white' }} flex items-center gap-1.5">
-                    <i class="fa-solid fa-radar"></i> Available Lipa Trips
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3 sm:gap-4 overflow-x-auto">
+                <a href="{{ route('riders.dashboard') }}" class="{{ request()->routeIs('riders.dashboard') ? 'text-limey-400 font-bold' : 'text-gray-300 hover:text-white' }} flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-radar"></i> Available Trips
                 </a>
-                <a href="{{ route('riders.wallet.index') }}" class="{{ request()->routeIs('riders.wallet*') ? 'text-limey-400 font-bold' : 'text-gray-300 hover:text-white' }} flex items-center gap-1.5">
-                    <i class="fa-solid fa-money-bill-transfer"></i> Earnings & GCash Cashout
+                <a href="{{ route('riders.wallet.index') }}" class="{{ request()->routeIs('riders.wallet*') ? 'text-limey-400 font-bold' : 'text-gray-300 hover:text-white' }} flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Earnings & Payout
                 </a>
             </div>
             <form method="POST" action="{{ route('logout') }}" class="inline">
                 @csrf
-                <button type="submit" class="text-rose-300 hover:text-rose-100 flex items-center gap-1.5 cursor-pointer font-bold text-xs transition hover:underline">
+                <button type="submit" class="text-rose-400 hover:text-rose-200 flex items-center gap-1.5 cursor-pointer font-bold text-xs transition hover:underline">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </button>

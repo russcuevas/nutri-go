@@ -57,38 +57,53 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 min-h-screen flex antialiased">
+<body class="bg-gray-50 min-h-screen flex antialiased" x-data="{ sidebarOpen: false }">
+
+    <!-- Mobile Backdrop -->
+    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
+        class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden transition-opacity"></div>
 
     <!-- Store Sidebar -->
-    <aside
-        class="w-64 bg-nutri-900 text-white flex flex-col shrink-0 hidden md:flex min-h-screen sticky top-0 border-r border-nutri-800">
+    <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-nutri-900 text-white flex flex-col shrink-0 min-h-screen border-r border-nutri-800 transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:min-h-screen">
         <!-- Store Brand Header -->
-        <div class="p-6 border-b border-white/10 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 shadow">
-                <img src="{{ asset('images/nutrigo-logo.jpg') }}" alt="Logo" class="w-full h-full object-contain">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 shadow shrink-0">
+                    <img src="{{ asset('images/nutrigo-logo.jpg') }}" alt="Logo"
+                        class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <span class="text-lg font-black text-white font-heading tracking-tight">Store<span
+                            class="text-limey-400">Portal</span></span>
+                    <p class="text-[10px] text-nutri-300 truncate max-w-[130px] font-semibold">
+                        {{ auth()->user()->store->store_name ?? 'Healthy Partner' }}
+                    </p>
+                </div>
             </div>
-            <div>
-                <span class="text-lg font-black text-white font-heading tracking-tight">Store<span
-                        class="text-limey-400">Portal</span></span>
-                <p class="text-[10px] text-nutri-300 truncate max-w-[130px] font-semibold">
-                    {{ auth()->user()->store->store_name ?? 'Healthy Partner' }}</p>
-            </div>
+            <!-- Mobile Close Button -->
+            <button @click="sidebarOpen = false"
+                class="md:hidden text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition"
+                title="Close Menu">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
         </div>
 
         <!-- Store Open / Close Status Badge -->
         @php $store = auth()->user()->store; @endphp
         @if ($store)
             <div
-                class="p-4 mx-4 my-3 rounded-2xl {{ $store->is_open ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200' : 'bg-rose-500/20 border-rose-400/40 text-rose-200' }} border flex items-center justify-between text-xs">
+                class="p-3.5 mx-4 my-3 rounded-2xl {{ $store->is_open ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200' : 'bg-rose-500/20 border-rose-400/40 text-rose-200' }} border flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2">
                     <span
                         class="w-2.5 h-2.5 rounded-full {{ $store->is_open ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400' }}"></span>
-                    <span class="font-bold">{{ $store->is_open ? 'Accepting Orders' : 'Store Closed' }}</span>
+                    <span
+                        class="font-bold text-[11px]">{{ $store->is_open ? 'Accepting Orders' : 'Store Closed' }}</span>
                 </div>
                 <form method="POST" action="{{ route('store.toggle.status') }}">
                     @csrf
                     <button type="submit"
-                        class="px-2 py-0.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold transition">
+                        class="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-[10px] font-black uppercase tracking-wider transition cursor-pointer">
                         Toggle
                     </button>
                 </form>
@@ -127,11 +142,6 @@
                 <i class="fa-solid fa-apple-whole text-sm w-5 text-center"></i> Healthy Foods & Calories
             </a>
 
-            <a href="{{ route('store.products.create') }}"
-                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-nutri-200 hover:bg-white/10 hover:text-white transition">
-                <i class="fa-solid fa-plus-circle text-sm w-5 text-center text-limey-400"></i> Add New Healthy Item
-            </a>
-
             <div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-widest text-nutri-400">
                 Settings
             </div>
@@ -142,55 +152,71 @@
             </a>
 
         </nav>
-
-        <!-- Store Owner Profile Footer -->
-        <div class="p-4 border-t border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div
-                    class="w-8 h-8 rounded-lg bg-emerald-500 text-white font-black flex items-center justify-center text-xs">
-                    ST
-                </div>
-                <div class="text-left">
-                    <p class="text-xs font-bold text-white truncate max-w-[120px]">{{ auth()->user()->name }}</p>
-                    <p class="text-[10px] text-nutri-300">Brgy. {{ $store->barangay ?? 'Lipa' }}</p>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="p-2 rounded-lg text-rose-400 hover:bg-rose-500/20 transition"
-                    title="Log Out">
-                    <i class="fa-solid fa-power-off text-xs"></i>
-                </button>
-            </form>
-        </div>
     </aside>
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0">
         <!-- Topbar -->
-        <header class="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between sticky top-0 z-30">
-            <div class="flex items-center gap-3">
-                <h2 class="text-lg font-bold text-gray-900 font-heading">@yield('header_title', 'Store Management')</h2>
+        <header
+            class="h-16 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+            <div class="flex items-center gap-3 min-w-0">
+                <button @click="sidebarOpen = !sidebarOpen"
+                    class="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
+                    title="Toggle Menu">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <h2 class="text-base sm:text-lg font-bold text-gray-900 font-heading truncate">@yield('header_title', 'Store Management')</h2>
                 @if ($store && $store->status === 'pending')
                     <span
-                        class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                        <i class="fa-solid fa-clock mr-1"></i> Awaiting Admin Healthy Food Vetting
+                        class="hidden sm:inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                        <i class="fa-solid fa-clock mr-1"></i> Awaiting Vetting
                     </span>
                 @endif
             </div>
-            <div class="flex items-center gap-3">
+
+            <!-- Top Right: Actions, Profile & Logout -->
+            <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('store.orders.index') }}?status=pending_store"
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-white shadow-sm hover:bg-amber-600 transition flex items-center gap-2">
+                    class="hidden sm:flex px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-white shadow-sm hover:bg-amber-600 transition items-center gap-1.5">
                     <i class="fa-solid fa-bell"></i>
-                    <span>Verify GCash Orders</span>
+                    <span>Orders</span>
                 </a>
+
+                <div class="flex items-center gap-2.5 pl-2">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-xs shadow-sm shrink-0 overflow-hidden">
+                        @if ($store && $store->logo)
+                            <img src="{{ $store->logo_url }}" alt="Logo" class="w-full h-full object-cover">
+                        @else
+                            ST
+                        @endif
+                    </div>
+                    <div class="text-left hidden md:block">
+                        <p class="text-xs font-bold text-gray-900 leading-tight truncate max-w-[140px]">
+                            {{ $store->store_name ?? auth()->user()->name }}</p>
+                        <p class="text-[10px] font-semibold text-emerald-700 leading-tight truncate max-w-[140px]">
+                            {{ $store->address_line ?? 'Lipa City' }}</p>
+                    </div>
+                </div>
+
+                <div class="h-6 w-px bg-gray-200 hidden sm:block"></div>
+
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit"
+                        class="p-2 sm:px-3 sm:py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+                        title="Log Out">
+                        <i class="fa-solid fa-power-off text-sm text-rose-500"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </form>
             </div>
         </header>
 
         <!-- SweetAlert2 Toast Alerts -->
         @include('partials.sweetalert')
 
-        <main class="p-6 flex-1">
+        <main class="p-4 sm:p-6 flex-1 overflow-x-hidden">
             @yield('content')
         </main>
     </div>

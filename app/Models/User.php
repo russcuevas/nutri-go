@@ -90,4 +90,12 @@ class User extends Authenticatable
     {
         return $this->activeSubscription()->exists();
     }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+        return null;
+    }
 }

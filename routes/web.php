@@ -12,6 +12,7 @@ use App\Http\Controllers\Users\CartController;
 use App\Http\Controllers\Users\CheckoutController;
 use App\Http\Controllers\Users\OrderTrackingController;
 use App\Http\Controllers\Users\SubscriptionController;
+use App\Http\Controllers\Users\ProfileController as UserProfileController;
 
 // Creators
 use App\Http\Controllers\Creators\CreatorHubController;
@@ -88,6 +89,11 @@ Route::middleware(['auth'])->prefix('my')->name('users.')->group(function () {
     Route::post('/orders/{orderNumber}/review', [OrderTrackingController::class, 'submitReview'])->name('orders.review.submit');
     Route::post('/orders/{orderNumber}/cancel', [OrderTrackingController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{orderNumber}/cancel', [OrderTrackingController::class, 'cancel'])->name('orders.cancel.delete');
+
+    // Profile Management
+    Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // Backward compatibility alias routes
@@ -172,11 +178,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('superadmin')->name('superadmi
     // Creator & Vlog Management
     Route::get('/creators', [SuperAdminCreatorController::class, 'index'])->name('creators.index');
     Route::post('/creators', [SuperAdminCreatorController::class, 'storeCreator'])->name('creators.store');
+    Route::delete('/creators/{id}', [SuperAdminCreatorController::class, 'destroyCreator'])->name('creators.destroy');
     Route::post('/creators/recipe', [SuperAdminCreatorController::class, 'storeRecipe'])->name('creators.recipe.store');
+    Route::delete('/creators/recipe/{id}', [SuperAdminCreatorController::class, 'destroyRecipe'])->name('creators.recipe.destroy');
 
     // Subscription Plans & Members
     Route::get('/subscriptions', [SuperAdminSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/subscriptions/plan', [SuperAdminSubscriptionController::class, 'storePlan'])->name('subscriptions.plan.store');
+    Route::delete('/subscriptions/plan/{id}', [SuperAdminSubscriptionController::class, 'destroyPlan'])->name('subscriptions.plan.destroy');
+    Route::delete('/subscriptions/{id}', [SuperAdminSubscriptionController::class, 'destroySubscription'])->name('subscriptions.destroy');
 
     // System Settings & Distance Rate Pricing
     Route::get('/settings', [SuperAdminSettingsController::class, 'index'])->name('settings.index');

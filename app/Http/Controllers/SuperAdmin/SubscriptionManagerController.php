@@ -14,8 +14,17 @@ class SubscriptionManagerController extends Controller
     {
         $plans = SubscriptionPlan::withCount('subscriptions')->get();
         $subscribers = UserSubscription::with(['user', 'plan'])->latest()->paginate(15);
+        
+        $activeSubscribersCount = UserSubscription::where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>', now());
+            })->count();
 
-        return view('superadmin.subscriptions.index', compact('plans', 'subscribers'));
+        $totalRevenue = UserSubscription::where('status', 'active')
+            ->join('subscription_plans', 'user_subscriptions.plan_id', '=', 'subscription_plans.id')
+            ->sum('subscription_plans.price');
+
+        return view('superadmin.subscriptions.index', compact('plans', 'subscribers', 'activeSubscribersCount', 'totalRevenue'));
     }
 
     public function storePlan(Request $request)
@@ -47,5 +56,21 @@ class SubscriptionManagerController extends Controller
         ]);
 
         return back()->with('success', 'Subscription Plan added successfully!');
+    }
+
+    public function destroyPlan($id)
+    {
+        $plan = SubscriptionPlan::findOrFail($id);
+        $plan->delete();
+
+        return back()->with('success', 'Subscription Plan removed successfully!');
+    }
+
+    public function destroySubscription($id)
+    {
+        $subscription = UserSubscription::findOrFail($id);
+        $subscription->delete();
+
+        return back()->with('success', 'Subscriber record removed successfully!');
     }
 }

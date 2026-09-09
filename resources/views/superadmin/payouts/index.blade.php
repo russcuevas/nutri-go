@@ -51,7 +51,7 @@
                     </div>
 
                     <!-- Process Modal -->
-                    <div x-show="openProcessModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                    <div x-show="openProcessModal" x-cloak x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                         <div @click.outside="openProcessModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
                             <h4 class="font-black font-heading text-base text-gray-900">Mark GCash Payout Completed</h4>
                             <p class="text-xs text-gray-500">Send ₱{{ number_format($p->amount, 2) }} to {{ $p->gcash_number }} ({{ $p->gcash_account_name }}) and enter GCash reference number below:</p>
@@ -75,7 +75,7 @@
                     </div>
 
                     <!-- Reject Modal -->
-                    <div x-show="openRejectModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                    <div x-show="openRejectModal" x-cloak x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                         <div @click.outside="openRejectModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
                             <h4 class="font-black font-heading text-base text-gray-900">Reject Payout Request</h4>
                             <form action="{{ route('superadmin.payouts.reject', $p->id) }}" method="POST" class="space-y-4 text-xs">

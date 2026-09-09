@@ -242,7 +242,7 @@
                         </div>
 
                         <!-- GCash Upload Box -->
-                        <div x-show="paymentMethod === 'gcash'"
+                        <div x-show="paymentMethod === 'gcash'" x-cloak
                             class="p-5 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-4 text-xs">
                             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm"
                                 x-data="{ showQrModal: false }">

@@ -21,47 +21,77 @@
 
     <div class="divide-y divide-gray-100">
         @forelse($riders as $r)
-            <div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4" x-data="{ openRejectModal: false }">
-                <div class="space-y-1 text-xs">
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold text-gray-900 text-sm">{{ $r->user->name }}</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase {{ $r->status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ($r->status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
-                            {{ $r->status }}
-                        </span>
+            <div class="py-4 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:bg-gray-50/50 px-2 rounded-2xl transition" x-data="{ openRejectModal: false }">
+                <div class="flex items-start gap-3.5 min-w-0">
+                    <div class="w-12 h-12 rounded-2xl bg-nutri-50 text-nutri-800 border border-nutri-100 flex items-center justify-center font-black text-sm shrink-0 shadow-2xs">
+                        <i class="fa-solid fa-motorcycle text-lg text-nutri-700"></i>
                     </div>
-                    <p class="text-gray-600 leading-relaxed text-xs">
-                        <strong>Vehicle:</strong> <span class="font-semibold text-gray-900">{{ $r->vehicle_type }}</span> • <strong>Plate:</strong> <span class="font-mono font-bold text-gray-900">{{ $r->plate_number }}</span>
-                        <br>
-                        <strong>Phone:</strong> {{ $r->phone }} • <strong>License:</strong> <span class="font-mono font-bold text-gray-800">{{ $r->license_number }}</span>
+
+                    <div class="space-y-1.5 min-w-0">
+                        <!-- Line 1: Name & Status -->
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <span class="font-bold text-gray-900 text-sm sm:text-base leading-snug">{{ $r->user->name }}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ $r->status === 'approved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : ($r->status === 'rejected' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-amber-100 text-amber-800 border border-amber-200') }}">
+                                {{ $r->status }}
+                            </span>
+                        </div>
+
+                        <!-- Line 2: Vehicle, Phone & License Badges -->
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <span class="inline-flex items-center gap-1.5 font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg text-[11px]">
+                                <i class="fa-solid fa-gauge text-[10px] text-nutri-700"></i>
+                                {{ $r->vehicle_type }} • <span class="font-mono text-gray-900">{{ $r->plate_number }}</span>
+                            </span>
+
+                            <span class="inline-flex items-center gap-1.5 text-gray-700 bg-gray-50 border border-gray-200/70 px-2.5 py-1 rounded-lg text-[11px]">
+                                <i class="fa-solid fa-phone text-[10px] text-gray-400"></i>
+                                {{ $r->phone }}
+                            </span>
+
+                            <span class="inline-flex items-center gap-1.5 text-gray-700 bg-gray-50 border border-gray-200/70 px-2.5 py-1 rounded-lg text-[11px]">
+                                <i class="fa-solid fa-id-card text-[10px] text-gray-400"></i>
+                                License: <span class="font-mono font-bold text-gray-800">{{ $r->license_number }}</span>
+                            </span>
+                        </div>
+
+                        <!-- Line 3: Address -->
                         @if($r->address_line)
-                            <br>
-                            <strong>Address:</strong> {{ $r->address_line }}
+                            <div class="text-[11px] text-gray-500 flex items-center gap-1.5 pt-0.5">
+                                <i class="fa-solid fa-location-dot text-rose-500 text-xs shrink-0"></i>
+                                <span>{{ $r->address_line }}</span>
+                            </div>
                         @endif
-                    </p>
-                    @if($r->rejection_reason)
-                        <p class="text-rose-600 font-semibold italic pt-1">Rejection Reason: "{{ $r->rejection_reason }}"</p>
-                    @endif
+
+                        <!-- Line 4: Rejection Reason if any -->
+                        @if($r->rejection_reason)
+                            <div class="text-[11px] text-rose-700 bg-rose-50 border border-rose-200/60 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5 mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
+                                <span>Rejection Reason: "{{ $r->rejection_reason }}"</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <!-- Actions -->
+                <div class="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end">
                     @if($r->status !== 'approved')
                         <form action="{{ route('superadmin.riders.approve', $r->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-check"></i> Approve Rider
                             </button>
                         </form>
                     @endif
 
                     @if($r->status !== 'rejected')
-                        <button @click="openRejectModal = true" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition flex items-center gap-1.5">
+                        <button @click="openRejectModal = true" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-trash-can"></i> Reject & Delete
                         </button>
                     @endif
                 </div>
 
                 <!-- Reject & Delete Modal -->
-                <div x-show="openRejectModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                <div x-show="openRejectModal" x-cloak x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                     <div @click.outside="openRejectModal = false" class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
                         <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto text-xl border border-rose-100">
                             <i class="fa-solid fa-triangle-exclamation"></i>

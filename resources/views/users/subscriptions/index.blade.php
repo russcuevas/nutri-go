@@ -18,20 +18,40 @@
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     
     @if($currentSubscription)
-        <div class="mb-10 p-6 rounded-3xl bg-emerald-50 border-2 border-emerald-300 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white text-2xl flex items-center justify-center shadow">
+        <div class="mb-10 p-6 rounded-3xl bg-emerald-50/90 border-2 border-emerald-300 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-5"
+             x-data="customerSubscriptionCountdown('{{ $currentSubscription->ends_at?->toISOString() }}', '{{ $currentSubscription->status }}')">
+            <div class="flex items-start sm:items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-nutri-950 text-2xl flex items-center justify-center shadow-md shrink-0">
                     👑
                 </div>
-                <div>
-                    <span class="text-[10px] font-extrabold uppercase text-emerald-700">Active Membership</span>
-                    <h3 class="text-lg font-black text-gray-900 font-heading">{{ $currentSubscription->plan->name }}</h3>
-                    <p class="text-xs text-gray-600">Valid until: <span class="font-bold">{{ $currentSubscription->ends_at?->format('M d, Y') ?? 'Lifetime' }}</span></p>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-200/70 px-2.5 py-0.5 rounded-md border border-emerald-300/70">Active Membership</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-600 text-white shadow-2xs">VIP Active</span>
+                    </div>
+                    <h3 class="text-xl font-black text-gray-900 font-heading">{{ $currentSubscription->plan->name }}</h3>
+                    <p class="text-xs text-gray-600 flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span>Started: <strong class="text-gray-800">{{ $currentSubscription->starts_at?->format('M d, Y') ?? 'N/A' }}</strong></span>
+                        <span>•</span>
+                        <span>Valid until: <strong class="text-gray-800">{{ $currentSubscription->ends_at?->format('M d, Y h:i A') ?? 'Lifetime' }}</strong></span>
+                    </p>
                 </div>
             </div>
-            <span class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow">
-                Active VIP Benefits Enabled
-            </span>
+
+            <!-- Real-time Live Countdown Display -->
+            <div class="flex flex-col sm:items-end gap-1.5 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-emerald-200">
+                <span class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Subscription Time Remaining:
+                </span>
+                <div class="font-mono font-black text-sm sm:text-base text-emerald-950 bg-white border border-emerald-300 px-4 py-2 rounded-2xl shadow-xs tracking-wider flex items-center gap-2.5">
+                    <i class="fa-solid fa-hourglass-half text-emerald-600 text-sm"></i>
+                    <span x-text="countdownText">Calculating...</span>
+                </div>
+            </div>
         </div>
     @endif
 
@@ -84,7 +104,7 @@
                     @endauth
 
                     <!-- Subscribe GCash Modal Form -->
-                    <div x-show="openSubscribe" x-transition class="mt-4 p-5 rounded-2xl bg-gray-50 border border-gray-200 text-xs space-y-4">
+                    <div x-show="openSubscribe" x-cloak x-transition class="mt-4 p-5 rounded-2xl bg-gray-50 border border-gray-200 text-xs space-y-4">
                         <p class="font-bold text-gray-900 flex items-center gap-1.5">
                             <i class="fa-solid fa-qrcode text-blue-600"></i> Send ₱{{ number_format($plan->price, 0) }} to NutriGo Admin GCash:
                         </p>
@@ -116,3 +136,55 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function customerSubscriptionCountdown(endsAtStr, status) {
+        return {
+            endsAt: endsAtStr ? new Date(endsAtStr).getTime() : null,
+            status: status,
+            countdownText: 'Calculating...',
+            isExpired: false,
+            timer: null,
+
+            init() {
+                if (!this.endsAt) {
+                    this.countdownText = 'Active / Lifetime';
+                    return;
+                }
+                this.updateTime();
+                this.timer = setInterval(() => {
+                    this.updateTime();
+                }, 1000);
+            },
+
+            updateTime() {
+                const now = new Date().getTime();
+                const distance = this.endsAt - now;
+
+                if (distance <= 0 || this.status !== 'active') {
+                    this.isExpired = true;
+                    this.countdownText = 'Expired';
+                    if (this.timer) clearInterval(this.timer);
+                    return;
+                }
+
+                this.isExpired = false;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let parts = [];
+                if (days > 0) parts.push(days + 'd');
+                parts.push(String(hours).padStart(2, '0') + 'h');
+                parts.push(String(minutes).padStart(2, '0') + 'm');
+                parts.push(String(seconds).padStart(2, '0') + 's');
+
+                this.countdownText = parts.join(' ');
+            }
+        };
+    }
+</script>
+@endpush
