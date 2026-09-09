@@ -96,13 +96,19 @@
                             <span class="text-[11px] text-gray-400 line-through ml-1">₱{{ number_format($item->original_price, 2) }}</span>
                         @endif
                     </div>
-                    <form action="{{ route('users.cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $item->id }}">
-                        <button type="submit" class="px-3.5 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1 active:scale-95">
-                            <i class="fa-solid fa-plus"></i> Add
+                    @if($item->store && $item->store->is_open)
+                        <form action="{{ route('users.cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $item->id }}">
+                            <button type="submit" class="px-3.5 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1 active:scale-95">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" disabled class="px-3 py-2 rounded-xl bg-gray-100 text-gray-400 font-bold text-xs cursor-not-allowed flex items-center gap-1" title="Store is closed">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Closed
                         </button>
-                    </form>
+                    @endif
                 </div>
             </div>
         @endforeach

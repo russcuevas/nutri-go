@@ -57,26 +57,17 @@
             </div>
         </div>
 
+        <input type="hidden" name="barangay" id="store_barangay_select" value="{{ old('barangay', $store->barangay ?? 'Marauoy') }}">
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-bold text-gray-700 uppercase mb-1">
-                    Lipa City Barangay * <span class="text-emerald-600 font-normal">(Auto-detected)</span>
-                </label>
-                <select name="barangay" id="store_barangay_select" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs bg-white">
-                    @foreach($barangays as $b)
-                        <option value="{{ $b }}" {{ $store->barangay == $b ? 'selected' : '' }}>{{ $b }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div>
                 <label class="block font-bold text-gray-700 uppercase mb-1">Contact Phone *</label>
                 <input type="text" name="phone" required value="{{ old('phone', $store->phone) }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs">
             </div>
-        </div>
-
-        <div>
-            <label class="block font-bold text-gray-700 uppercase mb-1">Complete Address Line in Lipa *</label>
-            <input type="text" name="address_line" id="store_address_line" required value="{{ old('address_line', $store->address_line) }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs">
+            <div>
+                <label class="block font-bold text-gray-700 uppercase mb-1">Complete Address Line in Lipa *</label>
+                <input type="text" name="address_line" id="store_address_line" required value="{{ old('address_line', $store->address_line) }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs">
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -320,17 +311,25 @@ document.addEventListener('DOMContentLoaded', function() {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    @php
+        $hasStoreLogo = !empty($store->logo);
+        $storeLogoUrl = $store->logo_url;
+    @endphp
     const storeIcon = L.divIcon({
-        html: '<div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white animate-bounce"><i class="fa-solid fa-store text-sm"></i></div>',
-        className: '',
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
+        className: 'border-0 bg-transparent',
+        html: {!! json_encode(
+            $hasStoreLogo
+                ? '<div class="w-10 h-10 rounded-full bg-white shadow-xl border-2 border-emerald-600 p-0.5 overflow-hidden flex items-center justify-center animate-bounce"><img src="' . e($storeLogoUrl) . '" alt="' . e($store->store_name) . '" class="w-full h-full rounded-full object-cover" onerror="this.onerror=null; this.parentElement.outerHTML=\'<div class=\\\'w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base animate-bounce\\\'><i class=\\\'fa-solid fa-store\\\'></i></div>\';"></div>'
+                : '<div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base animate-bounce"><i class="fa-solid fa-store"></i></div>'
+        ) !!},
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
     });
 
     const marker = L.marker([initialLat, initialLng], {
         draggable: true,
         icon: storeIcon
-    }).addTo(map).bindPopup("<b>{{ $store->store_name }}</b><br>Drag pin to change exact location").openPopup();
+    }).addTo(map).bindPopup("<b>{{ addslashes($store->store_name) }}</b><br>Drag pin to change exact location").openPopup();
 
     function updateLocation(lat, lng) {
         document.getElementById('store_latitude').value = lat.toFixed(7);

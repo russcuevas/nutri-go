@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
+use App\Models\User;
 
 class SubscriptionController extends Controller
 {
     public function index()
     {
         $plans = SubscriptionPlan::all();
+        /** @var User|null $user */
         $user = Auth::user();
         $currentSubscription = $user ? $user->activeSubscription : null;
 
@@ -22,6 +24,7 @@ class SubscriptionController extends Controller
     public function subscribe(Request $request, int $planId)
     {
         $plan = SubscriptionPlan::findOrFail($planId);
+        /** @var User|null $user */
         $user = Auth::user();
 
         $validated = $request->validate([

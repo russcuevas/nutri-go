@@ -20,8 +20,8 @@
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">
                             {{ $store->health_category }}
                         </span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $store->is_open ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                            {{ $store->is_open ? '● Open Now' : 'Closed' }}
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $store->is_open ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white' }}">
+                            {{ $store->is_open ? '● Open Now' : '🔒 Closed for Orders' }}
                         </span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black font-heading tracking-tight text-gray-900">{{ $store->store_name }}</h1>
@@ -55,11 +55,26 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         <!-- Menu Items List -->
-        <div class="lg:col-span-8 space-y-8">
+        <div class="lg:col-span-8 space-y-6">
             <div>
                 <h2 class="text-2xl font-black font-heading text-gray-900">Healthy Menu & Calorie Counts</h2>
                 <p class="text-xs text-gray-500 mt-0.5">Freshly prepared nutritious meals from {{ $store->store_name }}</p>
             </div>
+
+            @if(!$store->is_open)
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start sm:items-center gap-3.5 text-rose-900">
+                    <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-store-slash"></i>
+                    </span>
+                    <div class="text-xs flex-1">
+                        <h4 class="font-bold text-rose-950 text-sm">Store is Currently Closed</h4>
+                        <p class="text-rose-700 mt-0.5">Hindi tumatanggap ng orders ang restaurant na ito ngayon. Pwede mong tingnan ang menu at nutrition facts, ngunit naka-disable muna ang pag-order.</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-200 text-rose-900 shrink-0">
+                        Closed
+                    </span>
+                </div>
+            @endif
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 @forelse($store->products as $item)
@@ -108,13 +123,19 @@
                             <div>
                                 <span class="text-lg font-black text-nutri-900 font-heading">₱{{ number_format($item->price, 2) }}</span>
                             </div>
-                            <form action="{{ route('users.cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $item->id }}">
-                                <button type="submit" class="px-4 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-plus"></i> Add to Cart
+                            @if($store->is_open)
+                                <form action="{{ route('users.cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $item->id }}">
+                                    <button type="submit" class="px-4 py-2 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 active:scale-95">
+                                        <i class="fa-solid fa-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" disabled class="px-3.5 py-2 rounded-xl bg-gray-100 text-gray-400 font-bold text-xs cursor-not-allowed flex items-center gap-1.5" title="Store is currently closed">
+                                    <i class="fa-solid fa-lock text-[10px]"></i> Closed
                                 </button>
-                            </form>
+                            @endif
                         </div>
                     </div>
                 @empty

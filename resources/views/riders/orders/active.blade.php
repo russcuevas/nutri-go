@@ -247,16 +247,29 @@
             map.invalidateSize();
         }, 250);
 
-        // 1. Store Pin (Green Store Icon or Highlighted if active target)
+        // 1. Store Pin (Store Logo or Green/Amber Store Icon)
+        @php
+            $hasStoreLogo = !empty($order->store->logo);
+            $storeLogoUrl = $order->store->logo_url;
+        @endphp
         const storeIcon = L.divIcon({
+            className: 'border-0 bg-transparent',
             html: !isPickedUp 
-                ? '<div class="relative flex items-center justify-center"><div class="absolute w-10 h-10 rounded-full bg-amber-400/80 animate-ping"></div><div class="relative w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-lg border-2 border-white"><i class="fa-solid fa-store text-xs"></i></div></div>'
-                : '<div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg border-2 border-white"><i class="fa-solid fa-store text-xs"></i></div>',
-            iconSize: [32, 32],
-            iconAnchor: [16, 16]
+                ? ({!! json_encode(
+                    $hasStoreLogo
+                        ? '<div class="relative flex items-center justify-center"><div class="absolute w-12 h-12 rounded-full bg-amber-400/80 animate-ping"></div><div class="relative w-10 h-10 rounded-full bg-white shadow-xl border-2 border-amber-500 p-0.5 overflow-hidden flex items-center justify-center"><img src="' . e($storeLogoUrl) . '" alt="' . e($order->store->store_name) . '" class="w-full h-full rounded-full object-cover"></div></div>'
+                        : '<div class="relative flex items-center justify-center"><div class="absolute w-12 h-12 rounded-full bg-amber-400/80 animate-ping"></div><div class="relative w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-lg border-2 border-white text-base"><i class="fa-solid fa-store"></i></div></div>'
+                ) !!})
+                : ({!! json_encode(
+                    $hasStoreLogo
+                        ? '<div class="w-10 h-10 rounded-full bg-white shadow-xl border-2 border-emerald-600 p-0.5 overflow-hidden flex items-center justify-center"><img src="' . e($storeLogoUrl) . '" alt="' . e($order->store->store_name) . '" class="w-full h-full rounded-full object-cover"></div>'
+                        : '<div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base"><i class="fa-solid fa-store"></i></div>'
+                ) !!}),
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
         });
         L.marker([storeLat, storeLng], { icon: storeIcon }).addTo(map)
-            .bindPopup("<b>Pickup Store</b><br>{{ $order->store->store_name }}<br><small>{{ !$isPickedUp ? '📍 Current Destination (Step 1)' : '✓ Picked Up' }}</small>");
+            .bindPopup("<b>Pickup Store</b><br>{{ addslashes($order->store->store_name) }}<br><small>{{ !$isPickedUp ? '📍 Current Destination (Step 1)' : '✓ Picked Up' }}</small>");
 
         // 2. Customer Destination Pin (Red/Pink Location Dot or Highlighted if active target)
         const destIcon = L.divIcon({

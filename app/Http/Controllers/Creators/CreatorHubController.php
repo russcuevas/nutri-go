@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Creator;
 use App\Models\RecipeAndVlog;
 use App\Models\Product;
+use App\Models\User;
 
 class CreatorHubController extends Controller
 {
@@ -19,6 +20,7 @@ class CreatorHubController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(9);
 
+        /** @var User|null $user */
         $user = Auth::user();
         $isVip = $user && $user->isVipSubscriber();
 
@@ -28,6 +30,7 @@ class CreatorHubController extends Controller
     public function show(string $slug)
     {
         $recipe = RecipeAndVlog::where('slug', $slug)->with(['creator', 'store'])->firstOrFail();
+        /** @var User|null $user */
         $user = Auth::user();
         $isVip = $user && $user->isVipSubscriber();
 

@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Review;
 use App\Models\OrderTracking;
+use App\Models\User;
 
 class OrderTrackingController extends Controller
 {
     public function index()
     {
+        /** @var User $user */
         $user = Auth::user();
         $orders = Order::where('user_id', $user->id)
             ->with(['store', 'rider.user', 'items.product', 'review'])

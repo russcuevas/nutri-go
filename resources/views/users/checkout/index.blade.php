@@ -474,12 +474,20 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Store Marker (Green Icon)
+            // Store Marker (Store Logo or Green Fallback Icon)
+            @php
+                $hasStoreLogo = !empty($store->logo);
+                $storeLogoUrl = $store->logo_url;
+            @endphp
             const storeIcon = L.divIcon({
-                html: '<div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg border-2 border-white"><i class="fa-solid fa-store text-xs"></i></div>',
-                className: '',
-                iconSize: [32, 32],
-                iconAnchor: [16, 16]
+                className: 'border-0 bg-transparent',
+                html: {!! json_encode(
+                    $hasStoreLogo 
+                        ? '<div class="relative flex items-center justify-center"><div class="w-10 h-10 rounded-full bg-white shadow-xl border-2 border-emerald-600 p-0.5 overflow-hidden flex items-center justify-center"><img src="' . e($storeLogoUrl) . '" alt="' . e($store->store_name) . '" class="w-full h-full rounded-full object-cover" onerror="this.onerror=null; this.parentElement.outerHTML=\'<div class=\\\'w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base\\\'><i class=\\\'fa-solid fa-store\\\'></i></div>\';"></div></div>'
+                        : '<div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base"><i class="fa-solid fa-store"></i></div>'
+                ) !!},
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
             });
             L.marker([storeLat, storeLng], {
                     icon: storeIcon

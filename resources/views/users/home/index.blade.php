@@ -666,14 +666,22 @@
                                             class="text-xs text-gray-400 line-through ml-1">₱{{ number_format($item->original_price, 2) }}</span>
                                     @endif
                                 </div>
-                                <form action="{{ route('users.cart.add') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $item->id }}">
-                                    <button type="submit"
-                                        class="px-4 py-2.5 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm hover:shadow transition flex items-center gap-1.5">
-                                        <i class="fa-solid fa-plus"></i> Add to Cart
+                                @if ($item->store && $item->store->is_open)
+                                    <form action="{{ route('users.cart.add') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $item->id }}">
+                                        <button type="submit"
+                                            class="px-4 py-2.5 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm hover:shadow transition flex items-center gap-1.5 active:scale-95">
+                                            <i class="fa-solid fa-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                @else
+                                    <button type="button" disabled
+                                        class="px-3.5 py-2.5 rounded-xl bg-gray-100 text-gray-400 font-bold text-xs cursor-not-allowed flex items-center gap-1.5"
+                                        title="Store is currently closed">
+                                        <i class="fa-solid fa-lock text-[10px]"></i> Closed
                                     </button>
-                                </form>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -789,10 +797,15 @@
                                 <img src="{{ $store->logo_url }}" alt="{{ $store->store_name }}"
                                     class="w-full h-full object-cover rounded-xl">
                             </div>
-                            <span
-                                class="px-3 py-1 rounded-full text-[10px] font-extrabold bg-nutri-50 text-nutri-800 border border-nutri-200 mb-2">
-                                {{ $store->health_category }}
-                            </span>
+                            <div class="flex items-center gap-1.5 mb-2">
+                                <span
+                                    class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-nutri-50 text-nutri-800 border border-nutri-200">
+                                    {{ $store->health_category }}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                    {{ $store->is_open ? '● Open' : 'Closed' }}
+                                </span>
+                            </div>
                             <h3
                                 class="text-base font-black text-gray-900 font-heading group-hover:text-nutri-600 transition">
                                 {{ $store->store_name }}
@@ -984,10 +997,15 @@
                                                 class="w-full h-full object-cover rounded-xl">
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200 mb-1">
-                                                {{ $store->health_category }}
-                                            </span>
+                                            <div class="flex items-center gap-1.5 mb-1">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                                    {{ $store->health_category }}
+                                                </span>
+                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                                    {{ $store->is_open ? '● Open' : 'Closed' }}
+                                                </span>
+                                            </div>
                                             <h4
                                                 class="text-sm sm:text-base font-black text-gray-900 truncate font-heading group-hover:text-nutri-600 transition">
                                                 {{ $store->store_name }}

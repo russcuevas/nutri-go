@@ -36,6 +36,20 @@ class CartController extends Controller
         $quantity = max(1, (int) $request->input('quantity', 1));
 
         $product = Product::with('store')->findOrFail($productId);
+
+        if (!$product->store || !$product->store->is_open || $product->store->status !== 'approved') {
+            $storeName = $product->store ? $product->store->store_name : 'This store';
+            $msg = "Sorry, {$storeName} is currently closed and not accepting orders.";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'closed' => true,
+                    'message' => $msg,
+                ], 422);
+            }
+            return back()->with('error', $msg);
+        }
+
         $cart = session()->get('cart', []);
         $currentStoreId = session()->get('cart_store_id');
 

@@ -394,14 +394,23 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 1. Store Pin (Always Visible)
+        // 1. Store Pin (Always Visible - Logo or Fallback Store Icon)
+        @php
+            $hasStoreLogo = !empty($order->store->logo);
+            $storeLogoUrl = $order->store->logo_url;
+        @endphp
         const storeIcon = L.divIcon({
-            html: '<div class="relative"><div class="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg border-2 border-white text-sm"><i class="fa-solid fa-store"></i></div></div>',
-            iconSize: [36, 36],
-            iconAnchor: [18, 18]
+            className: 'border-0 bg-transparent',
+            html: {!! json_encode(
+                $hasStoreLogo 
+                    ? '<div class="relative flex items-center justify-center"><div class="w-10 h-10 rounded-full bg-white shadow-xl border-2 border-emerald-600 p-0.5 overflow-hidden flex items-center justify-center"><img src="' . e($storeLogoUrl) . '" alt="' . e($order->store->store_name) . '" class="w-full h-full rounded-full object-cover" onerror="this.onerror=null; this.parentElement.outerHTML=\'<div class=\\\'w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base\\\'><i class=\\\'fa-solid fa-store\\\'></i></div>\';"></div></div>'
+                    : '<div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base"><i class="fa-solid fa-store"></i></div>'
+            ) !!},
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
         });
         L.marker([storeLat, storeLng], { icon: storeIcon }).addTo(map)
-            .bindPopup("<b>{{ $order->store->store_name }}</b><br>Healthy Store");
+            .bindPopup("<b>{{ addslashes($order->store->store_name) }}</b><br>Healthy Store");
 
         // 2. Customer Destination Pin (Always Visible)
         const destIcon = L.divIcon({

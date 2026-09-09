@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderTracking;
 use App\Models\Store;
+use App\Models\User;
 use App\Services\LipaLocationService;
 
 class CheckoutController extends Controller
@@ -23,6 +24,10 @@ class CheckoutController extends Controller
 
         $storeId = session()->get('cart_store_id');
         $store = Store::where('id', $storeId)->where('status', 'approved')->firstOrFail();
+
+        if (!$store->is_open) {
+            return redirect()->route('users.cart.index')->with('error', "The store ({$store->store_name}) is currently closed and not accepting orders.");
+        }
 
         $subtotal = 0;
         $totalCalories = 0;
@@ -47,6 +52,7 @@ class CheckoutController extends Controller
         );
 
         $feeData = LipaLocationService::calculateDeliveryFee($distanceKm);
+        /** @var User|null $user */
         $user = Auth::user();
 
         $isVip = $user && $user->isVipSubscriber();
@@ -79,6 +85,10 @@ class CheckoutController extends Controller
 
         $storeId = session()->get('cart_store_id');
         $store = Store::where('id', $storeId)->where('status', 'approved')->firstOrFail();
+
+        if (!$store->is_open) {
+            return redirect()->route('users.cart.index')->with('error', "The store ({$store->store_name}) is currently closed and not accepting orders.");
+        }
 
         $validated = $request->validate([
             'recipient_name' => 'required|string|max:255',
@@ -116,6 +126,7 @@ class CheckoutController extends Controller
             $subtotal += $item['price'] * $item['quantity'];
         }
 
+        /** @var User|null $user */
         $user = Auth::user();
         $discountAmount = 0.00;
         if ($user && $user->isVipSubscriber()) {

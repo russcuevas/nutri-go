@@ -31,8 +31,16 @@
                             <div>
                                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-nutri-600">Ordering
                                     From</span>
-                                <h3 class="text-lg font-black text-gray-900 font-heading">
-                                    {{ $store->store_name ?? 'Healthy Partner' }}</h3>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-lg font-black text-gray-900 font-heading">
+                                        {{ $store->store_name ?? 'Healthy Partner' }}
+                                    </h3>
+                                    @if ($store)
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                            {{ $store->is_open ? '● Open Now' : 'Closed' }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                             <form action="{{ route('users.cart.clear') }}" method="POST">
                                 @csrf
@@ -41,6 +49,21 @@
                                 </button>
                             </form>
                         </div>
+
+                        @if ($store && !$store->is_open)
+                            <div class="my-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start sm:items-center justify-between gap-3 text-rose-900">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg shrink-0">
+                                        <i class="fa-solid fa-store-slash"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase tracking-wider text-rose-950">Store is Currently Closed</h4>
+                                        <p class="text-xs text-rose-700 mt-0.5">The store is not accepting orders at this time. You cannot proceed to checkout until the store opens.</p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-200 text-rose-900 shrink-0">Not Accepting Orders</span>
+                            </div>
+                        @endif
 
                         <div class="divide-y divide-gray-100">
                             @foreach ($cart as $item)
@@ -122,10 +145,21 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('users.checkout.index') }}"
-                            class="w-full py-4 rounded-2xl bg-limey-400 hover:bg-limey-500 text-nutri-950 font-black text-sm shadow-md transition font-heading flex items-center justify-center gap-2">
-                            Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
-                        </a>
+                        @if ($store && !$store->is_open)
+                            <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-circle-exclamation text-rose-600 text-base shrink-0"></i>
+                                <span>The store is currently <strong>CLOSED</strong>. Checkout is unavailable.</span>
+                            </div>
+                            <button type="button" disabled
+                                class="w-full py-4 rounded-2xl bg-gray-200 text-gray-500 font-black text-sm cursor-not-allowed flex items-center justify-center gap-2 shadow-none font-heading">
+                                <i class="fa-solid fa-lock"></i> Store Closed - Cannot Checkout
+                            </button>
+                        @else
+                            <a href="{{ route('users.checkout.index') }}"
+                                class="w-full py-4 rounded-2xl bg-limey-400 hover:bg-limey-500 text-nutri-950 font-black text-sm shadow-md transition font-heading flex items-center justify-center gap-2">
+                                Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
