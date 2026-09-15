@@ -63,4 +63,9 @@ class HomeController extends Controller
             'barangays'
         ));
     }
+
+    public function howItWorks()
+    {
+        return view('docs.how_it_works');
+    }
 }

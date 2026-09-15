@@ -323,6 +323,18 @@
                             </button>
                         </form>
 
+                        <!-- Quick Guide & Interactive Tour Action Buttons -->
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-1">
+                            <a href="{{ route('docs.guide') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition hover:scale-105 backdrop-blur-md">
+                                <i class="fa-solid fa-circle-question text-limey-400"></i> See How It Works (Docs)
+                            </a>
+                            <button type="button" @click="$dispatch('open-system-tutorial')"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-limey-400/20 hover:bg-limey-400/30 border border-limey-400/30 text-limey-300 text-xs font-bold transition hover:scale-105 backdrop-blur-md">
+                                <i class="fa-solid fa-play text-limey-400"></i> Quick Interactive Tour
+                            </button>
+                        </div>
+
                         <!-- Key Metrics & Perks with Animated Count-Up -->
                         <div
                             class="pt-4 grid grid-cols-3 gap-4 border-t border-white/15 max-w-lg mx-auto lg:mx-0 text-left">
@@ -592,7 +604,8 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($healthyChoices as $item)
+                    {{-- Layer 1: Single Row Muna (First 3 items) --}}
+                    @foreach ($healthyChoices->take(3) as $item)
                         <div
                             class="bg-white rounded-3xl border border-gray-200/80 overflow-hidden shadow-card hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1.5">
                             <div>
@@ -685,6 +698,97 @@
                             </div>
                         </div>
                     @endforeach
+
+                    {{-- [SECOND LAYER COMMENTED OUT - SINGLE ROW MUNA]
+                    @foreach ($healthyChoices->skip(3) as $item)
+                        <div
+                            class="bg-white rounded-3xl border border-gray-200/80 overflow-hidden shadow-card hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1.5">
+                            <div>
+                                <div class="relative h-48 overflow-hidden bg-gray-100">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->name }}"
+                                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+
+                                    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                                        <span
+                                            class="px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold shadow">
+                                            <i class="fa-solid fa-shield-heart mr-1"></i> Healthy Choice
+                                        </span>
+                                        @if ($item->is_supplement)
+                                            <span
+                                                class="px-2.5 py-1 rounded-full bg-purple-600 text-white text-[10px] font-extrabold shadow">
+                                                💊 Supplement
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div
+                                        class="absolute bottom-3 right-3 px-2.5 py-1 rounded-xl bg-gray-900/90 text-white text-xs font-black backdrop-blur-md shadow-md flex items-center gap-1">
+                                        🔥 {{ $item->calories }} kcal
+                                    </div>
+                                </div>
+
+                                <div class="p-6">
+                                    <div
+                                        class="text-[11px] font-extrabold text-nutri-600 uppercase tracking-wider mb-1 leading-tight">
+                                        {{ $item->store->store_name }}
+                                        <br>
+                                        <span
+                                            class="text-[10px] text-gray-400 font-normal normal-case block truncate mt-0.5"><i
+                                                class="fa-solid fa-location-dot text-[9px] text-gray-400 mr-0.5"></i>{{ $item->store->address_line ?? $item->store->barangay }}</span>
+                                    </div>
+                                    <h3
+                                        class="text-lg font-black text-gray-900 font-heading group-hover:text-nutri-600 transition">
+                                        {{ $item->name }}
+                                    </h3>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $item->description }}</p>
+
+                                    <div
+                                        class="mt-4 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs">
+                                        <div class="p-1.5 rounded-lg bg-rose-50 text-rose-700 font-bold">
+                                            <div class="text-[10px] uppercase text-gray-500 font-semibold">Protein</div>
+                                            {{ $item->protein_g }}g
+                                        </div>
+                                        <div class="p-1.5 rounded-lg bg-amber-50 text-amber-700 font-bold">
+                                            <div class="text-[10px] uppercase text-gray-500 font-semibold">Carbs</div>
+                                            {{ $item->carbs_g }}g
+                                        </div>
+                                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 font-bold">
+                                            <div class="text-[10px] uppercase text-gray-500 font-semibold">Fats</div>
+                                            {{ $item->fat_g }}g
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 pt-0 flex items-center justify-between">
+                                <div>
+                                    <span
+                                        class="text-xl font-black text-nutri-900 font-heading">₱{{ number_format($item->price, 2) }}</span>
+                                    @if ($item->original_price)
+                                        <span
+                                            class="text-xs text-gray-400 line-through ml-1">₱{{ number_format($item->original_price, 2) }}</span>
+                                    @endif
+                                </div>
+                                @if ($item->store && $item->store->is_open)
+                                    <form action="{{ route('users.cart.add') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $item->id }}">
+                                        <button type="submit"
+                                            class="px-4 py-2.5 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm hover:shadow transition flex items-center gap-1.5 active:scale-95">
+                                            <i class="fa-solid fa-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                @else
+                                    <button type="button" disabled
+                                        class="px-3.5 py-2.5 rounded-xl bg-gray-100 text-gray-400 font-bold text-xs cursor-not-allowed flex items-center gap-1.5"
+                                        title="Store is currently closed">
+                                        <i class="fa-solid fa-lock text-[10px]"></i> Closed
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                    --}}
                 </div>
             </div>
         </section>
@@ -802,7 +906,8 @@
                                     class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-nutri-50 text-nutri-800 border border-nutri-200">
                                     {{ $store->health_category }}
                                 </span>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                <span
+                                    class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                     {{ $store->is_open ? '● Open' : 'Closed' }}
                                 </span>
                             </div>
@@ -1002,7 +1107,8 @@
                                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
                                                     {{ $store->health_category }}
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                                <span
+                                                    class="px-2 py-0.5 rounded-full text-[9px] font-bold {{ $store->is_open ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                                                     {{ $store->is_open ? '● Open' : 'Closed' }}
                                                 </span>
                                             </div>

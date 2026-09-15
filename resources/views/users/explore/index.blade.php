@@ -260,6 +260,7 @@
                 const data = await response.json();
                 if (data.html && container) {
                     container.innerHTML = data.html;
+                    applyViewMode();
                     // Update URL without page reload and without scrolling
                     window.history.pushState({ path: targetUrl }, '', targetUrl);
                 }
@@ -273,7 +274,52 @@
         }
     }
 
+    let currentViewMode = localStorage.getItem('nutrigo_explore_view_mode') || 'grid';
+
+    function setViewMode(mode) {
+        currentViewMode = mode;
+        try {
+            localStorage.setItem('nutrigo_explore_view_mode', mode);
+        } catch (e) {}
+        applyViewMode();
+    }
+
+    function applyViewMode() {
+        const wrapper = document.getElementById('products-listing-wrapper');
+        const gridBtn = document.getElementById('view-mode-grid-btn');
+        const listBtn = document.getElementById('view-mode-list-btn');
+
+        if (!wrapper) return;
+
+        if (currentViewMode === 'list') {
+            wrapper.classList.remove('products-container-grid', 'grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+            wrapper.classList.add('products-container-list');
+
+            if (listBtn) {
+                listBtn.classList.remove('text-gray-500', 'hover:text-gray-900');
+                listBtn.classList.add('bg-white', 'text-nutri-950', 'shadow-xs');
+            }
+            if (gridBtn) {
+                gridBtn.classList.remove('bg-white', 'text-nutri-950', 'shadow-xs');
+                gridBtn.classList.add('text-gray-500', 'hover:text-gray-900');
+            }
+        } else {
+            wrapper.classList.remove('products-container-list');
+            wrapper.classList.add('products-container-grid', 'grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+
+            if (gridBtn) {
+                gridBtn.classList.remove('text-gray-500', 'hover:text-gray-900');
+                gridBtn.classList.add('bg-white', 'text-nutri-950', 'shadow-xs');
+            }
+            if (listBtn) {
+                listBtn.classList.remove('bg-white', 'text-nutri-950', 'shadow-xs');
+                listBtn.classList.add('text-gray-500', 'hover:text-gray-900');
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        applyViewMode();
         // Handle input events in the sidebar form
         const form = document.getElementById('explore-filter-form');
         if (form) {

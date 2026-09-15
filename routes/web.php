@@ -43,6 +43,7 @@ use App\Http\Controllers\SuperAdmin\SystemSettingsController as SuperAdminSettin
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/how-it-works', [HomeController::class, 'howItWorks'])->name('docs.guide');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

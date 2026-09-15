@@ -156,6 +156,9 @@
                         </span>
                         VIP Meal Prep
                     </a>
+                    <a href="{{ route('docs.guide') }}" class="text-sm font-semibold {{ request()->routeIs('docs.guide*') ? 'text-nutri-600 font-bold' : 'text-gray-700 hover:text-nutri-600' }} transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-question text-nutri-500"></i> See How It Works
+                    </a>
                 </nav>
 
                 <!-- Actions & Profile -->
@@ -174,7 +177,7 @@
                     @auth
                         <!-- Authenticated User Menu -->
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-nutri-50 transition border border-transparent hover:border-nutri-200 cursor-pointer">
+                            <button @click="open = !open" class="flex items-center gap-2.5 pl-2.5 pr-3 py-1.5 rounded-xl hover:bg-nutri-50 transition border border-transparent hover:border-nutri-200 cursor-pointer">
                                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-nutri-600 to-limey-500 flex items-center justify-center text-white font-bold text-sm shadow overflow-hidden shrink-0">
                                     @if(auth()->user()->avatar_url)
                                         <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
@@ -227,6 +230,10 @@
                                     <i class="fa-solid fa-crown text-amber-500"></i> VIP Subscription
                                 </a>
 
+                                <a href="{{ route('docs.guide') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-nutri-50 transition">
+                                    <i class="fa-solid fa-circle-question text-nutri-600"></i> See How It Works (Guide)
+                                </a>
+
                                 <div class="border-t border-gray-100 mt-1">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
@@ -257,12 +264,12 @@
     @include('partials.sweetalert')
 
     <!-- Main Content Area -->
-    <main class="flex-grow">
+    <main class="flex-grow pb-16 md:pb-0">
         @yield('content')
     </main>
 
     <!-- Modern NutriGo Footer -->
-    <footer class="bg-nutri-900 text-white pt-16 pb-12 mt-20 border-t border-nutri-800">
+    <footer class="bg-nutri-900 text-white pt-16 pb-16 md:pb-12 mt-0 border-t border-nutri-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-12 border-b border-white/10">
                 <!-- Col 1: Brand Info -->
@@ -301,6 +308,7 @@
                         <li><a href="{{ route('register') }}?tab=rider" class="hover:text-limey-400 transition flex items-center gap-1.5"><i class="fa-solid fa-motorcycle text-limey-400"></i> Apply as Delivery Rider</a></li>
                         <li><a href="{{ route('creators.index') }}" class="hover:text-limey-400 transition flex items-center gap-1.5"><i class="fa-solid fa-video text-rose-400"></i> Partner Cooking Vlogs</a></li>
                         <li><a href="{{ route('users.subscriptions.index') }}" class="hover:text-limey-400 transition flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> VIP Meal Prep Club</a></li>
+                        <li><a href="{{ route('docs.guide') }}" class="hover:text-limey-400 transition flex items-center gap-1.5"><i class="fa-solid fa-circle-question text-limey-400"></i> See How It Works (Guide)</a></li>
                     </ul>
                 </div>
             </div>
@@ -315,24 +323,27 @@
     </footer>
 
     <!-- Mobile Bottom Quick Navigation -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-nutri-100 shadow-lg px-4 py-2 flex items-center justify-around">
-        <a href="{{ route('home') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('home') ? 'text-nutri-600' : 'text-gray-500' }}">
-            <i class="fa-solid fa-house text-lg mb-0.5"></i> Home
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-nutri-100 shadow-lg px-2 py-2 flex items-center justify-around">
+        <a href="{{ route('home') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('home') ? 'text-nutri-600' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-house text-base mb-0.5"></i> Home
         </a>
-        <a href="{{ route('users.explore') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('users.explore*') ? 'text-nutri-600' : 'text-gray-500' }}">
-            <i class="fa-solid fa-magnifying-glass text-lg mb-0.5"></i> Explore
+        <a href="{{ route('users.explore') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('users.explore*') ? 'text-nutri-600' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-magnifying-glass text-base mb-0.5"></i> Explore
         </a>
-        <a href="{{ route('users.cart.index') }}" class="flex flex-col items-center text-[10px] font-bold relative {{ request()->routeIs('users.cart*') ? 'text-nutri-600' : 'text-gray-500' }}">
-            <i class="fa-solid fa-bag-shopping text-lg mb-0.5"></i> Cart
+        <a href="{{ route('docs.guide') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('docs.guide*') ? 'text-nutri-600 font-black' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-circle-question text-base mb-0.5 {{ request()->routeIs('docs.guide*') ? 'text-nutri-600' : 'text-nutri-500' }}"></i> Guide
+        </a>
+        <a href="{{ route('users.cart.index') }}" class="flex flex-col items-center text-[10px] font-bold relative {{ request()->routeIs('users.cart*') ? 'text-nutri-600' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-bag-shopping text-base mb-0.5"></i> Cart
             <span id="mobile-cart-count" class="{{ $cartCount > 0 ? '' : 'hidden' }} absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300 transform">
                 {{ $cartCount }}
             </span>
         </a>
-        <a href="{{ route('creators.index') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('creators*') ? 'text-nutri-600' : 'text-gray-500' }}">
-            <i class="fa-solid fa-play text-lg mb-0.5"></i> Vlogs
+        <a href="{{ route('creators.index') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('creators*') ? 'text-nutri-600' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-play text-base mb-0.5"></i> Vlogs
         </a>
-        <a href="{{ auth()->check() ? route('users.orders.index') : route('login') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('users.orders*') ? 'text-nutri-600' : 'text-gray-500' }}">
-            <i class="fa-solid fa-user text-lg mb-0.5"></i> {{ auth()->check() ? 'Orders' : 'Account' }}
+        <a href="{{ auth()->check() ? route('users.orders.index') : route('login') }}" class="flex flex-col items-center text-[10px] font-bold {{ request()->routeIs('users.orders*') ? 'text-nutri-600' : 'text-gray-500 hover:text-nutri-600' }}">
+            <i class="fa-solid fa-user text-base mb-0.5"></i> {{ auth()->check() ? 'Orders' : 'Account' }}
         </a>
     </div>
 
@@ -481,6 +492,9 @@
             });
         });
     </script>
+
+    <!-- Global System Tutorial Walkthrough Modal -->
+    @include('partials.system_tutorial_modal')
 
     @stack('scripts')
 </body>

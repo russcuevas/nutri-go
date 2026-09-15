@@ -19,7 +19,7 @@
         platformFee: 10.00,
         discount: {{ $discount }},
         isVip: {{ $isVip ? 'true' : 'false' }},
-        paymentMethod: 'gcash',
+        paymentMethod: 'cod',
         deliveryType: 'immediate',
         isLocating: false,
     
@@ -204,7 +204,8 @@
                             <h3 class="text-lg font-black text-gray-900 font-heading">Payment Method</h3>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
+                            {{-- [GCASH PAYMENT METHOD COMMENTED OUT - CLIENT REQUESTED COD MUNA]
                             <label class="relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition"
                                 :class="paymentMethod === 'gcash' ? 'border-blue-600 bg-blue-50/40 ring-1 ring-blue-600' :
                                     'border-gray-200 hover:border-gray-300'">
@@ -221,12 +222,10 @@
                                     </div>
                                 </div>
                             </label>
+                            --}}
 
-                            <label class="relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition"
-                                :class="paymentMethod === 'cod' ?
-                                    'border-nutri-600 bg-nutri-50/40 ring-1 ring-nutri-600' :
-                                    'border-gray-200 hover:border-gray-300'">
-                                <input type="radio" name="payment_method" value="cod" x-model="paymentMethod"
+                            <label class="relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition border-nutri-600 bg-nutri-50/40 ring-1 ring-nutri-600">
+                                <input type="radio" name="payment_method" value="cod" x-model="paymentMethod" checked
                                     class="sr-only">
                                 <div class="flex items-center gap-3">
                                     <div
@@ -234,14 +233,17 @@
                                         ₱
                                     </div>
                                     <div>
-                                        <p class="font-black text-gray-900 text-xs font-heading">Cash on Delivery (COD)</p>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-black text-gray-900 text-xs font-heading">Cash on Delivery (COD)</p>
+                                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">Active</span>
+                                        </div>
                                         <p class="text-[11px] text-gray-500">Pay cash directly upon food arrival</p>
                                     </div>
                                 </div>
                             </label>
                         </div>
 
-                        <!-- GCash Upload Box -->
+                        {{-- [GCASH UPLOAD BOX COMMENTED OUT - CLIENT REQUESTED COD MUNA]
                         <div x-show="paymentMethod === 'gcash'" x-cloak
                             class="p-5 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-4 text-xs">
                             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm"
@@ -311,6 +313,7 @@
                                 </div>
                             </div>
                         </div>
+                        --}}
                     </div>
 
                 </div>
@@ -367,13 +370,29 @@
                                 <span class="font-bold text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
+                                <span>Delivery Fee:</span>
+                                <div>
+                                    <template x-if="isVip && discount > 0">
+                                        <span>
+                                            <span class="line-through text-gray-400" x-text="'₱' + deliveryFee.toFixed(2)"></span>
+                                            <span class="text-emerald-600 font-bold ml-1" x-text="'₱' + Math.max(0, deliveryFee - discount).toFixed(2)"></span>
+                                        </span>
+                                    </template>
+                                    <template x-if="!isVip || discount <= 0">
+                                        <span class="font-bold text-gray-900" x-text="'₱' + deliveryFee.toFixed(2)"></span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
                                 <span>Platform Fee:</span>
                                 <span class="font-bold text-gray-900">₱10.00</span>
                             </div>
                             @if ($isVip)
-                                <div class="flex justify-between text-amber-600 font-bold">
-                                    <span>👑 VIP Free Delivery Perk:</span>
-                                    <span x-text="'-₱' + discount.toFixed(2)"></span>
+                                <div class="flex justify-between items-center text-amber-700 bg-amber-50/80 px-2.5 py-1.5 rounded-xl border border-amber-200 font-bold">
+                                    <span class="flex items-center gap-1.5">
+                                        <span>👑</span> VIP Free Delivery Perk:
+                                    </span>
+                                    <span class="text-emerald-700" x-text="'-₱' + discount.toFixed(2)"></span>
                                 </div>
                             @endif
 
