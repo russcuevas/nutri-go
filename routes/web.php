@@ -35,6 +35,7 @@ use App\Http\Controllers\SuperAdmin\RiderApprovalController as SuperAdminRiderCo
 use App\Http\Controllers\SuperAdmin\RiderPayoutController as SuperAdminPayoutController;
 use App\Http\Controllers\SuperAdmin\CreatorManagerController as SuperAdminCreatorController;
 use App\Http\Controllers\SuperAdmin\SubscriptionManagerController as SuperAdminSubscriptionController;
+use App\Http\Controllers\SuperAdmin\CustomerReviewController as SuperAdminReviewController;
 use App\Http\Controllers\SuperAdmin\SystemSettingsController as SuperAdminSettingsController;
 
 /*
@@ -44,6 +45,7 @@ use App\Http\Controllers\SuperAdmin\SystemSettingsController as SuperAdminSettin
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/how-it-works', [HomeController::class, 'howItWorks'])->name('docs.guide');
+Route::post('/customer-reviews', [HomeController::class, 'submitReview'])->name('customer.reviews.submit');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -192,4 +194,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('superadmin')->name('superadmi
     // System Settings & Distance Rate Pricing
     Route::get('/settings', [SuperAdminSettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SuperAdminSettingsController::class, 'update'])->name('settings.update');
+
+    // Customer Reviews & Feedback Management
+    Route::get('/reviews', [SuperAdminReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews', [SuperAdminReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews/{id}/toggle-active', [SuperAdminReviewController::class, 'toggleActive'])->name('reviews.toggle');
+    Route::delete('/reviews/{id}', [SuperAdminReviewController::class, 'destroy'])->name('reviews.destroy');
 });

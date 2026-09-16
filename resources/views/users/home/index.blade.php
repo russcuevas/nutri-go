@@ -228,8 +228,31 @@
         }
 
         .reveal-on-scroll.is-visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Swiper Customer Reviews Carousel Styles */
+        .swiper-pagination-reviews .swiper-pagination-bullet {
+            width: 8px;
+            height: 8px;
+            background: #cbd5e1;
+            opacity: 0.6;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 9999px;
+            margin: 0 4px !important;
+        }
+
+        .swiper-pagination-reviews .swiper-pagination-bullet-active {
+            width: 28px;
+            background: #16a34a;
             opacity: 1;
-            transform: translateY(0);
+            border-radius: 9999px;
+        }
+
+        .customer-reviews-swiper .swiper-slide {
+            height: auto;
+            display: flex;
         }
     </style>
 
@@ -944,6 +967,282 @@
             </div>
         </section>
 
+        <!-- Customer Reviews & Testimonials Section (Swiper Showcase & Inline Review Form) -->
+        <section class="py-20 bg-gradient-to-b from-gray-50 via-nutri-50/20 to-white relative overflow-hidden reveal-on-scroll border-t border-gray-100">
+            <!-- Decorative Background Elements -->
+            <div class="absolute top-1/3 left-0 -translate-y-1/2 w-80 h-80 bg-limey-400/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute top-2/3 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[110px] pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Section Header with Swiper Navigation Controls -->
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
+                    <div class="max-w-2xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-900 border border-amber-200/80 inline-flex items-center gap-1.5 shadow-xs">
+                                <i class="fa-solid fa-star text-amber-500"></i> Customer Voices & Ratings
+                            </span>
+                            <span class="text-xs text-gray-400 font-bold hidden sm:inline">•</span>
+                            <span class="text-xs text-emerald-700 font-bold hidden sm:inline flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check text-emerald-500"></i> Verified Lipa Foodies
+                            </span>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-black text-gray-900 font-heading tracking-tight">
+                            Loved by Health-Conscious Foodies in Lipa City
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
+                            Swipe through authentic reviews from locals ordering daily healthy meal preps, keto specials, and clean nutrition across Lipa.
+                        </p>
+                    </div>
+
+                    <!-- Right Side: Rating Summary Box & Swiper Navigation Arrows -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-gray-200/80 shadow-card">
+                            <div class="text-3xl font-black text-gray-900 font-heading leading-none">
+                                {{ number_format($avgCustomerRating, 1) }}
+                            </div>
+                            <div>
+                                <div class="flex text-amber-400 text-xs">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fa-solid fa-star {{ $i <= round($avgCustomerRating) ? 'text-amber-400' : 'text-gray-200' }}"></i>
+                                    @endfor
+                                </div>
+                                <p class="text-[11px] text-gray-500 font-bold mt-0.5">
+                                    Based on {{ $totalActiveReviews }} {{ Str::plural('review', $totalActiveReviews) }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Swiper Navigation Arrows -->
+                        <div class="flex items-center gap-2">
+                            <button type="button" aria-label="Previous Reviews"
+                                class="reviews-swiper-prev w-11 h-11 rounded-2xl bg-white hover:bg-nutri-900 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button type="button" aria-label="Next Reviews"
+                                class="reviews-swiper-next w-11 h-11 rounded-2xl bg-white hover:bg-nutri-900 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swiper Reviews Slider -->
+                @if ($customerReviews->count() > 0)
+                    <div class="relative">
+                        <div class="swiper customer-reviews-swiper !pb-14 !pt-2">
+                            <div class="swiper-wrapper">
+                                @foreach ($customerReviews as $review)
+                                    <div class="swiper-slide">
+                                        <div class="w-full bg-white rounded-3xl p-6 sm:p-7 border border-gray-200/80 hover:border-emerald-400 shadow-card hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 relative overflow-hidden">
+                                            <div>
+                                                <!-- Top Row: Star Ratings & Clean Rating Badge -->
+                                                <div class="flex items-center justify-between gap-3 mb-4 relative z-10">
+                                                    <div class="flex items-center gap-1 text-amber-400 text-sm">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="fa-solid fa-star {{ $i <= $review->rating ? 'text-amber-400' : 'text-gray-200' }}"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-900 border border-amber-200/80 shadow-2xs shrink-0">
+                                                        <i class="fa-solid fa-star text-amber-500 text-[11px]"></i> {{ $review->rating }}.0
+                                                    </span>
+                                                </div>
+
+                                                <!-- Review Message -->
+                                                <p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium mb-6 relative z-10">
+                                                    "{{ $review->message }}"
+                                                </p>
+                                            </div>
+
+                                            <!-- Reviewer Profile Footer -->
+                                            <div class="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+                                                <div class="flex items-center gap-3 min-w-0">
+                                                    <img src="{{ $review->avatar }}" alt="{{ $review->name }}"
+                                                        class="w-11 h-11 rounded-2xl object-cover bg-emerald-100 border border-gray-200 shadow-2xs shrink-0">
+                                                    <div class="min-w-0">
+                                                        <h4 class="text-xs sm:text-sm font-black text-gray-900 truncate font-heading group-hover:text-emerald-700 transition">
+                                                            {{ $review->name }}
+                                                        </h4>
+                                                        <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                                                            <i class="fa-solid fa-circle-check text-[9px]"></i> Verified Lipa Customer
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span class="text-[10px] text-gray-400 font-semibold shrink-0">
+                                                    {{ $review->created_at->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Swiper Pagination Dots -->
+                            <div class="swiper-pagination swiper-pagination-reviews !bottom-2"></div>
+                        </div>
+                    </div>
+                @else
+                    <div class="bg-white rounded-3xl p-10 text-center border border-gray-200 max-w-lg mx-auto space-y-3 mb-10">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl mx-auto">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <h4 class="text-base font-black text-gray-800 font-heading">Be the First to Review!</h4>
+                        <p class="text-xs text-gray-500">
+                            Have you ordered healthy food with NutriGo? Share your review below to be featured on our homepage!
+                        </p>
+                    </div>
+                @endif
+
+                <!-- Embedded Inline Customer Review Submission Form (NO MODAL) -->
+                <div class="mt-8 bg-gradient-to-br from-nutri-950 via-nutri-900 to-emerald-950 text-white rounded-[2.5rem] p-6 sm:p-10 lg:p-12 border border-white/10 shadow-2xl relative overflow-hidden">
+                    <!-- Ambient decorative light glow -->
+                    <div class="absolute -top-24 -right-24 w-80 h-80 bg-limey-400/15 rounded-full blur-[90px] pointer-events-none"></div>
+                    <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-[90px] pointer-events-none"></div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+                        <!-- Left Column: Invite & Instructions -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-limey-300 border border-white/15 text-[10px] font-extrabold uppercase tracking-widest backdrop-blur-md">
+                                <i class="fa-solid fa-pen-nib text-limey-400"></i> Share Your Voice
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-black font-heading leading-tight text-white tracking-tight">
+                                Leave a Customer Review
+                            </h3>
+                            <p class="text-xs sm:text-sm text-nutri-200 leading-relaxed">
+                                Tell the Lipa City health community about your meal freshness, store preparation, or rider delivery experience.
+                            </p>
+
+                            <div class="space-y-2.5 pt-2 text-xs text-nutri-100 font-medium">
+                                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
+                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🥗</span>
+                                    <span>Rate taste, freshness, and calorie accuracy</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
+                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🚴</span>
+                                    <span>Rate rider delivery speed and food handling</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
+                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">⭐</span>
+                                    <span>Active reviews are featured live in the carousel</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Inline Form Card -->
+                        <div class="lg:col-span-7 bg-white text-gray-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100"
+                            x-data="{ inlineRating: 5 }">
+                            <h4 class="text-lg font-black font-heading text-gray-900 mb-1">Submit Your Review</h4>
+                            <p class="text-xs text-gray-500 mb-4">Directly submit your feedback below without any popup.</p>
+
+                            <form action="{{ route('customer.reviews.submit') }}" method="POST" class="space-y-4">
+                                @csrf
+
+                                <!-- Name -->
+                                <div>
+                                    <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                        Your Full Name <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                        <input type="text" name="name" required
+                                            value="{{ auth()->user()->name ?? '' }}"
+                                            placeholder="e.g. Maria Clara"
+                                            class="w-full pl-9 pr-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition">
+                                    </div>
+                                </div>
+
+                                <!-- Email & Contact -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                            Email Address <span class="text-rose-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                            <input type="email" name="email" required
+                                                value="{{ auth()->user()->email ?? '' }}"
+                                                placeholder="yourname@gmail.com"
+                                                class="w-full pl-9 pr-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                            Contact Number
+                                        </label>
+                                        <div class="relative">
+                                            <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                            <input type="text" name="contact"
+                                                value="{{ auth()->user()->phone ?? '' }}"
+                                                placeholder="0917XXXXXXX"
+                                                class="w-full pl-9 pr-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Interactive 5-Star Rating Selector -->
+                                <div>
+                                    <label class="block text-xs font-black text-gray-800 mb-1.5 font-heading uppercase tracking-wider">
+                                        Rate Your Satisfaction <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="hidden" name="rating" :value="inlineRating">
+
+                                    <div class="p-3 bg-amber-50/60 rounded-2xl border border-amber-200/80 flex flex-wrap items-center justify-between gap-3">
+                                        <div class="flex items-center gap-1.5">
+                                            <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
+                                                <button type="button" @click="inlineRating = star"
+                                                    class="text-3xl transition-transform hover:scale-125 focus:outline-none cursor-pointer"
+                                                    :class="star <= inlineRating ? 'text-amber-400' : 'text-gray-300'">
+                                                    <i class="fa-solid fa-star"></i>
+                                                </button>
+                                            </template>
+                                        </div>
+
+                                        <span class="px-3 py-1 rounded-xl text-xs font-black"
+                                            :class="{
+                                                'bg-rose-100 text-rose-800': inlineRating === 1,
+                                                'bg-orange-100 text-orange-800': inlineRating === 2,
+                                                'bg-amber-100 text-amber-800': inlineRating === 3,
+                                                'bg-lime-100 text-lime-800': inlineRating === 4,
+                                                'bg-emerald-100 text-emerald-800': inlineRating === 5
+                                            }">
+                                            <span x-show="inlineRating === 1">⭐ 1 Star - Poor</span>
+                                            <span x-show="inlineRating === 2">⭐⭐ 2 Stars - Fair</span>
+                                            <span x-show="inlineRating === 3">⭐⭐⭐ 3 Stars - Good</span>
+                                            <span x-show="inlineRating === 4">⭐⭐⭐⭐ 4 Stars - Very Good</span>
+                                            <span x-show="inlineRating === 5">⭐⭐⭐⭐⭐ 5 Stars - Outstanding!</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Review Message -->
+                                <div>
+                                    <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                        Your Review & Experience <span class="text-rose-500">*</span>
+                                    </label>
+                                    <textarea name="message" rows="3" required minlength="5" maxlength="1500"
+                                        placeholder="Share how NutriGo helped your healthy eating habits, food quality, delivery speed, or favorite meals..."
+                                        class="w-full p-3.5 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition"></textarea>
+                                </div>
+
+                                <!-- Notice & Submit -->
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                                    <div class="text-[11px] text-gray-500 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-shield-check text-emerald-600 text-xs shrink-0"></i>
+                                        <span>Reviews are verified by management before appearing in the carousel</span>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="shimmer-btn px-7 py-3.5 rounded-2xl bg-nutri-900 hover:bg-emerald-600 text-white font-black text-xs transition-all duration-300 shadow-lg flex items-center justify-center gap-2 hover:scale-105 font-heading shrink-0 cursor-pointer">
+                                        <i class="fa-solid fa-paper-plane text-limey-400"></i> Submit Review
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- VIP Subscription Banner -->
         <section
             class="py-16 bg-gradient-to-r from-nutri-900 via-nutri-800 to-nutri-950 text-white relative overflow-hidden reveal-on-scroll">
@@ -1166,7 +1465,7 @@
         </div>
     </div>
 
-    <!-- Interactive Animations JavaScript (Socia.ph style Canvas Splash, 3D Tilt, Counters) -->
+    <!-- Interactive Animations JavaScript (Socia.ph style Canvas Splash, 3D Tilt, Counters, Swiper) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 1. Interactive Particle Canvas with Liquid Splash & Cursor Interaction
@@ -1362,7 +1661,7 @@
                     }
                 });
             }, {
-                threshold: 0.15
+                threshold: 0.05
             });
 
             revealElements.forEach(el => observer.observe(el));
@@ -1394,10 +1693,50 @@
                     }
                 });
             }, {
-                threshold: 0.5
+                threshold: 0.2
             });
 
             counters.forEach(c => counterObserver.observe(c));
+
+            // 5. Initialize Customer Reviews Swiper Carousel
+            function initReviewsSwiper() {
+                if (typeof Swiper !== 'undefined' && document.querySelector('.customer-reviews-swiper')) {
+                    new Swiper('.customer-reviews-swiper', {
+                        slidesPerView: 1,
+                        spaceBetween: 24,
+                        loop: {{ $customerReviews->count() > 3 ? 'true' : 'false' }},
+                        autoplay: {
+                            delay: 4500,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                        },
+                        pagination: {
+                            el: '.swiper-pagination-reviews',
+                            clickable: true,
+                        },
+                        navigation: {
+                            nextEl: '.reviews-swiper-next',
+                            prevEl: '.reviews-swiper-prev',
+                        },
+                        breakpoints: {
+                            640: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                            },
+                            1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 24,
+                            },
+                        },
+                    });
+                }
+            }
+
+            if (typeof Swiper !== 'undefined') {
+                initReviewsSwiper();
+            } else {
+                window.addEventListener('load', initReviewsSwiper);
+            }
         });
     </script>
 @endsection

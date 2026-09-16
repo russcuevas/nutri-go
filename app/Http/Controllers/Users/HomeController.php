@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Creator;
 use App\Models\RecipeAndVlog;
 use App\Models\SubscriptionPlan;
+use App\Models\CustomerReview;
 use App\Services\LipaLocationService;
 
 class HomeController extends Controller
@@ -52,6 +53,14 @@ class HomeController extends Controller
         $subscriptionPlans = SubscriptionPlan::all();
         $barangays = LipaLocationService::getBarangayList();
 
+        // Customer Reviews displayed on website (is_active = 1)
+        $customerReviews = CustomerReview::where('is_active', true)
+            ->latest()
+            ->get();
+
+        $totalActiveReviews = $customerReviews->count();
+        $avgCustomerRating = $totalActiveReviews > 0 ? round($customerReviews->avg('rating'), 1) : 5.0;
+
         return view('users.home.index', compact(
             'categories',
             'featuredStores',
@@ -60,8 +69,29 @@ class HomeController extends Controller
             'creators',
             'featuredRecipes',
             'subscriptionPlans',
-            'barangays'
+            'barangays',
+            'customerReviews',
+            'totalActiveReviews',
+            'avgCustomerRating'
         ));
+    }
+
+    public function submitReview(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:150',
+            'contact' => 'nullable|string|max:30',
+            'rating' => 'required|integer|min:1|max:5',
+            'message' => 'required|string|min:5|max:1500',
+        ]);
+
+        // When submitted by public, save with is_active = false for superadmin approval & moderation
+        $validated['is_active'] = false;
+
+        CustomerReview::create($validated);
+
+        return back()->with('success', 'Thank you for your feedback! Your review has been submitted to management for verification and display.');
     }
 
     public function howItWorks()

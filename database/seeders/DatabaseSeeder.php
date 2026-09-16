@@ -20,6 +20,7 @@ use App\Models\UserSubscription;
 use App\Models\RiderWallet;
 use App\Models\RiderWalletTransaction;
 use App\Models\SystemSetting;
+use App\Models\CustomerReview;
 use App\Services\LipaLocationService;
 
 class DatabaseSeeder extends Seeder
@@ -842,6 +843,52 @@ class DatabaseSeeder extends Seeder
             'type' => 'delivery_fee',
             'amount' => 50.00,
             'description' => 'Delivery Fee for Order #NTR-2026-1002 (Marauoy)',
+        ]);
+
+        // Customer Reviews (Management & Home Showcase)
+        CustomerReview::create([
+            'name' => 'Bea Constantino',
+            'email' => 'bea.constantino@gmail.com',
+            'contact' => '09171239876',
+            'rating' => 5,
+            'message' => 'NutriGo completely changed my fitness journey in Lipa! Getting high-protein meals delivered right on time after gym workouts at Marawoy is super convenient. The macro labels are 100% accurate.',
+            'is_active' => true,
+        ]);
+
+        CustomerReview::create([
+            'name' => 'Kenzo Alvarez',
+            'email' => 'kenzo.fit@yahoo.com',
+            'contact' => '09228884321',
+            'rating' => 5,
+            'message' => 'The keto bowls from Green Bites and Barako Fit are amazing. Rider arrived with food still hot, and customer support is very responsive. Best healthy food delivery platform in Batangas!',
+            'is_active' => true,
+        ]);
+
+        CustomerReview::create([
+            'name' => 'Dr. Patricia Hernandez',
+            'email' => 'dr.patricia@lipamed.ph',
+            'contact' => '09185551234',
+            'rating' => 5,
+            'message' => 'As a healthcare worker in Lipa, having access to clean, organic, and dietitian-approved meals saved me so much prep time. Super highly recommended for busy professionals!',
+            'is_active' => true,
+        ]);
+
+        CustomerReview::create([
+            'name' => 'Mark Joseph Dimayuga',
+            'email' => 'mj.dimayuga@outlook.com',
+            'contact' => '09279998877',
+            'rating' => 4,
+            'message' => 'Great selection of partner stores and 1-click vlog ingredient ordering is genius! Looking forward to more vegetarian options in Tambo area.',
+            'is_active' => true,
+        ]);
+
+        CustomerReview::create([
+            'name' => 'Aileen Santos',
+            'email' => 'aileen.s@gmail.com',
+            'contact' => '09391114455',
+            'rating' => 5,
+            'message' => 'Inquire lang po sana ako if may vegan dessert partners din kayo soon? So far so good with my daily salads!',
+            'is_active' => false,
         ]);
     }
 }
