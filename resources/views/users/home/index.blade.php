@@ -346,16 +346,45 @@
                             </button>
                         </form>
 
+                        <!-- Quick Health Goal Filter Chips (Direct 1-Click Discovery) -->
+                        <div class="space-y-1.5 pt-0.5">
+                            <span class="text-[11px] font-bold text-nutri-200 block text-center lg:text-left">
+                                <i class="fa-solid fa-fire text-amber-400 mr-1"></i> Popular Goals:
+                            </span>
+                            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                                <a href="{{ route('users.explore', ['calorie_range' => 'under300']) }}"
+                                    class="px-3 py-1 rounded-full bg-white/15 hover:bg-limey-400 hover:text-nutri-950 text-white text-[11px] font-bold border border-white/20 transition backdrop-blur-sm flex items-center gap-1.5">
+                                    <span>🔥</span> &lt; 350 kcal
+                                </a>
+                                <a href="{{ route('users.explore', ['calorie_range' => 'over500']) }}"
+                                    class="px-3 py-1 rounded-full bg-white/15 hover:bg-limey-400 hover:text-nutri-950 text-white text-[11px] font-bold border border-white/20 transition backdrop-blur-sm flex items-center gap-1.5">
+                                    <span>💪</span> High Protein (30g+)
+                                </a>
+                                <a href="{{ route('users.explore', ['q' => 'keto']) }}"
+                                    class="px-3 py-1 rounded-full bg-white/15 hover:bg-limey-400 hover:text-nutri-950 text-white text-[11px] font-bold border border-white/20 transition backdrop-blur-sm flex items-center gap-1.5">
+                                    <span>🥑</span> Keto & Low Carb
+                                </a>
+                                <a href="{{ route('users.explore', ['q' => 'salad']) }}"
+                                    class="px-3 py-1 rounded-full bg-white/15 hover:bg-limey-400 hover:text-nutri-950 text-white text-[11px] font-bold border border-white/20 transition backdrop-blur-sm flex items-center gap-1.5">
+                                    <span>🥗</span> Fresh Salads
+                                </a>
+                                <a href="{{ route('users.explore', ['q' => 'vegan']) }}"
+                                    class="px-3 py-1 rounded-full bg-white/15 hover:bg-limey-400 hover:text-nutri-950 text-white text-[11px] font-bold border border-white/20 transition backdrop-blur-sm flex items-center gap-1.5">
+                                    <span>🌱</span> 100% Vegan
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Quick Guide & Interactive Tour Action Buttons -->
                         <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-1">
-                            <a href="{{ route('docs.guide') }}"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition hover:scale-105 backdrop-blur-md">
-                                <i class="fa-solid fa-circle-question text-limey-400"></i> See How It Works (Docs)
-                            </a>
                             <button type="button" @click="$dispatch('open-system-tutorial')"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-limey-400/20 hover:bg-limey-400/30 border border-limey-400/30 text-limey-300 text-xs font-bold transition hover:scale-105 backdrop-blur-md">
-                                <i class="fa-solid fa-play text-limey-400"></i> Quick Interactive Tour
+                                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-limey-400 hover:bg-limey-300 text-nutri-950 text-xs font-black transition hover:scale-105 shadow-md font-heading">
+                                <i class="fa-solid fa-play text-nutri-900"></i> Paano Gamitin ang NutriGo? (Quick Tour)
                             </button>
+                            <a href="{{ route('docs.guide') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition hover:scale-105 backdrop-blur-md">
+                                <i class="fa-solid fa-book-open text-limey-400"></i> Read Complete Guide
+                            </a>
                         </div>
 
                         <!-- Key Metrics & Perks with Animated Count-Up -->
@@ -479,6 +508,145 @@
                 <span class="text-limey-300">•</span>
             </div>
         </div>
+
+        <!-- The NutriGo Concept: How It Works & Why NutriGo Section -->
+        <section class="py-16 bg-white border-b border-gray-100 reveal-on-scroll">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        🌿 Ang Konsepto ng NutriGo
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-black text-gray-900 font-heading tracking-tight">
+                        How NutriGo Works: 3 Simpleng Hakbang sa Healthy Eating
+                    </h2>
+                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                        Hindi ito ordinaryong fast-food delivery. Sa NutriGo, <strong>kontrolado mo ang calories at nutrisyon</strong> ng bawat order mo para sa iyong kalusugan at fitness goals sa Lipa City.
+                    </p>
+                </div>
+
+                <!-- 3 Visual Step Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+                    
+                    <!-- Step 1 Card -->
+                    <div class="relative p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-nutri-50/70 to-white border border-nutri-200 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-nutri-700 text-white flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform">
+                                    🎯
+                                </div>
+                                <span class="text-3xl font-black text-nutri-200 font-heading">01</span>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-black uppercase tracking-wider text-emerald-700">Hakbang 1: Piliin ang Goal</span>
+                                <h3 class="text-xl font-black text-gray-900 font-heading mt-0.5">Piliin ang Health Target Mo</h3>
+                            </div>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                Mag-browse ayon sa iyong diet: <strong>Keto, High-Protein, Calorie Deficit, Vegan, o Clean Diet</strong> mula sa mga verified healthy partner kitchens sa Lipa.
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-nutri-100 flex flex-wrap gap-1.5 text-[10px] font-bold">
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-nutri-200 text-nutri-800">🥗 Low-Cal</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-nutri-200 text-nutri-800">💪 High-Protein</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-nutri-200 text-nutri-800">🥑 Keto</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 Card -->
+                    <div class="relative p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-lime-50/70 to-white border border-lime-200 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-lime-500 to-emerald-600 text-white flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform">
+                                    📊
+                                </div>
+                                <span class="text-3xl font-black text-lime-300 font-heading">02</span>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-black uppercase tracking-wider text-lime-700">Hakbang 2: Macro Count</span>
+                                <h3 class="text-xl font-black text-gray-900 font-heading mt-0.5">100% Calorie & Macro Transparency</h3>
+                            </div>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                <strong>Walang hulaan.</strong> Bawat pagkain ay may nakasaad na Calories (kcal), Protein (g), Carbs, at Fat bago ka umorder para pasok sa daily macro budget mo.
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-lime-100 flex flex-wrap gap-1.5 text-[10px] font-bold">
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-lime-200 text-lime-800">🔥 Verified kcal</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-lime-200 text-lime-800">📈 Macro Count</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-lime-200 text-lime-800">✨ Guilt-Free</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 Card -->
+                    <div class="relative p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-teal-50/70 to-white border border-teal-200 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 text-white flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform">
+                                    🛵
+                                </div>
+                                <span class="text-3xl font-black text-teal-200 font-heading">03</span>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-black uppercase tracking-wider text-teal-700">Hakbang 3: Mabilis na Hatid</span>
+                                <h3 class="text-xl font-black text-gray-900 font-heading mt-0.5">Fresh Delivery sa 72 Lipa Barangays</h3>
+                            </div>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                Ihahatid nang sariwa ng <strong>local Lipa riders</strong> na may live GPS map tracking sa transparent na ₱40 flat base fare diretso sa iyong tahanan o opisina.
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-teal-100 flex flex-wrap gap-1.5 text-[10px] font-bold">
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-teal-800">⚡ ₱40 Base Fare</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-teal-800">🗺️ Live GPS Map</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-teal-800">🏍️ Local Riders</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 4 Pillars of the NutriGo Difference -->
+                <div class="p-6 sm:p-8 rounded-3xl bg-nutri-950 text-white shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-20 -right-20 w-60 h-60 bg-limey-400/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-widest text-limey-400">The NutriGo Advantage</span>
+                            <h3 class="text-xl sm:text-2xl font-black font-heading mt-1">Bakit NutriGo ang Piliin Mo Para sa Diet Mo?</h3>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('users.explore') }}" class="shimmer-btn px-5 py-2.5 rounded-xl bg-limey-400 hover:bg-limey-300 text-nutri-950 font-black text-xs transition font-heading">
+                                Mag-order ng Healthy Food <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
+                        <div class="space-y-2">
+                            <div class="text-2xl">🥗</div>
+                            <h4 class="font-bold text-white text-sm">Guilt-Free Eating</h4>
+                            <p class="text-xs text-nutri-200 leading-relaxed">Walang hidden sugars o unhealthy oils. Puro malinis at masustansyang sangkap.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="text-2xl">🔬</div>
+                            <h4 class="font-bold text-white text-sm">Smart Calorie Filters</h4>
+                            <p class="text-xs text-nutri-200 leading-relaxed">Mag-filter ayon sa iyong calories (&lt;300, 300-500, o 500+ kcal) sa isang click lang.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="text-2xl">🏪</div>
+                            <h4 class="font-bold text-white text-sm">Verified Local Kitchens</h4>
+                            <p class="text-xs text-nutri-200 leading-relaxed">Lahat ng partner stores sa Lipa ay sumailalim sa health & sanitation vetting.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="text-2xl">👑</div>
+                            <h4 class="font-bold text-white text-sm">Creator Vlogs & VIP Prep</h4>
+                            <p class="text-xs text-nutri-200 leading-relaxed">Eksklusibong recipes at video vlogs mula sa mga sikat na Lipa fitness creators.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
 
         <!-- Interactive Calorie & Macro Target Estimator Widget -->
         <section class="py-12 bg-white border-b border-gray-100 reveal-on-scroll" x-data="{
@@ -875,7 +1043,7 @@
                             </div>
 
                             <!-- 1-Click Order Ingredients Button -->
-                            <div class="p-6 pt-0">
+                            {{-- <div class="p-6 pt-0">
                                 <form action="{{ route('creators.order.ingredients', $vlog->id) }}" method="POST">
                                     @csrf
                                     <button type="submit"
@@ -884,7 +1052,7 @@
                                         {{ $vlog->store->store_name ?? 'Lipa Store' }}
                                     </button>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                     @endforeach
                 </div>
@@ -968,17 +1136,23 @@
         </section>
 
         <!-- Customer Reviews & Testimonials Section (Swiper Showcase & Inline Review Form) -->
-        <section class="py-20 bg-gradient-to-b from-gray-50 via-nutri-50/20 to-white relative overflow-hidden reveal-on-scroll border-t border-gray-100">
+        <section
+            class="py-20 bg-gradient-to-b from-gray-50 via-nutri-50/20 to-white relative overflow-hidden reveal-on-scroll border-t border-gray-100">
             <!-- Decorative Background Elements -->
-            <div class="absolute top-1/3 left-0 -translate-y-1/2 w-80 h-80 bg-limey-400/10 rounded-full blur-[100px] pointer-events-none"></div>
-            <div class="absolute top-2/3 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[110px] pointer-events-none"></div>
+            <div
+                class="absolute top-1/3 left-0 -translate-y-1/2 w-80 h-80 bg-limey-400/10 rounded-full blur-[100px] pointer-events-none">
+            </div>
+            <div
+                class="absolute top-2/3 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[110px] pointer-events-none">
+            </div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <!-- Section Header with Swiper Navigation Controls -->
                 <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
                     <div class="max-w-2xl">
                         <div class="flex items-center gap-2 mb-2">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-900 border border-amber-200/80 inline-flex items-center gap-1.5 shadow-xs">
+                            <span
+                                class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-900 border border-amber-200/80 inline-flex items-center gap-1.5 shadow-xs">
                                 <i class="fa-solid fa-star text-amber-500"></i> Customer Voices & Ratings
                             </span>
                             <span class="text-xs text-gray-400 font-bold hidden sm:inline">•</span>
@@ -990,20 +1164,23 @@
                             Loved by Health-Conscious Foodies in Lipa City
                         </h2>
                         <p class="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
-                            Swipe through authentic reviews from locals ordering daily healthy meal preps, keto specials, and clean nutrition across Lipa.
+                            Swipe through authentic reviews from locals ordering daily healthy meal preps, keto specials,
+                            and clean nutrition across Lipa.
                         </p>
                     </div>
 
                     <!-- Right Side: Rating Summary Box & Swiper Navigation Arrows -->
                     <div class="flex flex-wrap items-center gap-4">
-                        <div class="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-gray-200/80 shadow-card">
+                        <div
+                            class="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-gray-200/80 shadow-card">
                             <div class="text-3xl font-black text-gray-900 font-heading leading-none">
                                 {{ number_format($avgCustomerRating, 1) }}
                             </div>
                             <div>
                                 <div class="flex text-amber-400 text-xs">
                                     @for ($i = 1; $i <= 5; $i++)
-                                        <i class="fa-solid fa-star {{ $i <= round($avgCustomerRating) ? 'text-amber-400' : 'text-gray-200' }}"></i>
+                                        <i
+                                            class="fa-solid fa-star {{ $i <= round($avgCustomerRating) ? 'text-amber-400' : 'text-gray-200' }}"></i>
                                     @endfor
                                 </div>
                                 <p class="text-[11px] text-gray-500 font-bold mt-0.5">
@@ -1033,37 +1210,46 @@
                             <div class="swiper-wrapper">
                                 @foreach ($customerReviews as $review)
                                     <div class="swiper-slide">
-                                        <div class="w-full bg-white rounded-3xl p-6 sm:p-7 border border-gray-200/80 hover:border-emerald-400 shadow-card hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 relative overflow-hidden">
+                                        <div
+                                            class="w-full bg-white rounded-3xl p-6 sm:p-7 border border-gray-200/80 hover:border-emerald-400 shadow-card hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 relative overflow-hidden">
                                             <div>
                                                 <!-- Top Row: Star Ratings & Clean Rating Badge -->
                                                 <div class="flex items-center justify-between gap-3 mb-4 relative z-10">
                                                     <div class="flex items-center gap-1 text-amber-400 text-sm">
                                                         @for ($i = 1; $i <= 5; $i++)
-                                                            <i class="fa-solid fa-star {{ $i <= $review->rating ? 'text-amber-400' : 'text-gray-200' }}"></i>
+                                                            <i
+                                                                class="fa-solid fa-star {{ $i <= $review->rating ? 'text-amber-400' : 'text-gray-200' }}"></i>
                                                         @endfor
                                                     </div>
-                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-900 border border-amber-200/80 shadow-2xs shrink-0">
-                                                        <i class="fa-solid fa-star text-amber-500 text-[11px]"></i> {{ $review->rating }}.0
+                                                    <span
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-900 border border-amber-200/80 shadow-2xs shrink-0">
+                                                        <i class="fa-solid fa-star text-amber-500 text-[11px]"></i>
+                                                        {{ $review->rating }}.0
                                                     </span>
                                                 </div>
 
                                                 <!-- Review Message -->
-                                                <p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium mb-6 relative z-10">
+                                                <p
+                                                    class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium mb-6 relative z-10">
                                                     "{{ $review->message }}"
                                                 </p>
                                             </div>
 
                                             <!-- Reviewer Profile Footer -->
-                                            <div class="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+                                            <div
+                                                class="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
                                                 <div class="flex items-center gap-3 min-w-0">
                                                     <img src="{{ $review->avatar }}" alt="{{ $review->name }}"
                                                         class="w-11 h-11 rounded-2xl object-cover bg-emerald-100 border border-gray-200 shadow-2xs shrink-0">
                                                     <div class="min-w-0">
-                                                        <h4 class="text-xs sm:text-sm font-black text-gray-900 truncate font-heading group-hover:text-emerald-700 transition">
+                                                        <h4
+                                                            class="text-xs sm:text-sm font-black text-gray-900 truncate font-heading group-hover:text-emerald-700 transition">
                                                             {{ $review->name }}
                                                         </h4>
-                                                        <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                                                            <i class="fa-solid fa-circle-check text-[9px]"></i> Verified Lipa Customer
+                                                        <p
+                                                            class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                                                            <i class="fa-solid fa-circle-check text-[9px]"></i> Verified
+                                                            Lipa Customer
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1081,47 +1267,61 @@
                         </div>
                     </div>
                 @else
-                    <div class="bg-white rounded-3xl p-10 text-center border border-gray-200 max-w-lg mx-auto space-y-3 mb-10">
-                        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl mx-auto">
+                    <div
+                        class="bg-white rounded-3xl p-10 text-center border border-gray-200 max-w-lg mx-auto space-y-3 mb-10">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl mx-auto">
                             <i class="fa-solid fa-star"></i>
                         </div>
                         <h4 class="text-base font-black text-gray-800 font-heading">Be the First to Review!</h4>
                         <p class="text-xs text-gray-500">
-                            Have you ordered healthy food with NutriGo? Share your review below to be featured on our homepage!
+                            Have you ordered healthy food with NutriGo? Share your review below to be featured on our
+                            homepage!
                         </p>
                     </div>
                 @endif
 
                 <!-- Embedded Inline Customer Review Submission Form (NO MODAL) -->
-                <div class="mt-8 bg-gradient-to-br from-nutri-950 via-nutri-900 to-emerald-950 text-white rounded-[2.5rem] p-6 sm:p-10 lg:p-12 border border-white/10 shadow-2xl relative overflow-hidden">
+                <div
+                    class="mt-8 bg-gradient-to-br from-nutri-950 via-nutri-900 to-emerald-950 text-white rounded-[2.5rem] p-6 sm:p-10 lg:p-12 border border-white/10 shadow-2xl relative overflow-hidden">
                     <!-- Ambient decorative light glow -->
-                    <div class="absolute -top-24 -right-24 w-80 h-80 bg-limey-400/15 rounded-full blur-[90px] pointer-events-none"></div>
-                    <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-[90px] pointer-events-none"></div>
+                    <div
+                        class="absolute -top-24 -right-24 w-80 h-80 bg-limey-400/15 rounded-full blur-[90px] pointer-events-none">
+                    </div>
+                    <div
+                        class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-[90px] pointer-events-none">
+                    </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
                         <!-- Left Column: Invite & Instructions -->
                         <div class="lg:col-span-5 space-y-4">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-limey-300 border border-white/15 text-[10px] font-extrabold uppercase tracking-widest backdrop-blur-md">
+                            <div
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-limey-300 border border-white/15 text-[10px] font-extrabold uppercase tracking-widest backdrop-blur-md">
                                 <i class="fa-solid fa-pen-nib text-limey-400"></i> Share Your Voice
                             </div>
-                            <h3 class="text-2xl sm:text-3xl font-black font-heading leading-tight text-white tracking-tight">
+                            <h3
+                                class="text-2xl sm:text-3xl font-black font-heading leading-tight text-white tracking-tight">
                                 Leave a Customer Review
                             </h3>
                             <p class="text-xs sm:text-sm text-nutri-200 leading-relaxed">
-                                Tell the Lipa City health community about your meal freshness, store preparation, or rider delivery experience.
+                                Tell the Lipa City health community about your meal freshness, store preparation, or rider
+                                delivery experience.
                             </p>
 
                             <div class="space-y-2.5 pt-2 text-xs text-nutri-100 font-medium">
                                 <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
-                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🥗</span>
+                                    <span
+                                        class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🥗</span>
                                     <span>Rate taste, freshness, and calorie accuracy</span>
                                 </div>
                                 <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
-                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🚴</span>
+                                    <span
+                                        class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">🚴</span>
                                     <span>Rate rider delivery speed and food handling</span>
                                 </div>
                                 <div class="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10">
-                                    <span class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">⭐</span>
+                                    <span
+                                        class="w-8 h-8 rounded-xl bg-limey-400/20 text-limey-400 flex items-center justify-center font-bold text-sm shrink-0">⭐</span>
                                     <span>Active reviews are featured live in the carousel</span>
                                 </div>
                             </div>
@@ -1131,21 +1331,23 @@
                         <div class="lg:col-span-7 bg-white text-gray-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100"
                             x-data="{ inlineRating: 5 }">
                             <h4 class="text-lg font-black font-heading text-gray-900 mb-1">Submit Your Review</h4>
-                            <p class="text-xs text-gray-500 mb-4">Directly submit your feedback below without any popup.</p>
+                            <p class="text-xs text-gray-500 mb-4">Directly submit your feedback below without any popup.
+                            </p>
 
                             <form action="{{ route('customer.reviews.submit') }}" method="POST" class="space-y-4">
                                 @csrf
 
                                 <!-- Name -->
                                 <div>
-                                    <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                    <label
+                                        class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
                                         Your Full Name <span class="text-rose-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                        <i
+                                            class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                                         <input type="text" name="name" required
-                                            value="{{ auth()->user()->name ?? '' }}"
-                                            placeholder="e.g. Maria Clara"
+                                            value="{{ auth()->user()->name ?? '' }}" placeholder="e.g. Maria Clara"
                                             class="w-full pl-9 pr-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition">
                                     </div>
                                 </div>
@@ -1153,11 +1355,13 @@
                                 <!-- Email & Contact -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                     <div>
-                                        <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                        <label
+                                            class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
                                             Email Address <span class="text-rose-500">*</span>
                                         </label>
                                         <div class="relative">
-                                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                            <i
+                                                class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                                             <input type="email" name="email" required
                                                 value="{{ auth()->user()->email ?? '' }}"
                                                 placeholder="yourname@gmail.com"
@@ -1166,14 +1370,15 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                        <label
+                                            class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
                                             Contact Number
                                         </label>
                                         <div class="relative">
-                                            <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                            <i
+                                                class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                                             <input type="text" name="contact"
-                                                value="{{ auth()->user()->phone ?? '' }}"
-                                                placeholder="0917XXXXXXX"
+                                                value="{{ auth()->user()->phone ?? '' }}" placeholder="0917XXXXXXX"
                                                 class="w-full pl-9 pr-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-medium focus:bg-white focus:outline-none focus:border-nutri-500 focus:ring-4 focus:ring-nutri-500/10 shadow-inner transition">
                                         </div>
                                     </div>
@@ -1181,12 +1386,14 @@
 
                                 <!-- Interactive 5-Star Rating Selector -->
                                 <div>
-                                    <label class="block text-xs font-black text-gray-800 mb-1.5 font-heading uppercase tracking-wider">
+                                    <label
+                                        class="block text-xs font-black text-gray-800 mb-1.5 font-heading uppercase tracking-wider">
                                         Rate Your Satisfaction <span class="text-rose-500">*</span>
                                     </label>
                                     <input type="hidden" name="rating" :value="inlineRating">
 
-                                    <div class="p-3 bg-amber-50/60 rounded-2xl border border-amber-200/80 flex flex-wrap items-center justify-between gap-3">
+                                    <div
+                                        class="p-3 bg-amber-50/60 rounded-2xl border border-amber-200/80 flex flex-wrap items-center justify-between gap-3">
                                         <div class="flex items-center gap-1.5">
                                             <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
                                                 <button type="button" @click="inlineRating = star"
@@ -1216,7 +1423,8 @@
 
                                 <!-- Review Message -->
                                 <div>
-                                    <label class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
+                                    <label
+                                        class="block text-xs font-black text-gray-800 mb-1 font-heading uppercase tracking-wider">
                                         Your Review & Experience <span class="text-rose-500">*</span>
                                     </label>
                                     <textarea name="message" rows="3" required minlength="5" maxlength="1500"

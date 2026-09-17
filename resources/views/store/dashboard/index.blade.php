@@ -8,48 +8,185 @@
     
     <!-- Top Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card">
+        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Gross Sales</span>
-                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shadow-xs">
                     <i class="fa-solid fa-peso-sign"></i>
                 </div>
             </div>
             <div class="text-2xl font-black text-gray-900 font-heading mt-2">₱{{ number_format($totalRevenue, 2) }}</div>
-            <span class="text-[10px] text-emerald-600 font-bold"><i class="fa-solid fa-check mr-1"></i> From Delivered Orders</span>
+            <div class="flex items-center justify-between mt-1">
+                <span class="text-[11px] text-emerald-600 font-bold"><i class="fa-solid fa-check mr-1"></i> {{ $completedOrdersCount }} Delivered</span>
+                <span class="text-[10px] text-gray-400 font-semibold">₱{{ number_format($avgOrderValue, 2) }} AOV</span>
+            </div>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card">
+        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pending GCash Review</span>
-                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shadow-xs">
                     <i class="fa-solid fa-bell"></i>
                 </div>
             </div>
             <div class="text-2xl font-black text-amber-600 font-heading mt-2">{{ $pendingOrders->count() }}</div>
-            <span class="text-[10px] text-amber-600 font-bold">Needs Store Verification</span>
+            <span class="text-[11px] text-amber-600 font-bold"><i class="fa-solid fa-clock mr-1"></i> Needs Store Verification</span>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card">
+        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Active in Kitchen</span>
-                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shadow-xs">
                     <i class="fa-solid fa-fire-burner"></i>
                 </div>
             </div>
             <div class="text-2xl font-black text-blue-600 font-heading mt-2">{{ $activeOrders->count() }}</div>
-            <span class="text-[10px] text-blue-600 font-bold">Preparing / Awaiting Pickup</span>
+            <span class="text-[11px] text-blue-600 font-bold"><i class="fa-solid fa-kitchen-set mr-1"></i> Preparing / On Delivery</span>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card">
+        <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-card hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Store Health Rating</span>
-                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg shadow-xs">
                     <i class="fa-solid fa-star"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-gray-900 font-heading mt-2">{{ number_format($store->rating, 2) }}</div>
-            <span class="text-[10px] text-gray-400 font-semibold">{{ $store->total_reviews }} Verified Reviews</span>
+            <div class="text-2xl font-black text-gray-900 font-heading mt-2">{{ number_format($store->rating, 1) }} / 5.0</div>
+            <span class="text-[11px] text-gray-500 font-semibold">{{ $store->total_reviews ?? 0 }} Verified Reviews</span>
+        </div>
+    </div>
+
+    <!-- Store Analytics & Visual Intelligence Section -->
+    <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <h3 class="text-xl font-black font-heading text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-nutri-600"></i> Sales Performance & Menu Intelligence
+                </h3>
+                <p class="text-xs text-gray-500">Visual sales trends, top-selling dishes, and customer distribution</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-lime-50 text-nutri-900 border border-lime-200">
+                <i class="fa-solid fa-utensils text-nutri-600"></i> {{ $totalItemsSold }} Items Delivered
+            </span>
+        </div>
+
+        <!-- Row 1: Sales Revenue Line Chart + Top Selling Dishes Bar Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Daily Sales Line Chart -->
+            <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-gray-200 shadow-card flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-nutri-700">7-Day Revenue</span>
+                            <h4 class="text-base font-black font-heading text-gray-900">Daily Sales Growth (₱)</h4>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700">
+                            ₱{{ number_format(array_sum($dailySales), 2) }} (7 Days)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-4 relative h-64 sm:h-72 w-full">
+                    <canvas id="storeRevenueChart"></canvas>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <span><i class="fa-solid fa-calendar-day mr-1 text-emerald-600"></i> Past 7 Days Delivered Food Sales</span>
+                    <span class="font-bold text-gray-700">Average: ₱{{ number_format(count($dailySales) > 0 ? array_sum($dailySales) / count($dailySales) : 0, 2) }}/day</span>
+                </div>
+            </div>
+
+            <!-- Top Selling Dishes Bar Chart -->
+            <div class="lg:col-span-5 bg-white p-6 sm:p-7 rounded-3xl border border-gray-200 shadow-card flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-nutri-700">Best Sellers</span>
+                            <h4 class="text-base font-black font-heading text-gray-900">Top Ordered Dishes</h4>
+                        </div>
+                        <span class="text-xs px-2.5 py-1 rounded-xl bg-gray-100 text-gray-600 font-bold">By Quantity</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 relative h-64 sm:h-72 w-full">
+                    @if(empty($topProductQuantities) || array_sum($topProductQuantities) === 0)
+                        <div class="h-full flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
+                            <i class="fa-solid fa-bowl-food text-3xl mb-2 text-gray-300"></i>
+                            No dish order data yet. Complete orders to see top sellers!
+                        </div>
+                    @else
+                        <canvas id="storeTopProductsChart"></canvas>
+                    @endif
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <span><i class="fa-solid fa-fire text-amber-500 mr-1"></i> Customer Favorites</span>
+                    <span class="font-bold text-gray-700">{{ count($topProductLabels) }} Dishes Ranked</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Row 2: Order Fulfillment Doughnut + Top Lipa Customer Delivery Addresses Bar Chart -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Order Fulfillment Doughnut Chart -->
+            <div class="bg-white p-6 sm:p-7 rounded-3xl border border-gray-200 shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-nutri-700">Fulfillment Pipeline</span>
+                        <h4 class="text-base font-black font-heading text-gray-900">Order Status Breakdown</h4>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-xl bg-blue-50 text-blue-700 font-bold">Total: {{ $totalOrdersCount }}</span>
+                </div>
+
+                <div class="mt-4 relative h-60 sm:h-64 w-full flex items-center justify-center">
+                    @if($totalOrdersCount === 0)
+                        <div class="h-full flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
+                            <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-300"></i>
+                            No orders placed yet for this store.
+                        </div>
+                    @else
+                        <canvas id="storeOrderStatusChart"></canvas>
+                    @endif
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <span><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Store Fulfillment Rate</span>
+                    <span class="font-bold text-emerald-600">
+                        {{ $totalOrdersCount > 0 ? round(($completedOrdersCount / $totalOrdersCount) * 100, 1) : 0 }}%
+                    </span>
+                </div>
+            </div>
+
+            <!-- Top Delivery Addresses Bar Chart -->
+            <div class="bg-white p-6 sm:p-7 rounded-3xl border border-gray-200 shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-nutri-700">Customer Locations</span>
+                        <h4 class="text-base font-black font-heading text-gray-900">Orders by Delivery Address</h4>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-xl bg-lime-50 text-nutri-900 font-bold">Top Hotspots</span>
+                </div>
+
+                <div class="mt-4 relative h-60 sm:h-64 w-full flex items-center justify-center">
+                    @if(empty($addressCounts) || array_sum($addressCounts) === 0)
+                        <div class="h-full flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
+                            <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-gray-300"></i>
+                            No customer address records yet.
+                        </div>
+                    @else
+                        <canvas id="storeAddressChart"></canvas>
+                    @endif
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <span><i class="fa-solid fa-truck mr-1 text-nutri-600"></i> Local Lipa Reach</span>
+                    <span class="font-bold text-gray-700">{{ count($addressLabels) }} Active Locations</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -232,3 +369,233 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+    Chart.defaults.color = '#64748b';
+
+    // 1. Store 7-Day Revenue Line Chart
+    const revCtx = document.getElementById('storeRevenueChart');
+    if (revCtx) {
+        new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: @json($revenueDates),
+                datasets: [{
+                    label: 'Store Revenue (₱)',
+                    data: @json($dailySales),
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.12)',
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#16a34a',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 12, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return ' Revenue: ₱' + context.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            callback: function(value) {
+                                return '₱' + value;
+                            },
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Top Selling Dishes Bar Chart (Horizontal)
+    const topProdCtx = document.getElementById('storeTopProductsChart');
+    if (topProdCtx) {
+        new Chart(topProdCtx, {
+            type: 'bar',
+            data: {
+                labels: @json($topProductLabels),
+                datasets: [{
+                    label: 'Units Sold',
+                    data: @json($topProductQuantities),
+                    backgroundColor: [
+                        '#16a34a',
+                        '#84cc16',
+                        '#0284c7',
+                        '#f59e0b',
+                        '#8b5cf6'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        cornerRadius: 10,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.parsed.x + ' items ordered';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { size: 11 } },
+                        grid: { color: '#f1f5f9' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10, weight: '600' } }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Store Order Fulfillment Doughnut Chart
+    const statusCtx = document.getElementById('storeOrderStatusChart');
+    if (statusCtx) {
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @json($orderStatusData['labels']),
+                datasets: [{
+                    data: @json($orderStatusData['counts']),
+                    backgroundColor: [
+                        '#16a34a', // Delivered (Emerald)
+                        '#3b82f6', // In Kitchen / Transit (Blue)
+                        '#f59e0b', // Pending (Amber)
+                        '#f43f5e'  // Declined/Cancelled (Rose)
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 12,
+                            font: { size: 11, weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        cornerRadius: 10,
+                        padding: 10
+                    }
+                },
+                cutout: '68%'
+            }
+        });
+    }
+
+    // 4. Customer Delivery Addresses Bar Chart
+    const addrCtx = document.getElementById('storeAddressChart');
+    if (addrCtx) {
+        const rawStoreAddressLabels = @json($addressLabels);
+        new Chart(addrCtx, {
+            type: 'bar',
+            data: {
+                labels: rawStoreAddressLabels,
+                datasets: [{
+                    label: 'Orders',
+                    data: @json($addressCounts),
+                    backgroundColor: [
+                        '#84cc16',
+                        '#16a34a',
+                        '#22c55e',
+                        '#10b981',
+                        '#0284c7'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        cornerRadius: 10,
+                        padding: 10,
+                        callbacks: {
+                            title: function(items) {
+                                if (!items.length) return '';
+                                const idx = items[0].dataIndex;
+                                return rawStoreAddressLabels[idx] || '';
+                            },
+                            label: function(context) {
+                                return ' ' + context.parsed.y + ' Orders Delivered';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 10, weight: '600' },
+                            callback: function(val, index) {
+                                const text = this.getLabelForValue(val) || '';
+                                return text.length > 15 ? text.substring(0, 13) + '...' : text;
+                            },
+                            maxRotation: 30,
+                            minRotation: 0
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { size: 11 } },
+                        grid: { color: '#f1f5f9' }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+@endpush
