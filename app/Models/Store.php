@@ -23,6 +23,9 @@ class Store extends Model
         'phone',
         'health_category',
         'business_permit_no',
+        'business_registration_number',
+        'tax_identification_number',
+        'business_establishment_date',
         'health_certificate',
         'gcash_name',
         'gcash_number',
@@ -43,6 +46,7 @@ class Store extends Model
         'longitude' => 'float',
         'rating' => 'float',
         'commission_percent' => 'float',
+        'business_establishment_date' => 'date',
     ];
 
     public function user()

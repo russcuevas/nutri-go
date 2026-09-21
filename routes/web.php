@@ -181,8 +181,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('superadmin')->name('superadmi
     // Creator & Vlog Management
     Route::get('/creators', [SuperAdminCreatorController::class, 'index'])->name('creators.index');
     Route::post('/creators', [SuperAdminCreatorController::class, 'storeCreator'])->name('creators.store');
+    Route::put('/creators/{id}', [SuperAdminCreatorController::class, 'updateCreator'])->name('creators.update');
     Route::delete('/creators/{id}', [SuperAdminCreatorController::class, 'destroyCreator'])->name('creators.destroy');
     Route::post('/creators/recipe', [SuperAdminCreatorController::class, 'storeRecipe'])->name('creators.recipe.store');
+    Route::put('/creators/recipe/{id}', [SuperAdminCreatorController::class, 'updateRecipe'])->name('creators.recipe.update');
     Route::delete('/creators/recipe/{id}', [SuperAdminCreatorController::class, 'destroyRecipe'])->name('creators.recipe.destroy');
 
     // Subscription Plans & Members

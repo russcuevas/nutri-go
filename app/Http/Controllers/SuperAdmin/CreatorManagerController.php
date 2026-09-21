@@ -110,6 +110,101 @@ class CreatorManagerController extends Controller
         return back()->with('success', 'Recipe & Cooking Vlog published successfully!');
     }
 
+    public function updateCreator(Request $request, $id)
+    {
+        $creator = Creator::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'channel_name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
+            'specialties' => 'nullable|string',
+            'youtube_url' => 'nullable|url',
+            'tiktok_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        $avatarPath = $creator->avatar;
+        if ($request->hasFile('avatar')) {
+            if ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($creator->avatar);
+            }
+            $avatarPath = $request->file('avatar')->store('creators', 'public');
+        }
+
+        $creator->update([
+            'name' => $validated['name'],
+            'channel_name' => $validated['channel_name'],
+            'bio' => $validated['bio'] ?? null,
+            'specialties' => $validated['specialties'] ?? null,
+            'youtube_url' => $validated['youtube_url'] ?? null,
+            'tiktok_url' => $validated['tiktok_url'] ?? null,
+            'instagram_url' => $validated['instagram_url'] ?? null,
+            'avatar' => $avatarPath,
+        ]);
+
+        return back()->with('success', "Partner Creator '{$creator->name}' updated successfully!");
+    }
+
+    public function updateRecipe(Request $request, $id)
+    {
+        $recipe = RecipeAndVlog::findOrFail($id);
+
+        $validated = $request->validate([
+            'creator_id' => 'required|exists:creators,id',
+            'store_id' => 'nullable|exists:stores,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'video_url' => 'required|string',
+            'video_embed' => 'nullable|string',
+            'prep_time_mins' => 'required|integer|min:1',
+            'calories' => 'required|integer|min:0',
+            'protein_g' => 'required|numeric|min:0',
+            'carbs_g' => 'required|numeric|min:0',
+            'fat_g' => 'required|numeric|min:0',
+            'ingredients' => 'nullable|string',
+            'instructions' => 'nullable|string',
+            'is_premium_only' => 'nullable|boolean',
+            'linked_product_ids' => 'nullable|array',
+            'thumbnail' => 'nullable|image|max:3072',
+        ]);
+
+        $thumbPath = $recipe->thumbnail;
+        if ($request->hasFile('thumbnail')) {
+            if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
+            }
+            $thumbPath = $request->file('thumbnail')->store('recipes', 'public');
+        }
+
+        $ingredientsArray = [];
+        if (!empty($validated['ingredients'])) {
+            $ingredientsArray = array_values(array_filter(array_map('trim', explode("\n", $validated['ingredients']))));
+        }
+
+        $recipe->update([
+            'creator_id' => $validated['creator_id'],
+            'store_id' => $validated['store_id'] ?? null,
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'video_url' => $validated['video_url'],
+            'video_embed' => $validated['video_embed'] ?? null,
+            'thumbnail' => $thumbPath,
+            'prep_time_mins' => $validated['prep_time_mins'],
+            'calories' => $validated['calories'],
+            'protein_g' => $validated['protein_g'],
+            'carbs_g' => $validated['carbs_g'],
+            'fat_g' => $validated['fat_g'],
+            'ingredients' => $ingredientsArray,
+            'instructions' => $validated['instructions'] ?? null,
+            'is_premium_only' => $request->boolean('is_premium_only', false),
+            'linked_product_ids' => $validated['linked_product_ids'] ?? $recipe->linked_product_ids ?? [],
+        ]);
+
+        return back()->with('success', "Recipe '{$recipe->title}' updated successfully!");
+    }
+
     public function destroyRecipe($id)
     {
         $recipe = RecipeAndVlog::findOrFail($id);

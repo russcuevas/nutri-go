@@ -112,11 +112,65 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Business Email</label>
-                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="store@example.com">
+                    <input type="email" name="email" value="{{ old('email') }}" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="store@example.com">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Contact Phone</label>
-                    <input type="tel" name="phone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="09171234567">
+                    <input type="tel" name="phone" value="{{ old('phone') }}" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none" placeholder="09171234567">
+                </div>
+            </div>
+
+            <!-- Business Legal, Permits & Tax Information -->
+            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-bold text-emerald-950 flex items-center gap-1.5 uppercase tracking-wider">
+                        <i class="fa-solid fa-file-shield text-emerald-600"></i> Business Legal, Permits & Tax Information
+                    </p>
+                    <span class="text-[10px] text-emerald-700 font-bold bg-emerald-100/70 px-2 py-0.5 rounded-md">Vetting Required</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                            Business Reg. No. *
+                        </label>
+                        <input type="text" name="business_registration_number" value="{{ old('business_registration_number') }}" required 
+                               class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-xs bg-white outline-none" 
+                               placeholder="DTI / SEC / CDA No.">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                            Tax ID No. (TIN) *
+                        </label>
+                        <input type="text" name="tax_identification_number" value="{{ old('tax_identification_number') }}" required 
+                               class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-xs bg-white font-mono outline-none" 
+                               placeholder="e.g. 123-456-789-000">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                            Establishment Date *
+                        </label>
+                        <input type="date" name="business_establishment_date" value="{{ old('business_establishment_date') }}" required max="{{ date('Y-m-d') }}"
+                               class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-xs bg-white outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                            Business / Mayor's Permit No.
+                        </label>
+                        <input type="text" name="business_permit_no" value="{{ old('business_permit_no') }}" 
+                               class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-xs bg-white outline-none" 
+                               placeholder="e.g. BP-LIPA-2026-XXXX">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                            Sanitary / Health Certificate No.
+                        </label>
+                        <input type="text" name="health_certificate" value="{{ old('health_certificate') }}" 
+                               class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-xs bg-white outline-none" 
+                               placeholder="e.g. HC-BATANGAS-XXXX / FDA">
+                    </div>
                 </div>
             </div>
 

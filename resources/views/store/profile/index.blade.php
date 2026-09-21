@@ -70,6 +70,40 @@
             </div>
         </div>
 
+        <!-- Business Legal & Tax Identification -->
+        <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-bold text-gray-900 flex items-center gap-1.5 uppercase tracking-wider">
+                    <i class="fa-solid fa-file-shield text-emerald-600"></i> Business Legal, Permits & Tax Information
+                </p>
+                <span class="text-[10px] text-gray-500 font-medium">Official Registration</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block font-bold text-gray-700 uppercase mb-1 text-[11px]">Business Reg. No. (DTI/SEC)</label>
+                    <input type="text" name="business_registration_number" value="{{ old('business_registration_number', $store->business_registration_number) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white outline-none focus:ring-2 focus:ring-nutri-500" placeholder="e.g. DTI-04918239">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 uppercase mb-1 text-[11px]">Tax ID No. (TIN)</label>
+                    <input type="text" name="tax_identification_number" value="{{ old('tax_identification_number', $store->tax_identification_number) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white font-mono outline-none focus:ring-2 focus:ring-nutri-500" placeholder="e.g. 123-456-789-000">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 uppercase mb-1 text-[11px]">Establishment Date</label>
+                    <input type="date" name="business_establishment_date" value="{{ old('business_establishment_date', $store->business_establishment_date ? $store->business_establishment_date->format('Y-m-d') : '') }}" max="{{ date('Y-m-d') }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white outline-none focus:ring-2 focus:ring-nutri-500">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                    <label class="block font-bold text-gray-700 uppercase mb-1 text-[11px]">Business / Mayor's Permit No.</label>
+                    <input type="text" name="business_permit_no" value="{{ old('business_permit_no', $store->business_permit_no) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white outline-none focus:ring-2 focus:ring-nutri-500" placeholder="e.g. BP-LIPA-2026-XXXX">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 uppercase mb-1 text-[11px]">Sanitary / Health Certificate No.</label>
+                    <input type="text" name="health_certificate" value="{{ old('health_certificate', $store->health_certificate) }}" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs bg-white outline-none focus:ring-2 focus:ring-nutri-500" placeholder="e.g. HC-BATANGAS-XXXX / FDA">
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <label class="block font-bold text-gray-700 uppercase mb-1">Daily Opening Time</label>
