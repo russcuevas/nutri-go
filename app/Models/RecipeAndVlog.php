@@ -66,6 +66,63 @@ class RecipeAndVlog extends Model
         return 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80';
     }
 
+    public function getIsLocalVideoAttribute(): bool
+    {
+        if (empty($this->video_url)) {
+            return false;
+        }
+
+        if (str_starts_with($this->video_url, 'images/creators/videos') || 
+            str_starts_with($this->video_url, 'videos/') ||
+            str_starts_with($this->video_url, 'uploads/') ||
+            preg_match('/\.(mp4|webm|ogg|mov|mkv)(\?.*)?$/i', $this->video_url)) {
+            if (!preg_match('/(youtube\.com|youtu\.be|vimeo\.com|tiktok\.com)/i', $this->video_url)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getVideoSourceUrlAttribute(): string
+    {
+        if (empty($this->video_url)) {
+            return '';
+        }
+
+        if (str_starts_with($this->video_url, 'http://') || str_starts_with($this->video_url, 'https://')) {
+            return $this->video_url;
+        }
+
+        return asset($this->video_url);
+    }
+
+    public function getVideoEmbedHtmlAttribute(): string
+    {
+        if ($this->is_local_video) {
+            $src = e($this->video_source_url);
+            $poster = e($this->thumbnail_url);
+            return '<video controls playsinline class="w-full h-full object-contain bg-black" poster="' . $poster . '"><source src="' . $src . '">Your browser does not support HTML5 video.</video>';
+        }
+
+        $url = $this->video_url ?? '';
+
+        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $url, $match)) {
+            $videoId = $match[1];
+            return '<iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/' . $videoId . '" title="' . e($this->title) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="w-full h-full"></iframe>';
+        }
+
+        if (!empty($this->video_embed)) {
+            return $this->video_embed;
+        }
+
+        if (!empty($url)) {
+            return '<iframe width="100%" height="100%" src="' . e($url) . '" title="' . e($this->title) . '" frameborder="0" allowfullscreen class="w-full h-full"></iframe>';
+        }
+
+        return '<div class="w-full h-full flex items-center justify-center text-gray-500 bg-gray-900 text-xs">No video stream available</div>';
+    }
+
     public function getLinkedProducts()
     {
         if (empty($this->linked_product_ids)) {

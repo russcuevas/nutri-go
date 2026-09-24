@@ -69,7 +69,8 @@ class CreatorManagerController extends Controller
             'store_id' => 'nullable|exists:stores,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'video_url' => 'required|string',
+            'video_file' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm,avi,mkv|max:102400',
+            'video_url' => 'nullable|string',
             'video_embed' => 'nullable|string',
             'prep_time_mins' => 'required|integer|min:1',
             'calories' => 'required|integer|min:0',
@@ -78,10 +79,26 @@ class CreatorManagerController extends Controller
             'fat_g' => 'required|numeric|min:0',
             'ingredients' => 'nullable|string',
             'instructions' => 'nullable|string',
-            'is_premium_only' => 'boolean',
+            'is_premium_only' => 'nullable|boolean',
             'linked_product_ids' => 'nullable|array',
             'thumbnail' => 'nullable|image|max:3072',
         ]);
+
+        $videoPathOrUrl = $request->input('video_url');
+        if ($request->hasFile('video_file')) {
+            $vFile = $request->file('video_file');
+            $vFilename = 'video_' . time() . '_' . Str::random(8) . '.' . $vFile->getClientOriginalExtension();
+            $vDest = public_path('images/creators/videos');
+            if (!file_exists($vDest)) {
+                mkdir($vDest, 0755, true);
+            }
+            $vFile->move($vDest, $vFilename);
+            $videoPathOrUrl = 'images/creators/videos/' . $vFilename;
+        }
+
+        if (empty($videoPathOrUrl)) {
+            return back()->withInput()->with('error', 'Please provide either a video file or a video URL link.');
+        }
 
         $thumbPath = null;
         if ($request->hasFile('thumbnail')) {
@@ -98,7 +115,7 @@ class CreatorManagerController extends Controller
         // Format ingredients lines into array
         $ingredientsArray = [];
         if (!empty($validated['ingredients'])) {
-            $ingredientsArray = array_filter(array_map('trim', explode("\n", $validated['ingredients'])));
+            $ingredientsArray = array_values(array_filter(array_map('trim', explode("\n", $validated['ingredients']))));
         }
 
         RecipeAndVlog::create([
@@ -107,7 +124,7 @@ class CreatorManagerController extends Controller
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']) . '-' . rand(100, 999),
             'description' => $validated['description'] ?? null,
-            'video_url' => $validated['video_url'],
+            'video_url' => $videoPathOrUrl,
             'video_embed' => $validated['video_embed'] ?? null,
             'thumbnail' => $thumbPath,
             'prep_time_mins' => $validated['prep_time_mins'],
@@ -179,7 +196,8 @@ class CreatorManagerController extends Controller
             'store_id' => 'nullable|exists:stores,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'video_url' => 'required|string',
+            'video_file' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm,avi,mkv|max:102400',
+            'video_url' => 'nullable|string',
             'video_embed' => 'nullable|string',
             'prep_time_mins' => 'required|integer|min:1',
             'calories' => 'required|integer|min:0',
@@ -192,6 +210,29 @@ class CreatorManagerController extends Controller
             'linked_product_ids' => 'nullable|array',
             'thumbnail' => 'nullable|image|max:3072',
         ]);
+
+        $videoPathOrUrl = $recipe->video_url;
+
+        if ($request->hasFile('video_file')) {
+            if ($recipe->video_url && file_exists(public_path($recipe->video_url))) {
+                @unlink(public_path($recipe->video_url));
+            } elseif ($recipe->video_url && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->video_url)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->video_url);
+            }
+            $vFile = $request->file('video_file');
+            $vFilename = 'video_' . time() . '_' . Str::random(8) . '.' . $vFile->getClientOriginalExtension();
+            $vDest = public_path('images/creators/videos');
+            if (!file_exists($vDest)) {
+                mkdir($vDest, 0755, true);
+            }
+            $vFile->move($vDest, $vFilename);
+            $videoPathOrUrl = 'images/creators/videos/' . $vFilename;
+        } elseif ($request->filled('video_url')) {
+            if ($recipe->video_url && $recipe->video_url !== $request->input('video_url') && file_exists(public_path($recipe->video_url))) {
+                @unlink(public_path($recipe->video_url));
+            }
+            $videoPathOrUrl = $request->input('video_url');
+        }
 
         $thumbPath = $recipe->thumbnail;
         if ($request->hasFile('thumbnail')) {
@@ -220,7 +261,7 @@ class CreatorManagerController extends Controller
             'store_id' => $validated['store_id'] ?? null,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'video_url' => $validated['video_url'],
+            'video_url' => $videoPathOrUrl,
             'video_embed' => $validated['video_embed'] ?? null,
             'thumbnail' => $thumbPath,
             'prep_time_mins' => $validated['prep_time_mins'],
@@ -247,6 +288,12 @@ class CreatorManagerController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
         }
 
+        if ($recipe->video_url && file_exists(public_path($recipe->video_url))) {
+            @unlink(public_path($recipe->video_url));
+        } elseif ($recipe->video_url && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->video_url)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->video_url);
+        }
+
         $recipe->delete();
 
         return back()->with('success', 'Recipe & Cooking Vlog deleted successfully!');
@@ -262,13 +309,20 @@ class CreatorManagerController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($creator->avatar);
         }
 
-        // Also delete their recipes' thumbnails and records
+        // Also delete their recipes' thumbnails, video files, and records
         foreach ($creator->recipes as $recipe) {
             if ($recipe->thumbnail && file_exists(public_path($recipe->thumbnail))) {
                 @unlink(public_path($recipe->thumbnail));
             } elseif ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
             }
+
+            if ($recipe->video_url && file_exists(public_path($recipe->video_url))) {
+                @unlink(public_path($recipe->video_url));
+            } elseif ($recipe->video_url && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->video_url)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->video_url);
+            }
+
             $recipe->delete();
         }
 

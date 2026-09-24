@@ -174,6 +174,18 @@
                                         {{ $v->is_premium_only ? '👑 VIP Only' : '✨ Free Access' }}
                                     </span>
 
+                                    @if($v->is_local_video)
+                                        <span class="inline-flex items-center gap-1 font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg text-[11px]" title="{{ $v->video_url }}">
+                                            <i class="fa-solid fa-file-video text-[10px] text-indigo-500"></i>
+                                            Local Video
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-lg text-[11px]" title="{{ $v->video_url }}">
+                                            <i class="fa-brands fa-youtube text-[10px] text-rose-500"></i>
+                                            Video Link
+                                        </span>
+                                    @endif
+
                                     @if($v->store)
                                         <span class="inline-flex items-center gap-1 text-gray-500 bg-gray-50 border border-gray-200/60 px-2 py-0.5 rounded-lg text-[11px]">
                                             <i class="fa-solid fa-store text-[10px] text-gray-400"></i>
@@ -229,7 +241,7 @@
                                         </div>
                                         <div>
                                             <h4 class="font-black font-heading text-base text-gray-900">Edit Cooking Vlog / Recipe</h4>
-                                            <p class="text-[11px] text-gray-500">Update vlog title, macros, instructions, or linked store</p>
+                                            <p class="text-[11px] text-gray-500">Update vlog title, video file/link, macros, or linked store</p>
                                         </div>
                                     </div>
                                     <button type="button" @click="openEditRecipe = false" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 flex items-center justify-center transition">
@@ -269,12 +281,48 @@
                                             <input type="text" name="title" value="{{ $v->title }}" required placeholder="e.g. 5-Minute Post-Workout High Protein Chicken Bowl" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-gray-50/50 focus:bg-white text-xs transition">
                                         </div>
 
-                                        <!-- Video URL -->
-                                        <div>
-                                            <label class="block font-bold text-gray-700 mb-1">YouTube Video URL <span class="text-rose-500">*</span></label>
-                                            <div class="relative">
-                                                <i class="fa-brands fa-youtube absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 text-sm"></i>
-                                                <input type="text" name="video_url" value="{{ $v->video_url }}" required placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-gray-50/50 focus:bg-white text-xs transition">
+                                        <!-- Video Upload or Link Selection -->
+                                        <div x-data="{ videoSource: '{{ $v->is_local_video ? 'file' : 'link' }}' }" class="p-3.5 bg-gray-50/80 rounded-2xl border border-gray-100 space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="block font-bold text-gray-800 text-xs">Recipe Video</label>
+                                                    <span class="text-[10px] text-gray-500">
+                                                        Current: 
+                                                        @if($v->is_local_video)
+                                                            <span class="text-indigo-600 font-bold"><i class="fa-solid fa-file-video mr-1"></i>{{ $v->video_url }}</span>
+                                                        @else
+                                                            <span class="text-rose-600 font-bold"><i class="fa-brands fa-youtube mr-1"></i>{{ Str::limit($v->video_url, 35) }}</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center bg-gray-200/80 p-0.5 rounded-xl text-[11px] font-bold">
+                                                    <button type="button" @click="videoSource = 'file'" :class="videoSource === 'file' ? 'bg-white text-nutri-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'" class="px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                                                        <i class="fa-solid fa-cloud-arrow-up"></i> Video File
+                                                    </button>
+                                                    <button type="button" @click="videoSource = 'link'" :class="videoSource === 'link' ? 'bg-white text-nutri-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'" class="px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                                                        <i class="fa-solid fa-link"></i> Video Link
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- File Upload Option -->
+                                            <div x-show="videoSource === 'file'" class="space-y-2">
+                                                <div class="border-2 border-dashed border-gray-200 hover:border-nutri-400 bg-white rounded-2xl p-4 text-center transition">
+                                                    <i class="fa-solid fa-file-video text-2xl text-nutri-600 mb-1"></i>
+                                                    <p class="text-xs font-bold text-gray-700">Upload new video file (leave empty to keep current)</p>
+                                                    <p class="text-[10px] text-gray-400 mb-2">Stored in <code class="text-nutri-700 bg-nutri-50 px-1 py-0.5 rounded">images/creators/videos</code> (MP4, WebM, MOV up to 100MB)</p>
+                                                    <input type="file" name="video_file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-nutri-50 file:text-nutri-700 hover:file:bg-nutri-100 transition cursor-pointer">
+                                                </div>
+                                            </div>
+
+                                            <!-- Link Option -->
+                                            <div x-show="videoSource === 'link'" class="space-y-1.5">
+                                                <label class="block font-semibold text-gray-600 text-[11px]">YouTube / Video Link URL</label>
+                                                <div class="relative">
+                                                    <i class="fa-brands fa-youtube absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 text-sm"></i>
+                                                    <input type="text" name="video_url" value="{{ !$v->is_local_video ? $v->video_url : '' }}" placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-white text-xs transition">
+                                                </div>
+                                                <p class="text-[10px] text-gray-400">Leave blank if keeping current uploaded file or enter a new link</p>
                                             </div>
                                         </div>
 
@@ -484,12 +532,38 @@
                         <input type="text" name="title" required placeholder="e.g. 5-Minute Post-Workout High Protein Chicken Bowl" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-gray-50/50 focus:bg-white text-xs transition">
                     </div>
 
-                    <!-- Video URL -->
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1">YouTube Video URL <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="fa-brands fa-youtube absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 text-sm"></i>
-                            <input type="text" name="video_url" required placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-gray-50/50 focus:bg-white text-xs transition">
+                    <!-- Video Upload or Link Selection -->
+                    <div x-data="{ videoSource: 'file' }" class="p-3.5 bg-gray-50/80 rounded-2xl border border-gray-100 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block font-bold text-gray-800 text-xs">Recipe Video <span class="text-rose-500">*</span></label>
+                            <div class="flex items-center bg-gray-200/80 p-0.5 rounded-xl text-[11px] font-bold">
+                                <button type="button" @click="videoSource = 'file'" :class="videoSource === 'file' ? 'bg-white text-nutri-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'" class="px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload File
+                                </button>
+                                <button type="button" @click="videoSource = 'link'" :class="videoSource === 'link' ? 'bg-white text-nutri-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'" class="px-3 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-link"></i> Video Link / URL
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- File Upload Option -->
+                        <div x-show="videoSource === 'file'" class="space-y-2">
+                            <div class="border-2 border-dashed border-gray-200 hover:border-nutri-400 bg-white rounded-2xl p-4 text-center transition">
+                                <i class="fa-solid fa-file-video text-2xl text-nutri-600 mb-1"></i>
+                                <p class="text-xs font-bold text-gray-700">Choose a video file from your computer</p>
+                                <p class="text-[10px] text-gray-400 mb-2">Stored directly in <code class="text-nutri-700 bg-nutri-50 px-1 py-0.5 rounded">images/creators/videos</code> (MP4, WebM, MOV up to 100MB)</p>
+                                <input type="file" name="video_file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-nutri-50 file:text-nutri-700 hover:file:bg-nutri-100 transition cursor-pointer">
+                            </div>
+                        </div>
+
+                        <!-- Link Option -->
+                        <div x-show="videoSource === 'link'" class="space-y-1.5">
+                            <label class="block font-semibold text-gray-600 text-[11px]">YouTube / Video Link URL</label>
+                            <div class="relative">
+                                <i class="fa-brands fa-youtube absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 text-sm"></i>
+                                <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=... or any web video link" class="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-nutri-500 focus:ring-2 focus:ring-nutri-500/20 bg-white text-xs transition">
+                            </div>
+                            <p class="text-[10px] text-gray-400">Paste a YouTube, Vimeo, or web video stream link</p>
                         </div>
                     </div>
 

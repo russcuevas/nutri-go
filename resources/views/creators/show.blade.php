@@ -71,9 +71,8 @@
                 </div>
             @else
                 <!-- Active Video Stream / Embed -->
-                <div class="aspect-video w-full">
-                    {!! $recipe->video_embed ??
-                        '<iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Cooking Video" frameborder="0" allowfullscreen class="w-full h-full"></iframe>' !!}
+                <div class="aspect-video w-full bg-black flex items-center justify-center">
+                    {!! $recipe->video_embed_html !!}
                 </div>
             @endif
         </div>
