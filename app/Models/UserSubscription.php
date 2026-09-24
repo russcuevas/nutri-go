@@ -38,4 +38,18 @@ class UserSubscription extends Model
     {
         return $this->status === 'active' && ($this->ends_at === null || $this->ends_at->isFuture());
     }
+
+    public function getPaymentProofUrlAttribute(): ?string
+    {
+        if ($this->payment_proof) {
+            if (str_starts_with($this->payment_proof, 'http')) {
+                return $this->payment_proof;
+            }
+            if (file_exists(public_path($this->payment_proof)) || str_starts_with($this->payment_proof, 'images/') || str_starts_with($this->payment_proof, 'uploads/')) {
+                return asset($this->payment_proof);
+            }
+            return asset('storage/' . $this->payment_proof);
+        }
+        return null;
+    }
 }

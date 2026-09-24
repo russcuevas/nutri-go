@@ -89,4 +89,18 @@ class Rider extends Model
             ->whereIn('status', ['rider_assigned', 'rider_picked_up', 'on_the_way'])
             ->count();
     }
+
+    public function getLicenseImageUrlAttribute(): ?string
+    {
+        if ($this->license_image) {
+            if (str_starts_with($this->license_image, 'http')) {
+                return $this->license_image;
+            }
+            if (file_exists(public_path($this->license_image)) || str_starts_with($this->license_image, 'images/') || str_starts_with($this->license_image, 'uploads/')) {
+                return asset($this->license_image);
+            }
+            return asset('storage/' . $this->license_image);
+        }
+        return null;
+    }
 }

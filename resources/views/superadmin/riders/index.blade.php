@@ -52,6 +52,13 @@
                                 <i class="fa-solid fa-id-card text-[10px] text-gray-400"></i>
                                 License: <span class="font-mono font-bold text-gray-800">{{ $r->license_number }}</span>
                             </span>
+
+                            @if($r->license_image_url)
+                                <a href="{{ $r->license_image_url }}" target="_blank" class="inline-flex items-center gap-1.5 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/70 px-2.5 py-1 rounded-lg text-[11px] font-bold transition">
+                                    <i class="fa-solid fa-image text-[10px] text-blue-500"></i>
+                                    <span>View License Photo</span>
+                                </a>
+                            @endif
                         </div>
 
                         <!-- Line 3: Address -->

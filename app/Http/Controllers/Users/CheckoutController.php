@@ -137,7 +137,14 @@ class CheckoutController extends Controller
 
         $proofPath = null;
         if ($request->hasFile('payment_proof_image')) {
-            $proofPath = $request->file('payment_proof_image')->store('orders/payment_proofs', 'public');
+            $file = $request->file('payment_proof_image');
+            $filename = 'proof_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/orders/payment_proofs');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $proofPath = 'images/orders/payment_proofs/' . $filename;
         }
 
         $orderNumber = 'NTR-' . date('Ymd') . '-' . strtoupper(Str::random(5));

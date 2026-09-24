@@ -345,7 +345,7 @@
                             <div class="space-y-1">
                                 <span class="text-[10px] font-bold uppercase text-gray-400 tracking-wider block">Doorstep Proof Photo</span>
                                 <div class="rounded-2xl overflow-hidden border border-gray-200 max-h-48">
-                                    <img :src="'/storage/' + selectedOrder.rider_proof_image" alt="Proof of delivery" class="w-full h-full object-cover">
+                                    <img :src="selectedOrder.rider_proof_image" alt="Proof of delivery" class="w-full h-full object-cover">
                                 </div>
                             </div>
                         </template>

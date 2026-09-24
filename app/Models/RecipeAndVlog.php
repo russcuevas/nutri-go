@@ -57,7 +57,11 @@ class RecipeAndVlog extends Model
     public function getThumbnailUrlAttribute()
     {
         if ($this->thumbnail) {
-            return str_starts_with($this->thumbnail, 'http') ? $this->thumbnail : asset('storage/' . $this->thumbnail);
+            if (str_starts_with($this->thumbnail, 'http')) return $this->thumbnail;
+            if (file_exists(public_path($this->thumbnail)) || str_starts_with($this->thumbnail, 'images/') || str_starts_with($this->thumbnail, 'uploads/')) {
+                return asset($this->thumbnail);
+            }
+            return asset('storage/' . $this->thumbnail);
         }
         return 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80';
     }

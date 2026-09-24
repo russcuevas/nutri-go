@@ -14,27 +14,6 @@
             <p class="mt-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Healthy Food, Anytime, Anywhere</p>
         </div>
 
-        <!-- Quick Demo Switcher -->
-        <div class="p-3.5 rounded-2xl bg-nutri-50/80 border border-nutri-200 text-xs">
-            <p class="font-bold text-nutri-900 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-bolt text-amber-500"></i> Fast Demo Accounts:
-            </p>
-            <div class="grid grid-cols-2 gap-2 text-[11px]">
-                <a href="{{ route('quick.login', 'admin') }}" class="p-2 rounded-xl bg-white hover:bg-nutri-100 text-nutri-950 font-bold border border-nutri-200 transition text-center shadow-xs">
-                    🛡️ Super Admin
-                </a>
-                <a href="{{ route('quick.login', 'store') }}" class="p-2 rounded-xl bg-white hover:bg-nutri-100 text-nutri-950 font-bold border border-nutri-200 transition text-center shadow-xs">
-                    🥗 Healthy Store
-                </a>
-                <a href="{{ route('quick.login', 'rider') }}" class="p-2 rounded-xl bg-white hover:bg-nutri-100 text-nutri-950 font-bold border border-nutri-200 transition text-center shadow-xs">
-                    🛵 Delivery Rider
-                </a>
-                <a href="{{ route('quick.login', 'customer') }}" class="p-2 rounded-xl bg-white hover:bg-nutri-100 text-nutri-950 font-bold border border-nutri-200 transition text-center shadow-xs">
-                    👑 VIP Customer
-                </a>
-            </div>
-        </div>
-
         <!-- Form -->
         <form class="mt-8 space-y-5" action="{{ route('login.submit') }}" method="POST">
             @csrf
@@ -52,7 +31,7 @@
                         <i class="fa-regular fa-envelope"></i>
                     </span>
                     <input id="email" name="email" type="email" autocomplete="email" required
-                           value="{{ old('email', 'customer@nutrigo.ph') }}"
+                           value="{{ old('email') }}"
                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 focus:border-nutri-500 text-sm outline-none transition"
                            placeholder="you@example.com">
                 </div>
@@ -65,7 +44,6 @@
                         <i class="fa-solid fa-lock"></i>
                     </span>
                     <input id="password" name="password" type="password" autocomplete="current-password" required
-                           value="password123"
                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 focus:border-nutri-500 text-sm outline-none transition"
                            placeholder="••••••••">
                 </div>
@@ -76,7 +54,6 @@
                     <input type="checkbox" name="remember" class="w-4 h-4 rounded text-nutri-600 focus:ring-nutri-500 border-gray-300">
                     <span class="text-gray-600 font-medium">Remember me</span>
                 </label>
-                <span class="text-gray-400 text-[11px]">Demo: password123</span>
             </div>
 
             <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-extrabold text-sm shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 font-heading tracking-wide">

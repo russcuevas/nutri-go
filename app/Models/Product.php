@@ -69,7 +69,9 @@ class Product extends Model
     {
         if ($this->image) {
             if (str_starts_with($this->image, 'http')) return $this->image;
-            if (str_starts_with($this->image, 'uploads/') || file_exists(public_path($this->image))) return asset($this->image);
+            if (file_exists(public_path($this->image)) || str_starts_with($this->image, 'images/') || str_starts_with($this->image, 'uploads/')) {
+                return asset($this->image);
+            }
             return asset('storage/' . $this->image);
         }
         return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80';

@@ -78,7 +78,9 @@ class Store extends Model
     {
         if ($this->logo) {
             if (str_starts_with($this->logo, 'http')) return $this->logo;
-            if (str_starts_with($this->logo, 'uploads/') || file_exists(public_path($this->logo))) return asset($this->logo);
+            if (file_exists(public_path($this->logo)) || str_starts_with($this->logo, 'images/') || str_starts_with($this->logo, 'uploads/')) {
+                return asset($this->logo);
+            }
             return asset('storage/' . $this->logo);
         }
         return asset('images/nutrigo-logo.jpg');
@@ -88,7 +90,9 @@ class Store extends Model
     {
         if ($this->banner) {
             if (str_starts_with($this->banner, 'http')) return $this->banner;
-            if (str_starts_with($this->banner, 'uploads/') || file_exists(public_path($this->banner))) return asset($this->banner);
+            if (file_exists(public_path($this->banner)) || str_starts_with($this->banner, 'images/') || str_starts_with($this->banner, 'uploads/')) {
+                return asset($this->banner);
+            }
             return asset('storage/' . $this->banner);
         }
         return 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1200&q=80';
@@ -98,7 +102,9 @@ class Store extends Model
     {
         if ($this->gcash_qr) {
             if (str_starts_with($this->gcash_qr, 'http')) return $this->gcash_qr;
-            if (str_starts_with($this->gcash_qr, 'uploads/') || file_exists(public_path($this->gcash_qr))) return asset($this->gcash_qr);
+            if (file_exists(public_path($this->gcash_qr)) || str_starts_with($this->gcash_qr, 'images/') || str_starts_with($this->gcash_qr, 'uploads/')) {
+                return asset($this->gcash_qr);
+            }
             return asset('storage/' . $this->gcash_qr);
         }
         return null;

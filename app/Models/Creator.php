@@ -33,7 +33,11 @@ class Creator extends Model
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
-            return str_starts_with($this->avatar, 'http') ? $this->avatar : asset('storage/' . $this->avatar);
+            if (str_starts_with($this->avatar, 'http')) return $this->avatar;
+            if (file_exists(public_path($this->avatar)) || str_starts_with($this->avatar, 'images/') || str_starts_with($this->avatar, 'uploads/')) {
+                return asset($this->avatar);
+            }
+            return asset('storage/' . $this->avatar);
         }
         return 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80';
     }

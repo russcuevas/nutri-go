@@ -142,24 +142,24 @@ class AuthController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $filename = 'logo_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/stores/logos');
+            $dest = public_path('images/stores/logos');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $logoPath = 'uploads/stores/logos/' . $filename;
+            $logoPath = 'images/stores/logos/' . $filename;
         }
 
         $gcashQrPath = null;
         if ($request->hasFile('gcash_qr')) {
             $file = $request->file('gcash_qr');
             $filename = 'gcash_qr_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/stores/gcash');
+            $dest = public_path('images/stores/gcash');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $gcashQrPath = 'uploads/stores/gcash/' . $filename;
+            $gcashQrPath = 'images/stores/gcash/' . $filename;
         }
 
         Store::create([
@@ -234,7 +234,14 @@ class AuthController extends Controller
 
         $licensePath = null;
         if ($request->hasFile('license_image')) {
-            $licensePath = $request->file('license_image')->store('riders/licenses', 'public');
+            $file = $request->file('license_image');
+            $filename = 'license_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/riders/licenses');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $licensePath = 'images/riders/licenses/' . $filename;
         }
 
         $rider = Rider::create([

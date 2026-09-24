@@ -38,7 +38,7 @@ class WalletPayoutController extends Controller
                         'distance_km' => $tx->order->distance_km,
                         'total_amount' => (float) $tx->order->total_amount,
                         'delivery_fee' => (float) $tx->order->delivery_fee,
-                        'rider_proof_image' => $tx->order->rider_proof_image,
+                        'rider_proof_image' => $tx->order->rider_proof_url,
                         'store' => $tx->order->store ? [
                             'store_name' => $tx->order->store->store_name,
                             'address_line' => $tx->order->store->address_line,

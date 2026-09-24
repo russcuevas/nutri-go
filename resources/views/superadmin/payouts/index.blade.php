@@ -33,7 +33,14 @@
                         Rider: <span class="font-bold">{{ $p->rider->user->name }}</span> • Send to GCash: <span class="font-mono font-bold text-blue-800">{{ $p->gcash_number }}</span> ({{ $p->gcash_account_name }})
                     </p>
                     @if($p->admin_reference_no)
-                        <p class="text-emerald-700 font-mono font-bold">Disbursement GCash Ref: {{ $p->admin_reference_no }}</p>
+                        <div class="flex items-center gap-2">
+                            <p class="text-emerald-700 font-mono font-bold">Disbursement GCash Ref: {{ $p->admin_reference_no }}</p>
+                            @if($p->proof_url)
+                                <a href="{{ $p->proof_url }}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:underline">
+                                    <i class="fa-solid fa-receipt"></i> View Receipt
+                                </a>
+                            @endif
+                        </div>
                     @endif
                     @if($p->notes)
                         <p class="text-gray-500 italic">"{{ $p->notes }}"</p>

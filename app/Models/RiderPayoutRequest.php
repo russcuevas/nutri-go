@@ -36,9 +36,13 @@ class RiderPayoutRequest extends Model
     public function getProofUrlAttribute()
     {
         if ($this->proof_image) {
-            return str_starts_with($this->proof_image, 'http')
-                ? $this->proof_image
-                : asset('storage/' . $this->proof_image);
+            if (str_starts_with($this->proof_image, 'http')) {
+                return $this->proof_image;
+            }
+            if (file_exists(public_path($this->proof_image)) || str_starts_with($this->proof_image, 'images/') || str_starts_with($this->proof_image, 'uploads/')) {
+                return asset($this->proof_image);
+            }
+            return asset('storage/' . $this->proof_image);
         }
         return null;
     }

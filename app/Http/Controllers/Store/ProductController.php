@@ -58,12 +58,12 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = 'product_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/products');
+            $dest = public_path('images/products');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $imagePath = 'uploads/products/' . $filename;
+            $imagePath = 'images/products/' . $filename;
         }
 
         Product::create([
@@ -128,15 +128,21 @@ class ProductController extends Controller
 
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
+            if ($product->image && file_exists(public_path($product->image))) {
+                @unlink(public_path($product->image));
+            }
             $file = $request->file('image');
             $filename = 'product_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/products');
+            $dest = public_path('images/products');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $imagePath = 'uploads/products/' . $filename;
+            $imagePath = 'images/products/' . $filename;
         } elseif ($request->boolean('remove_image')) {
+            if ($product->image && file_exists(public_path($product->image))) {
+                @unlink(public_path($product->image));
+            }
             $imagePath = null;
         }
 
@@ -167,6 +173,9 @@ class ProductController extends Controller
     {
         $store = Auth::user()->store;
         $product = Product::where('store_id', $store->id)->where('id', $id)->firstOrFail();
+        if ($product->image && file_exists(public_path($product->image))) {
+            @unlink(public_path($product->image));
+        }
         $product->delete();
 
         return redirect()->route('store.products.index')->with('success', 'Product deleted.');

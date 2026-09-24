@@ -128,9 +128,27 @@ class Order extends Model
     public function getPaymentProofUrlAttribute()
     {
         if ($this->payment_proof_image) {
-            return str_starts_with($this->payment_proof_image, 'http')
-                ? $this->payment_proof_image
-                : asset('storage/' . $this->payment_proof_image);
+            if (str_starts_with($this->payment_proof_image, 'http')) {
+                return $this->payment_proof_image;
+            }
+            if (file_exists(public_path($this->payment_proof_image)) || str_starts_with($this->payment_proof_image, 'images/') || str_starts_with($this->payment_proof_image, 'uploads/')) {
+                return asset($this->payment_proof_image);
+            }
+            return asset('storage/' . $this->payment_proof_image);
+        }
+        return null;
+    }
+
+    public function getRiderProofUrlAttribute()
+    {
+        if ($this->rider_proof_image) {
+            if (str_starts_with($this->rider_proof_image, 'http')) {
+                return $this->rider_proof_image;
+            }
+            if (file_exists(public_path($this->rider_proof_image)) || str_starts_with($this->rider_proof_image, 'images/') || str_starts_with($this->rider_proof_image, 'uploads/')) {
+                return asset($this->rider_proof_image);
+            }
+            return asset('storage/' . $this->rider_proof_image);
         }
         return null;
     }

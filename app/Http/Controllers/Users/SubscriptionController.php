@@ -34,7 +34,14 @@ class SubscriptionController extends Controller
 
         $proofPath = null;
         if ($request->hasFile('payment_proof')) {
-            $proofPath = $request->file('payment_proof')->store('subscriptions/proofs', 'public');
+            $file = $request->file('payment_proof');
+            $filename = 'proof_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/subscriptions/proofs');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $proofPath = 'images/subscriptions/proofs/' . $filename;
         }
 
         $durationDays = $plan->billing_period === 'annual' ? 365 : 30;

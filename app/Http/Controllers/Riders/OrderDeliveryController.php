@@ -115,7 +115,14 @@ class OrderDeliveryController extends Controller
 
         $proofPath = null;
         if ($request->hasFile('rider_proof_image')) {
-            $proofPath = $request->file('rider_proof_image')->store('riders/delivery_proofs', 'public');
+            $file = $request->file('rider_proof_image');
+            $filename = 'proof_' . time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/riders/delivery_proofs');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $proofPath = 'images/riders/delivery_proofs/' . $filename;
         }
 
         $order->update([

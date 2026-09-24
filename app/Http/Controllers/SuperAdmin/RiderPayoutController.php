@@ -44,7 +44,14 @@ class RiderPayoutController extends Controller
 
         $proofPath = null;
         if ($request->hasFile('proof_image')) {
-            $proofPath = $request->file('proof_image')->store('payouts/proofs', 'public');
+            $file = $request->file('proof_image');
+            $filename = 'proof_' . time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/payouts/proofs');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $proofPath = 'images/payouts/proofs/' . $filename;
         }
 
         $wallet = $payout->rider->wallet;

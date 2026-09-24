@@ -96,33 +96,6 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-    <!-- Quick Role Switcher Banner for Pair Programming Demo -->
-    <div class="bg-gradient-to-r from-nutri-900 via-nutri-800 to-nutri-900 text-white text-xs py-1.5 px-4 shadow-inner">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-limey-500 text-nutri-950 uppercase tracking-wider">
-                    <i class="fa-solid fa-bolt mr-1"></i> Lipa City Live Mode
-                </span>
-                <span class="hidden sm:inline text-nutri-200">Switch role for testing:</span>
-            </div>
-            <div class="flex items-center gap-1.5 overflow-x-auto text-[11px]">
-                <span class="text-nutri-300 mr-1 hidden md:inline">Quick Login:</span>
-                <a href="{{ route('quick.login', 'admin') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 transition text-white font-medium">
-                    <i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i> Super Admin
-                </a>
-                <a href="{{ route('quick.login', 'store') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 transition text-white font-medium">
-                    <i class="fa-solid fa-store text-emerald-400 mr-1"></i> Store (Green Bites)
-                </a>
-                <a href="{{ route('quick.login', 'rider') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 transition text-white font-medium">
-                    <i class="fa-solid fa-motorcycle text-limey-400 mr-1"></i> Rider (Juan)
-                </a>
-                <a href="{{ route('quick.login', 'customer') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 transition text-white font-medium">
-                    <i class="fa-solid fa-user text-blue-400 mr-1"></i> Customer (VIP)
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- Navigation Header -->
     <header class="sticky top-0 z-50 glass-nav transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -37,7 +37,14 @@ class CreatorManagerController extends Controller
 
         $avatarPath = null;
         if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('creators', 'public');
+            $file = $request->file('avatar');
+            $filename = 'creator_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/creators');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $avatarPath = 'images/creators/' . $filename;
         }
 
         Creator::create([
@@ -78,7 +85,14 @@ class CreatorManagerController extends Controller
 
         $thumbPath = null;
         if ($request->hasFile('thumbnail')) {
-            $thumbPath = $request->file('thumbnail')->store('recipes', 'public');
+            $file = $request->file('thumbnail');
+            $filename = 'recipe_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/recipes');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $thumbPath = 'images/recipes/' . $filename;
         }
 
         // Format ingredients lines into array
@@ -127,10 +141,19 @@ class CreatorManagerController extends Controller
 
         $avatarPath = $creator->avatar;
         if ($request->hasFile('avatar')) {
-            if ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
+            if ($creator->avatar && file_exists(public_path($creator->avatar))) {
+                @unlink(public_path($creator->avatar));
+            } elseif ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($creator->avatar);
             }
-            $avatarPath = $request->file('avatar')->store('creators', 'public');
+            $file = $request->file('avatar');
+            $filename = 'creator_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/creators');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $avatarPath = 'images/creators/' . $filename;
         }
 
         $creator->update([
@@ -172,10 +195,19 @@ class CreatorManagerController extends Controller
 
         $thumbPath = $recipe->thumbnail;
         if ($request->hasFile('thumbnail')) {
-            if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+            if ($recipe->thumbnail && file_exists(public_path($recipe->thumbnail))) {
+                @unlink(public_path($recipe->thumbnail));
+            } elseif ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
             }
-            $thumbPath = $request->file('thumbnail')->store('recipes', 'public');
+            $file = $request->file('thumbnail');
+            $filename = 'recipe_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $dest = public_path('images/recipes');
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+            $file->move($dest, $filename);
+            $thumbPath = 'images/recipes/' . $filename;
         }
 
         $ingredientsArray = [];
@@ -209,7 +241,9 @@ class CreatorManagerController extends Controller
     {
         $recipe = RecipeAndVlog::findOrFail($id);
 
-        if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+        if ($recipe->thumbnail && file_exists(public_path($recipe->thumbnail))) {
+            @unlink(public_path($recipe->thumbnail));
+        } elseif ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
         }
 
@@ -222,13 +256,17 @@ class CreatorManagerController extends Controller
     {
         $creator = Creator::findOrFail($id);
 
-        if ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
+        if ($creator->avatar && file_exists(public_path($creator->avatar))) {
+            @unlink(public_path($creator->avatar));
+        } elseif ($creator->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($creator->avatar)) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($creator->avatar);
         }
 
         // Also delete their recipes' thumbnails and records
         foreach ($creator->recipes as $recipe) {
-            if ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
+            if ($recipe->thumbnail && file_exists(public_path($recipe->thumbnail))) {
+                @unlink(public_path($recipe->thumbnail));
+            } elseif ($recipe->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($recipe->thumbnail)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($recipe->thumbnail);
             }
             $recipe->delete();

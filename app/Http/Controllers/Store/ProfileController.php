@@ -51,43 +51,61 @@ class ProfileController extends Controller
 
         $logoPath = $store->logo;
         if ($request->hasFile('logo')) {
+            if ($store->logo && file_exists(public_path($store->logo))) {
+                @unlink(public_path($store->logo));
+            }
             $file = $request->file('logo');
             $filename = 'logo_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/stores/logos');
+            $dest = public_path('images/stores/logos');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $logoPath = 'uploads/stores/logos/' . $filename;
+            $logoPath = 'images/stores/logos/' . $filename;
         } elseif ($request->boolean('remove_logo')) {
+            if ($store->logo && file_exists(public_path($store->logo))) {
+                @unlink(public_path($store->logo));
+            }
             $logoPath = null;
         }
 
         $bannerPath = $store->banner;
         if ($request->hasFile('banner')) {
+            if ($store->banner && file_exists(public_path($store->banner))) {
+                @unlink(public_path($store->banner));
+            }
             $file = $request->file('banner');
             $filename = 'banner_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/stores/banners');
+            $dest = public_path('images/stores/banners');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $bannerPath = 'uploads/stores/banners/' . $filename;
+            $bannerPath = 'images/stores/banners/' . $filename;
         } elseif ($request->boolean('remove_banner')) {
+            if ($store->banner && file_exists(public_path($store->banner))) {
+                @unlink(public_path($store->banner));
+            }
             $bannerPath = null;
         }
 
         $gcashQrPath = $store->gcash_qr;
         if ($request->hasFile('gcash_qr')) {
+            if ($store->gcash_qr && file_exists(public_path($store->gcash_qr))) {
+                @unlink(public_path($store->gcash_qr));
+            }
             $file = $request->file('gcash_qr');
             $filename = 'gcash_qr_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('uploads/stores/gcash');
+            $dest = public_path('images/stores/gcash');
             if (!file_exists($dest)) {
                 mkdir($dest, 0755, true);
             }
             $file->move($dest, $filename);
-            $gcashQrPath = 'uploads/stores/gcash/' . $filename;
+            $gcashQrPath = 'images/stores/gcash/' . $filename;
         } elseif ($request->boolean('remove_gcash_qr')) {
+            if ($store->gcash_qr && file_exists(public_path($store->gcash_qr))) {
+                @unlink(public_path($store->gcash_qr));
+            }
             $gcashQrPath = null;
         }
 
