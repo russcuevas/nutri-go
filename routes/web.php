@@ -119,6 +119,7 @@ Route::middleware(['auth', 'role:store'])->prefix('store')->name('store.')->grou
     Route::post('/orders/{id}/accept', [StoreOrderController::class, 'accept'])->name('orders.accept');
     Route::post('/orders/{id}/decline', [StoreOrderController::class, 'decline'])->name('orders.decline');
     Route::post('/orders/{id}/ready', [StoreOrderController::class, 'markReady'])->name('orders.ready');
+    Route::match(['post', 'delete'], '/orders/{id}/cancel', [StoreOrderController::class, 'cancel'])->name('orders.cancel');
 
     // Product & Nutrition Management
     Route::get('/products', [StoreProductController::class, 'index'])->name('products.index');

@@ -119,4 +119,29 @@ class OrderController extends Controller
 
         return back()->with('success', "Order #{$order->order_number} is now marked Ready for Pickup! It is dispatched to nearby Lipa riders.");
     }
+
+    public function cancel(Request $request, int $id)
+    {
+        $store = Auth::user()->store;
+        $order = Order::where('store_id', $store->id)->where('id', $id)->firstOrFail();
+
+        if (in_array($order->status, ['delivered', 'rider_picked_up', 'on_the_way'])) {
+            return back()->with('error', 'Hindi na maaaring i-cancel ang order dahil nakuha o naihatid na ito ng rider.');
+        }
+
+        $orderNumber = $order->order_number;
+
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order) {
+            // Delete order items
+            $order->items()->delete();
+            // Delete trackings
+            $order->trackings()->delete();
+            // Delete review if any
+            $order->review()?->delete();
+            // Delete the order itself
+            $order->delete();
+        });
+
+        return redirect()->route('store.orders.index')->with('success', "Order #{$orderNumber} ay matagumpay na na-cancel at nabura ang data.");
+    }
 }
