@@ -521,12 +521,89 @@
                     </div>
                 </div>
 
-                <!-- Driver's License ID Verification (Front & Back Required) -->
-                <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4"
+                <!-- ======================================================== -->
+                <!-- RIDER IDENTITY VERIFICATION: STEP 1 (FACE) & STEP 2 (ID)   -->
+                <!-- ======================================================== -->
+                <div class="space-y-4"
                      x-data="{
+                         // Step 1: Face Verification State
+                         faceVerified: false,
+                         cameraActive: false,
+                         facePreview: null,
+                         faceData: null,
+                         stream: null,
+                         cameraError: null,
+
+                         async startCamera() {
+                             this.cameraError = null;
+                             this.cameraActive = true;
+                             try {
+                                 this.stream = await navigator.mediaDevices.getUserMedia({ 
+                                     video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
+                                 });
+                                 this.$nextTick(() => {
+                                     if (this.$refs.videoEl) {
+                                         this.$refs.videoEl.srcObject = this.stream;
+                                         this.$refs.videoEl.play();
+                                     }
+                                 });
+                             } catch (err) {
+                                 console.error('Camera access error:', err);
+                                 this.cameraError = 'Hindi mabuksan ang camera. Mangyaring mag-upload na lamang ng selfie photo gamit ang button sa ibaba.';
+                                 this.cameraActive = false;
+                             }
+                         },
+
+                         captureSelfie() {
+                             if (!this.$refs.videoEl) return;
+                             const video = this.$refs.videoEl;
+                             const canvas = document.createElement('canvas');
+                             canvas.width = video.videoWidth || 640;
+                             canvas.height = video.videoHeight || 480;
+                             const ctx = canvas.getContext('2d');
+                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                             const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                             this.facePreview = dataUrl;
+                             this.faceData = dataUrl;
+                             this.faceVerified = true;
+                             this.stopCamera();
+                         },
+
+                         handleFaceFile(e) {
+                             const file = e.target.files[0];
+                             if (file) {
+                                 const reader = new FileReader();
+                                 reader.onload = (event) => {
+                                     this.facePreview = event.target.result;
+                                     this.faceData = event.target.result;
+                                     this.faceVerified = true;
+                                     this.stopCamera();
+                                 };
+                                 reader.readAsDataURL(file);
+                             }
+                         },
+
+                         retakeFace() {
+                             this.facePreview = null;
+                             this.faceData = null;
+                             this.faceVerified = false;
+                             this.stopCamera();
+                             if (this.$refs.faceFileInput) this.$refs.faceFileInput.value = '';
+                         },
+
+                         stopCamera() {
+                             this.cameraActive = false;
+                             if (this.stream) {
+                                 this.stream.getTracks().forEach(t => t.stop());
+                                 this.stream = null;
+                             }
+                         },
+
+                         // Step 2: License ID State
                          previewFront: null,
                          previewBack: null,
                          zoomModal: null,
+
                          handleFront(e) {
                              const file = e.target.files[0];
                              if (file) {
@@ -549,155 +626,279 @@
                          }
                      }">
 
-                    <!-- Section Header -->
-                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-gray-200">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fa-solid fa-id-card text-nutri-600"></i> Driver's License Verification
-                            </h4>
-                            <p class="text-[11px] text-gray-500 mt-0.5">I-upload ang malinaw na litrato ng harap at likod ng lisensya para masuri ng Super Admin.</p>
+                    <!-- Hidden Inputs for Face Verification Data -->
+                    <input type="hidden" name="face_image_data" :value="faceData">
+                    <input type="file" name="face_image" x-ref="faceFileInput" @change="handleFaceFile($event)" accept="image/*" capture="user" class="hidden">
+
+                    <!-- ============================================== -->
+                    <!-- CARD 1: STEP 1 - RIDER FACE VERIFICATION       -->
+                    <!-- ============================================== -->
+                    <div class="p-5 rounded-2xl border transition-all"
+                         :class="faceVerified ? 'bg-emerald-50/50 border-emerald-300' : 'bg-gray-50 border-gray-200'">
+                        
+                        <!-- Header -->
+                        <div class="flex items-center justify-between gap-2 pb-2 border-b"
+                             :class="faceVerified ? 'border-emerald-200' : 'border-gray-200'">
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+                                    :class="faceVerified ? 'text-emerald-950' : 'text-gray-900'">
+                                    <i class="fa-solid fa-camera" :class="faceVerified ? 'text-emerald-600' : 'text-nutri-600'"></i>
+                                    Step 1: Rider Face Verification (Live Selfie)
+                                </h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">
+                                    Kailangan munang mag-selfie bago ma-unlock ang pag-upload ng Driver's License ID.
+                                </p>
+                            </div>
+                            <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg border shrink-0"
+                                  :class="faceVerified ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-amber-100 text-amber-800 border-amber-200'">
+                                <span x-text="faceVerified ? '✓ Step 1 Complete' : 'Required Bago Mag-ID'"></span>
+                            </span>
                         </div>
-                        <span class="text-[10px] text-nutri-800 font-extrabold bg-nutri-100 px-2.5 py-1 rounded-lg border border-nutri-200 shrink-0">
-                            Front & Back Required
-                        </span>
-                    </div>
 
-                    <!-- License Number -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                            Driver's License Number *
-                        </label>
-                        <input type="text" name="license_number" required
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white font-mono"
-                            placeholder="e.g. N02-23-123456">
-                    </div>
+                        <!-- 1.A: Camera Active State (Live Video Stream) -->
+                        <div x-show="cameraActive && !faceVerified" class="mt-4 p-4 bg-gray-900 rounded-2xl text-center space-y-3">
+                            <div class="relative max-w-sm mx-auto h-64 rounded-2xl overflow-hidden bg-black border-2 border-limey-400 shadow-inner flex items-center justify-center">
+                                <video x-ref="videoEl" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                                <!-- Face Oval Outline Guide -->
+                                <div class="absolute inset-4 rounded-[50%] border-2 border-dashed border-white/60 pointer-events-none flex items-center justify-center">
+                                    <span class="text-[10px] text-white/80 font-bold bg-black/50 px-2 py-0.5 rounded-full">Iposisyon ang Mukha sa Loob</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-center gap-2 pt-1">
+                                <button type="button" @click="captureSelfie()" class="px-5 py-2.5 rounded-xl bg-limey-500 hover:bg-limey-600 text-nutri-950 font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-camera"></i> Kunan ng Litrato (Capture Selfie)
+                                </button>
+                                <button type="button" @click="stopCamera()" class="px-3.5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition cursor-pointer">
+                                    Kanselahin
+                                </button>
+                            </div>
+                        </div>
 
-                    <!-- Dual Upload Grid: Front & Back -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- 1.B: Camera Inactive & Not Yet Verified State -->
+                        <div x-show="!cameraActive && !faceVerified" class="mt-4 space-y-3">
+                            <!-- Camera Error Alert if any -->
+                            <div x-show="cameraError" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-circle-exclamation text-rose-600"></i>
+                                <span x-text="cameraError"></span>
+                            </div>
 
-                        <!-- 1. FRONT ID -->
-                        <div class="space-y-1.5">
-                            <label class="block text-xs font-bold text-gray-700">
-                                Harap ng Lisensya (Front ID) *
-                            </label>
-                            <input type="file" name="license_image" x-ref="frontInput" @change="handleFront($event)" accept="image/*" class="hidden">
-
-                            <!-- Empty State / Dropzone -->
-                            <div x-show="!previewFront" @click="$refs.frontInput.click()"
-                                class="p-5 rounded-2xl border-2 border-dashed border-gray-300 hover:border-nutri-500 bg-white hover:bg-nutri-50/40 text-center cursor-pointer transition space-y-2 group">
-                                <div class="w-12 h-12 rounded-2xl bg-nutri-50 text-nutri-700 flex items-center justify-center mx-auto text-xl group-hover:scale-105 transition shadow-2xs">
-                                    <i class="fa-solid fa-id-card"></i>
+                            <div class="p-5 rounded-2xl border-2 border-dashed border-nutri-300 bg-white text-center space-y-3">
+                                <div class="w-14 h-14 rounded-2xl bg-nutri-50 text-nutri-700 flex items-center justify-center mx-auto text-2xl shadow-2xs">
+                                    <i class="fa-solid fa-face-smile"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold text-gray-800 group-hover:text-nutri-700 transition">I-upload ang Harap (Front)</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">PNG, JPG up to 5MB</p>
+                                    <h5 class="text-xs font-bold text-gray-900">Mag-Selfie para sa Face Verification</h5>
+                                    <p class="text-[11px] text-gray-500 mt-0.5">I-verify ang iyong mukha bago mag-upload ng Driver's License ID.</p>
                                 </div>
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gray-100 group-hover:bg-nutri-600 text-gray-700 group-hover:text-white text-xs font-bold transition shadow-2xs">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Pumili ng Larawan
-                                </span>
-                            </div>
-
-                            <!-- Preview Card -->
-                            <div x-show="previewFront" class="p-3 bg-white rounded-2xl border-2 border-nutri-500 shadow-sm space-y-2.5">
-                                <div class="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group cursor-pointer" @click="zoomModal = 'front'" title="Pindutin para palakihin">
-                                    <img :src="previewFront" alt="Front License Preview" class="w-full h-full object-contain p-2">
-                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                                        <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Image
-                                    </div>
-                                    <button type="button" @click.stop="clearFront()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition" title="Alisin ang Larawan">
-                                        <i class="fa-solid fa-xmark"></i>
+                                <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                    <button type="button" @click="startCamera()" class="px-4 py-2.5 rounded-xl bg-nutri-900 hover:bg-nutri-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-camera"></i> Buksan ang Camera (Live Selfie)
                                     </button>
-                                </div>
-                                <div class="flex items-center justify-between pt-0.5">
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                                        <i class="fa-solid fa-circle-check"></i> Harap Ready
-                                    </span>
-                                    <div class="flex items-center gap-1.5">
-                                        <button type="button" @click="$refs.frontInput.click()" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1">
-                                            <i class="fa-solid fa-arrows-rotate"></i> Palitan
-                                        </button>
-                                        <button type="button" @click="zoomModal = 'front'" class="px-3 py-1.5 rounded-xl bg-nutri-50 hover:bg-nutri-100 text-nutri-700 text-xs font-bold transition flex items-center gap-1">
-                                            <i class="fa-solid fa-expand"></i> Zoom
-                                        </button>
-                                    </div>
+                                    <button type="button" @click="$refs.faceFileInput.click()" class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-image"></i> O Mag-upload ng Selfie Photo
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 2. BACK ID -->
-                        <div class="space-y-1.5">
-                            <label class="block text-xs font-bold text-gray-700">
-                                Likod ng Lisensya (Back ID) *
-                            </label>
-                            <input type="file" name="license_back_image" x-ref="backInput" @change="handleBack($event)" accept="image/*" class="hidden">
-
-                            <!-- Empty State / Dropzone -->
-                            <div x-show="!previewBack" @click="$refs.backInput.click()"
-                                class="p-5 rounded-2xl border-2 border-dashed border-gray-300 hover:border-nutri-500 bg-white hover:bg-nutri-50/40 text-center cursor-pointer transition space-y-2 group">
-                                <div class="w-12 h-12 rounded-2xl bg-nutri-50 text-nutri-700 flex items-center justify-center mx-auto text-xl group-hover:scale-105 transition shadow-2xs">
-                                    <i class="fa-solid fa-id-card-clip"></i>
+                        <!-- 1.C: Face Verification Completed State -->
+                        <div x-show="faceVerified" class="mt-3 flex flex-col sm:flex-row items-center justify-between gap-4 p-3 bg-white rounded-2xl border border-emerald-200 shadow-2xs">
+                            <div class="flex items-center gap-3.5">
+                                <div class="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-emerald-500 bg-gray-100 shrink-0 shadow-sm">
+                                    <img :src="facePreview" alt="Face Verification Selfie" class="w-full h-full object-cover">
+                                    <span class="absolute bottom-0 inset-x-0 bg-emerald-600 text-white text-[8px] font-black text-center py-0.5 uppercase tracking-wider">Verified</span>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-800 group-hover:text-nutri-700 transition">I-upload ang Likod (Back)</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">PNG, JPG up to 5MB</p>
-                                </div>
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gray-100 group-hover:bg-nutri-600 text-gray-700 group-hover:text-white text-xs font-bold transition shadow-2xs">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Pumili ng Larawan
-                                </span>
-                            </div>
-
-                            <!-- Preview Card -->
-                            <div x-show="previewBack" class="p-3 bg-white rounded-2xl border-2 border-nutri-500 shadow-sm space-y-2.5">
-                                <div class="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group cursor-pointer" @click="zoomModal = 'back'" title="Pindutin para palakihin">
-                                    <img :src="previewBack" alt="Back License Preview" class="w-full h-full object-contain p-2">
-                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                                        <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Image
+                                <div class="space-y-0.5">
+                                    <div class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Mukha Na-verify
                                     </div>
-                                    <button type="button" @click.stop="clearBack()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition" title="Alisin ang Larawan">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                                <div class="flex items-center justify-between pt-0.5">
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                                        <i class="fa-solid fa-circle-check"></i> Likod Ready
-                                    </span>
-                                    <div class="flex items-center gap-1.5">
-                                        <button type="button" @click="$refs.backInput.click()" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1">
-                                            <i class="fa-solid fa-arrows-rotate"></i> Palitan
-                                        </button>
-                                        <button type="button" @click="zoomModal = 'back'" class="px-3 py-1.5 rounded-xl bg-nutri-50 hover:bg-nutri-100 text-nutri-700 text-xs font-bold transition flex items-center gap-1">
-                                            <i class="fa-solid fa-expand"></i> Zoom
-                                        </button>
-                                    </div>
+                                    <h5 class="text-xs font-bold text-gray-900">Step 1 Kumpleto: Handa na ang iyong Selfie</h5>
+                                    <p class="text-[11px] text-gray-500">Naka-unlock na ang Step 2 para sa Driver's License ID.</p>
                                 </div>
                             </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Zoom Lightbox Modal -->
-                    <div x-show="zoomModal !== null" x-cloak
-                        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
-                        @click.self="zoomModal = null" @keydown.escape.window="zoomModal = null">
-                        <div class="bg-white p-6 rounded-3xl max-w-lg w-full text-center space-y-4 shadow-2xl relative">
-                            <button type="button" @click="zoomModal = null"
-                                class="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center font-bold">
-                                ✕
+                            <button type="button" @click="retakeFace()" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-arrows-rotate"></i> Kunan Muli (Retake)
                             </button>
-                            <h4 class="font-black text-gray-900 font-heading text-sm sm:text-base flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-id-card text-nutri-600"></i>
-                                <span x-text="zoomModal === 'front' ? 'Harap ng Driver\'s License (Front ID)' : 'Likod ng Driver\'s License (Back ID)'"></span>
-                            </h4>
-                            <div class="w-full h-80 rounded-2xl overflow-hidden border border-gray-200 p-2 bg-gray-50 flex items-center justify-center shadow-inner">
-                                <img :src="zoomModal === 'front' ? previewFront : previewBack" alt="License ID Zoom"
-                                    class="max-w-full max-h-full object-contain rounded-lg">
-                            </div>
-                            <p class="text-xs text-gray-500">Suriin kung malinaw at madaling mabasa ang mga impormasyon sa ID.</p>
                         </div>
+
                     </div>
+
+                    <!-- ============================================== -->
+                    <!-- CARD 2: STEP 2 - DRIVER'S LICENSE ID           -->
+                    <!-- ============================================== -->
+                    <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4 relative overflow-hidden transition-all"
+                         :class="{ 'opacity-60': !faceVerified }">
+
+                        <!-- Lock Overlay if Face Not Verified Yet -->
+                        <div x-show="!faceVerified" class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2.5">
+                            <i class="fa-solid fa-lock text-amber-600 text-base shrink-0"></i>
+                            <div>
+                                <strong>Step 2 Naka-Lock:</strong> Kumpletuhin muna ang <b>Step 1 (Face Verification)</b> sa itaas para ma-unlock ang pag-upload ng Driver's License ID.
+                            </div>
+                        </div>
+
+                        <!-- Unlocked Banner -->
+                        <div x-show="faceVerified" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 font-bold">
+                                <i class="fa-solid fa-lock-open text-emerald-600"></i> Na-unlock na ang Step 2: Driver's License ID Upload
+                            </span>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-extrabold">Ready to Upload</span>
+                        </div>
+
+                        <!-- Section Header -->
+                        <div class="flex items-center justify-between gap-2 pb-2 border-b border-gray-200">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-id-card text-nutri-600"></i> Step 2: Driver's License ID (Harap at Likod)
+                                </h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">I-upload ang malinaw na litrato ng harap at likod ng lisensya para masuri ng Super Admin.</p>
+                            </div>
+                            <span class="text-[10px] text-nutri-800 font-extrabold bg-nutri-100 px-2.5 py-1 rounded-lg border border-nutri-200 shrink-0">
+                                Front & Back Required
+                            </span>
+                        </div>
+
+                        <!-- License Number Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                                Driver's License Number *
+                            </label>
+                            <input type="text" name="license_number" required :disabled="!faceVerified"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nutri-500 text-sm outline-none bg-white font-mono disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                placeholder="e.g. N02-23-123456">
+                        </div>
+
+                        <!-- Dual Upload Grid: Front & Back -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                            <!-- 1. FRONT ID -->
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-700">
+                                    Harap ng Lisensya (Front ID) *
+                                </label>
+                                <input type="file" name="license_image" x-ref="frontInput" @change="handleFront($event)" accept="image/*" class="hidden" :disabled="!faceVerified">
+
+                                <!-- Empty State / Dropzone -->
+                                <div x-show="!previewFront" @click="faceVerified ? $refs.frontInput.click() : null"
+                                    :class="faceVerified ? 'cursor-pointer hover:border-nutri-500 hover:bg-nutri-50/40' : 'cursor-not-allowed opacity-75'"
+                                    class="p-5 rounded-2xl border-2 border-dashed border-gray-300 bg-white text-center transition space-y-2 group">
+                                    <div class="w-12 h-12 rounded-2xl bg-nutri-50 text-nutri-700 flex items-center justify-center mx-auto text-xl group-hover:scale-105 transition shadow-2xs">
+                                        <i class="fa-solid fa-id-card"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-800 group-hover:text-nutri-700 transition">I-upload ang Harap (Front)</p>
+                                        <p class="text-[11px] text-gray-400 mt-0.5">PNG, JPG up to 5MB</p>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gray-100 group-hover:bg-nutri-600 text-gray-700 group-hover:text-white text-xs font-bold transition shadow-2xs">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Pumili ng Larawan
+                                    </span>
+                                </div>
+
+                                <!-- Preview Card -->
+                                <div x-show="previewFront" class="p-3 bg-white rounded-2xl border-2 border-nutri-500 shadow-sm space-y-2.5">
+                                    <div class="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group cursor-pointer" @click="zoomModal = 'front'" title="Pindutin para palakihin">
+                                        <img :src="previewFront" alt="Front License Preview" class="w-full h-full object-contain p-2">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Image
+                                        </div>
+                                        <button type="button" @click.stop="clearFront()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition" title="Alisin ang Larawan">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-0.5">
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                            <i class="fa-solid fa-circle-check"></i> Harap Ready
+                                        </span>
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" @click="$refs.frontInput.click()" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1">
+                                                <i class="fa-solid fa-arrows-rotate"></i> Palitan
+                                            </button>
+                                            <button type="button" @click="zoomModal = 'front'" class="px-3 py-1.5 rounded-xl bg-nutri-50 hover:bg-nutri-100 text-nutri-700 text-xs font-bold transition flex items-center gap-1">
+                                                <i class="fa-solid fa-expand"></i> Zoom
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. BACK ID -->
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-700">
+                                    Likod ng Lisensya (Back ID) *
+                                </label>
+                                <input type="file" name="license_back_image" x-ref="backInput" @change="handleBack($event)" accept="image/*" class="hidden" :disabled="!faceVerified">
+
+                                <!-- Empty State / Dropzone -->
+                                <div x-show="!previewBack" @click="faceVerified ? $refs.backInput.click() : null"
+                                    :class="faceVerified ? 'cursor-pointer hover:border-nutri-500 hover:bg-nutri-50/40' : 'cursor-not-allowed opacity-75'"
+                                    class="p-5 rounded-2xl border-2 border-dashed border-gray-300 bg-white text-center transition space-y-2 group">
+                                    <div class="w-12 h-12 rounded-2xl bg-nutri-50 text-nutri-700 flex items-center justify-center mx-auto text-xl group-hover:scale-105 transition shadow-2xs">
+                                        <i class="fa-solid fa-id-card-clip"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-800 group-hover:text-nutri-700 transition">I-upload ang Likod (Back)</p>
+                                        <p class="text-[11px] text-gray-400 mt-0.5">PNG, JPG up to 5MB</p>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gray-100 group-hover:bg-nutri-600 text-gray-700 group-hover:text-white text-xs font-bold transition shadow-2xs">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Pumili ng Larawan
+                                    </span>
+                                </div>
+
+                                <!-- Preview Card -->
+                                <div x-show="previewBack" class="p-3 bg-white rounded-2xl border-2 border-nutri-500 shadow-sm space-y-2.5">
+                                    <div class="relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group cursor-pointer" @click="zoomModal = 'back'" title="Pindutin para palakihin">
+                                        <img :src="previewBack" alt="Back License Preview" class="w-full h-full object-contain p-2">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Image
+                                        </div>
+                                        <button type="button" @click.stop="clearBack()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-rose-700 transition" title="Alisin ang Larawan">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-0.5">
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                            <i class="fa-solid fa-circle-check"></i> Likod Ready
+                                        </span>
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" @click="$refs.backInput.click()" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1">
+                                                <i class="fa-solid fa-arrows-rotate"></i> Palitan
+                                            </button>
+                                            <button type="button" @click="zoomModal = 'back'" class="px-3 py-1.5 rounded-xl bg-nutri-50 hover:bg-nutri-100 text-nutri-700 text-xs font-bold transition flex items-center gap-1">
+                                                <i class="fa-solid fa-expand"></i> Zoom
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Zoom Lightbox Modal for ID Cards -->
+                        <div x-show="zoomModal !== null" x-cloak
+                            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+                            @click.self="zoomModal = null" @keydown.escape.window="zoomModal = null">
+                            <div class="bg-white p-6 rounded-3xl max-w-lg w-full text-center space-y-4 shadow-2xl relative">
+                                <button type="button" @click="zoomModal = null"
+                                    class="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center font-bold">
+                                    ✕
+                                </button>
+                                <h4 class="font-black text-gray-900 font-heading text-sm sm:text-base flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-id-card text-nutri-600"></i>
+                                    <span x-text="zoomModal === 'front' ? 'Harap ng Driver\'s License (Front ID)' : 'Likod ng Driver\'s License (Back ID)'"></span>
+                                </h4>
+                                <div class="w-full h-80 rounded-2xl overflow-hidden border border-gray-200 p-2 bg-gray-50 flex items-center justify-center shadow-inner">
+                                    <img :src="zoomModal === 'front' ? previewFront : previewBack" alt="License ID Zoom"
+                                        class="max-w-full max-h-full object-contain rounded-lg">
+                                </div>
+                                <p class="text-xs text-gray-500">Suriin kung malinaw at madaling mabasa ang mga impormasyon sa ID.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- END of Step 2 -->
 
                 </div>
-                <!-- END of Driver's License ID Verification -->
+                <!-- END of Rider Verification -->
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Complete Home / Base Address in Lipa City</label>

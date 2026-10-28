@@ -205,6 +205,8 @@ class AuthController extends Controller
             'license_image' => 'nullable|image|max:5120',
             'license_front_image' => 'nullable|image|max:5120',
             'license_back_image' => 'nullable|image|max:5120',
+            'face_image' => 'nullable|image|max:5120',
+            'face_image_data' => 'nullable|string',
         ]);
 
         $user = User::create([
@@ -255,6 +257,35 @@ class AuthController extends Controller
             $licenseBackPath = 'images/riders/licenses/' . $filenameBack;
         }
 
+        // Process Face Verification Image (Live Camera base64 or Uploaded File)
+        $facePath = null;
+        $facesDest = public_path('images/riders/faces');
+        if (!file_exists($facesDest)) {
+            mkdir($facesDest, 0755, true);
+        }
+
+        if ($request->filled('face_image_data')) {
+            $base64Data = $request->input('face_image_data');
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+                $base64Data = substr($base64Data, strpos($base64Data, ',') + 1);
+                $ext = strtolower($type[1]);
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $ext = 'jpg';
+                }
+                $decoded = base64_decode($base64Data);
+                if ($decoded !== false) {
+                    $filenameFace = 'face_' . time() . '_' . Str::random(8) . '.' . $ext;
+                    file_put_contents($facesDest . '/' . $filenameFace, $decoded);
+                    $facePath = 'images/riders/faces/' . $filenameFace;
+                }
+            }
+        } elseif ($request->hasFile('face_image')) {
+            $faceFile = $request->file('face_image');
+            $filenameFace = 'face_' . time() . '_' . Str::random(8) . '.' . $faceFile->getClientOriginalExtension();
+            $faceFile->move($facesDest, $filenameFace);
+            $facePath = 'images/riders/faces/' . $filenameFace;
+        }
+
         $rider = Rider::create([
             'user_id' => $user->id,
             'vehicle_type' => $validated['vehicle_type'],
@@ -262,6 +293,7 @@ class AuthController extends Controller
             'license_number' => $validated['license_number'],
             'license_image' => $licensePath,
             'license_back_image' => $licenseBackPath,
+            'face_image' => $facePath,
             'phone' => $validated['phone'],
             'barangay' => $barangay,
             'address_line' => $validated['address_line'],

@@ -56,8 +56,12 @@
         <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <!-- Rider Brand -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-1 shadow shrink-0">
-                    <img src="{{ asset('images/nutrigo-logo.jpg') }}" alt="Logo" class="w-full h-full object-contain">
+                <div class="w-10 h-10 rounded-xl overflow-hidden bg-white p-0.5 shadow shrink-0 border border-white/20">
+                    @if(auth()->user()->rider?->face_image_url)
+                        <img src="{{ auth()->user()->rider->face_image_url }}" alt="Rider Face" class="w-full h-full object-cover rounded-lg">
+                    @else
+                        <img src="{{ asset('images/nutrigo-logo.jpg') }}" alt="Logo" class="w-full h-full object-contain p-0.5">
+                    @endif
                 </div>
                 <div>
                     <div class="flex items-center gap-2">

@@ -64,6 +64,13 @@ class RiderApprovalController extends Controller
             @unlink(storage_path('app/public/' . $rider->license_back_image));
         }
 
+        // Clean up face verification image if exists
+        if ($rider->face_image && file_exists(public_path($rider->face_image))) {
+            @unlink(public_path($rider->face_image));
+        } elseif ($rider->face_image && file_exists(storage_path('app/public/' . $rider->face_image))) {
+            @unlink(storage_path('app/public/' . $rider->face_image));
+        }
+
         // Deleting user cascades to rider and wallet
         if ($user) {
             $user->delete();

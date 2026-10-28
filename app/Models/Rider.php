@@ -16,6 +16,7 @@ class Rider extends Model
         'license_number',
         'license_image',
         'license_back_image',
+        'face_image',
         'phone',
         'barangay',
         'address_line',
@@ -104,6 +105,11 @@ class Rider extends Model
     public function getLicenseBackImageUrlAttribute(): ?string
     {
         return $this->resolveImageUrl($this->license_back_image);
+    }
+
+    public function getFaceImageUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->face_image);
     }
 
     protected function resolveImageUrl(?string $path): ?string

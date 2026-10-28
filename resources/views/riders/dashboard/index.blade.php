@@ -5,6 +5,49 @@
 @section('content')
 <div class="space-y-6">
     
+    <!-- Rider Identity & Verified Face Banner -->
+    <div class="p-5 rounded-3xl bg-white border border-gray-200 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4 text-center sm:text-left">
+            <div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 bg-gray-50 shadow-md shrink-0">
+                @if($rider->face_image_url)
+                    <img src="{{ $rider->face_image_url }}" alt="Rider Face" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full bg-nutri-50 text-nutri-700 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                @endif
+                <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[9px] text-white" title="Face Verified">
+                    ✓
+                </span>
+            </div>
+            <div class="space-y-1">
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900 font-heading">{{ auth()->user()->name }}</h2>
+                    <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                        <i class="fa-solid fa-shield-check text-emerald-600"></i> Face Verified
+                    </span>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-nutri-900 bg-lime-200 px-2 py-0.5 rounded-md">
+                        {{ $rider->vehicle_type }}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500">
+                    Plate No: <span class="font-mono font-bold text-gray-800">{{ $rider->plate_number }}</span> • 
+                    License: <span class="font-mono font-bold text-gray-800">{{ $rider->license_number }}</span> • 
+                    Base: <span class="text-gray-700 font-semibold">{{ $rider->barangay ?? 'Lipa City' }}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+            <div class="text-center sm:text-right px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100">
+                <span class="text-[10px] uppercase font-bold text-gray-400 block">Fleet Rating</span>
+                <span class="text-sm font-black text-amber-500 font-heading flex items-center justify-center sm:justify-end gap-1">
+                    <i class="fa-solid fa-star text-xs"></i> {{ number_format($rider->rating ?? 5.0, 1) }}
+                </span>
+            </div>
+        </div>
+    </div>
+
     <!-- Rider Top Stats & 3 Orders Limit Meter -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <!-- Wallet Card -->
