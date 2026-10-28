@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('plate_number');
             $table->string('license_number');
             $table->string('license_image')->nullable();
+            $table->string('license_back_image')->nullable();
             $table->string('phone');
             $table->string('barangay'); // Lipa City Barangay
             $table->decimal('current_latitude', 10, 7)->nullable();

@@ -15,6 +15,7 @@ class Rider extends Model
         'plate_number',
         'license_number',
         'license_image',
+        'license_back_image',
         'phone',
         'barangay',
         'address_line',
@@ -92,15 +93,30 @@ class Rider extends Model
 
     public function getLicenseImageUrlAttribute(): ?string
     {
-        if ($this->license_image) {
-            if (str_starts_with($this->license_image, 'http')) {
-                return $this->license_image;
-            }
-            if (file_exists(public_path($this->license_image)) || str_starts_with($this->license_image, 'images/') || str_starts_with($this->license_image, 'uploads/')) {
-                return asset($this->license_image);
-            }
-            return asset('storage/' . $this->license_image);
+        return $this->resolveImageUrl($this->license_image);
+    }
+
+    public function getLicenseFrontImageUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->license_image);
+    }
+
+    public function getLicenseBackImageUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->license_back_image);
+    }
+
+    protected function resolveImageUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
         }
-        return null;
+        if (str_starts_with($path, 'http')) {
+            return $path;
+        }
+        if (file_exists(public_path($path)) || str_starts_with($path, 'images/') || str_starts_with($path, 'uploads/')) {
+            return asset($path);
+        }
+        return asset('storage/' . $path);
     }
 }

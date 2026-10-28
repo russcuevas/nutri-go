@@ -51,11 +51,17 @@ class RiderApprovalController extends Controller
         $riderName = $rider->user?->name ?? 'Rider';
         $user = $rider->user;
 
-        // Clean up license image if exists
+        // Clean up license images if exist
         if ($rider->license_image && file_exists(public_path($rider->license_image))) {
             @unlink(public_path($rider->license_image));
         } elseif ($rider->license_image && file_exists(storage_path('app/public/' . $rider->license_image))) {
             @unlink(storage_path('app/public/' . $rider->license_image));
+        }
+
+        if ($rider->license_back_image && file_exists(public_path($rider->license_back_image))) {
+            @unlink(public_path($rider->license_back_image));
+        } elseif ($rider->license_back_image && file_exists(storage_path('app/public/' . $rider->license_back_image))) {
+            @unlink(storage_path('app/public/' . $rider->license_back_image));
         }
 
         // Deleting user cascades to rider and wallet

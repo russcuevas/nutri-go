@@ -202,7 +202,9 @@ class AuthController extends Controller
             'barangay' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'license_image' => 'nullable|image|max:3072',
+            'license_image' => 'nullable|image|max:5120',
+            'license_front_image' => 'nullable|image|max:5120',
+            'license_back_image' => 'nullable|image|max:5120',
         ]);
 
         $user = User::create([
@@ -233,15 +235,24 @@ class AuthController extends Controller
         $longitude = !empty($validated['longitude']) ? (float) $validated['longitude'] : ($fallbackCoords['lng'] ?? 121.1631);
 
         $licensePath = null;
-        if ($request->hasFile('license_image')) {
-            $file = $request->file('license_image');
-            $filename = 'license_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $dest = public_path('images/riders/licenses');
-            if (!file_exists($dest)) {
-                mkdir($dest, 0755, true);
-            }
-            $file->move($dest, $filename);
+        $licenseBackPath = null;
+        $dest = public_path('images/riders/licenses');
+        if (!file_exists($dest)) {
+            mkdir($dest, 0755, true);
+        }
+
+        $licenseFrontFile = $request->file('license_front_image') ?? $request->file('license_image');
+        if ($licenseFrontFile) {
+            $filename = 'license_front_' . time() . '_' . Str::random(8) . '.' . $licenseFrontFile->getClientOriginalExtension();
+            $licenseFrontFile->move($dest, $filename);
             $licensePath = 'images/riders/licenses/' . $filename;
+        }
+
+        if ($request->hasFile('license_back_image')) {
+            $backFile = $request->file('license_back_image');
+            $filenameBack = 'license_back_' . time() . '_' . Str::random(8) . '.' . $backFile->getClientOriginalExtension();
+            $backFile->move($dest, $filenameBack);
+            $licenseBackPath = 'images/riders/licenses/' . $filenameBack;
         }
 
         $rider = Rider::create([
@@ -250,6 +261,7 @@ class AuthController extends Controller
             'plate_number' => $validated['plate_number'],
             'license_number' => $validated['license_number'],
             'license_image' => $licensePath,
+            'license_back_image' => $licenseBackPath,
             'phone' => $validated['phone'],
             'barangay' => $barangay,
             'address_line' => $validated['address_line'],
@@ -280,7 +292,7 @@ class AuthController extends Controller
 
     public function quickLogin(string $role)
     {
-        $email = match($role) {
+        $email = match ($role) {
             'admin' => 'admin@nutrigo.ph',
             'store' => 'greenbites@nutrigo.ph',
             'rider' => 'rider.juan@nutrigo.ph',
@@ -299,7 +311,7 @@ class AuthController extends Controller
 
     protected function redirectBasedOnRole(User $user)
     {
-        return match($user->role) {
+        return match ($user->role) {
             'admin' => redirect()->route('superadmin.dashboard'),
             'store' => redirect()->route('store.dashboard'),
             'rider' => redirect()->route('riders.dashboard'),
