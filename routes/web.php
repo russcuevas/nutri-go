@@ -33,6 +33,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardCo
 use App\Http\Controllers\SuperAdmin\StoreApprovalController as SuperAdminStoreController;
 use App\Http\Controllers\SuperAdmin\RiderApprovalController as SuperAdminRiderController;
 use App\Http\Controllers\SuperAdmin\RiderPayoutController as SuperAdminPayoutController;
+use App\Http\Controllers\SuperAdmin\RiderRemittanceController as SuperAdminRemittanceController;
 use App\Http\Controllers\SuperAdmin\CreatorManagerController as SuperAdminCreatorController;
 use App\Http\Controllers\SuperAdmin\SubscriptionManagerController as SuperAdminSubscriptionController;
 use App\Http\Controllers\SuperAdmin\CustomerReviewController as SuperAdminReviewController;
@@ -154,6 +155,7 @@ Route::middleware(['auth', 'role:rider'])->prefix('riders')->name('riders.')->gr
     // Rider Wallet & GCash Payouts
     Route::get('/wallet', [RiderWalletController::class, 'index'])->name('wallet.index');
     Route::post('/wallet/payout', [RiderWalletController::class, 'requestPayout'])->name('wallet.payout');
+    Route::post('/wallet/remit', [RiderWalletController::class, 'submitRemittance'])->name('wallet.remit');
 });
 
 /*
@@ -174,10 +176,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('superadmin')->name('superadmi
     Route::post('/riders/{id}/approve', [SuperAdminRiderController::class, 'approve'])->name('riders.approve');
     Route::post('/riders/{id}/reject', [SuperAdminRiderController::class, 'reject'])->name('riders.reject');
 
-    // Rider Payout Queue
+    // Rider Payout Queue (Withdrawals)
     Route::get('/payouts', [SuperAdminPayoutController::class, 'index'])->name('payouts.index');
     Route::post('/payouts/{id}/process', [SuperAdminPayoutController::class, 'process'])->name('payouts.process');
     Route::post('/payouts/{id}/reject', [SuperAdminPayoutController::class, 'reject'])->name('payouts.reject');
+
+    // Rider 15-Day COD Remittances & Store Sales Reconciliation
+    Route::get('/remittances', [SuperAdminRemittanceController::class, 'index'])->name('remittances.index');
+    Route::post('/remittances/{id}/verify', [SuperAdminRemittanceController::class, 'verify'])->name('remittances.verify');
+    Route::post('/remittances/{id}/reject', [SuperAdminRemittanceController::class, 'reject'])->name('remittances.reject');
 
     // Creator & Vlog Management
     Route::get('/creators', [SuperAdminCreatorController::class, 'index'])->name('creators.index');

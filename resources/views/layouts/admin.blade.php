@@ -130,6 +130,26 @@
                 @endif
             </a>
 
+            <a href="{{ route('superadmin.remittances.index') }}"
+                class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold {{ request()->routeIs('superadmin.remittances*') ? 'bg-limey-400 text-nutri-950 shadow' : 'text-nutri-200 hover:bg-white/10 hover:text-white' }} transition">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-hand-holding-dollar text-sm w-5 text-center"></i> Rider Remittances
+                </div>
+                @php
+                    $pendingRemits = 0;
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('rider_remittances')) {
+                            $pendingRemits = \App\Models\RiderRemittance::where('status', 'pending')->count();
+                        }
+                    } catch (\Throwable $e) {
+                    }
+                @endphp
+                @if ($pendingRemits > 0)
+                    <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-nutri-950">{{ $pendingRemits }}</span>
+                @endif
+            </a>
+
             <div class="pt-4 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-widest text-nutri-400">
                 Partners & Management
             </div>
@@ -140,8 +160,8 @@
                     <i class="fa-solid fa-star text-sm w-5 text-center"></i> Customer Reviews
                 </div>
                 @php $activeReviews = \App\Models\CustomerReview::where('is_active', true)->count(); @endphp
-                <span
-                    class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-limey-400 text-nutri-950" title="Active on Website">{{ $activeReviews }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-limey-400 text-nutri-950"
+                    title="Active on Website">{{ $activeReviews }}</span>
             </a>
 
             <a href="{{ route('superadmin.creators.index') }}"

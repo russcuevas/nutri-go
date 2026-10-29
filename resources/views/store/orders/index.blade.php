@@ -42,9 +42,23 @@
                             <span class="font-bold"><i class="fa-solid fa-map-pin text-emerald-600 mr-1"></i> Landmark / House No.:</span> {{ $order->delivery_landmark }}
                         </p>
                     @endif
-                    <p class="text-xs text-gray-500 pt-0.5">
-                        <span class="font-bold text-gray-700">Items:</span> {{ $order->items->pluck('product_name')->implode(', ') }} • <span class="font-bold text-gray-900">₱{{ number_format($order->total_amount, 2) }}</span>
-                    </p>
+                    @php
+                        $rFee = (float) $order->delivery_fee;
+                        $totAmt = (float) $order->total_amount;
+                        $sInc = (float) $order->subtotal;
+                        if ($sInc <= 0 && $totAmt > 0) {
+                            $sInc = max(0, $totAmt - $rFee);
+                        }
+                    @endphp
+                    <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                        <span class="text-gray-600 font-medium"><strong class="text-gray-700">Items:</strong> {{ $order->items->pluck('product_name')->implode(', ') }}</span>
+                        <span class="text-gray-300">•</span>
+                        <span class="px-2.5 py-0.5 rounded-lg bg-lime-100 text-nutri-950 font-black text-xs border border-lime-300 inline-flex items-center gap-1">
+                            <i class="fa-solid fa-coins text-lime-700"></i> Store Net Income: ₱{{ number_format($sInc, 2) }}
+                        </span>
+                        <span class="text-[11px] text-rose-600 font-bold">(-₱{{ number_format($rFee, 2) }} rider fee)</span>
+                        <span class="text-[11px] text-gray-400 font-medium">(Total Bill: ₱{{ number_format($totAmt, 2) }})</span>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3">

@@ -64,6 +64,11 @@ class Rider extends Model
         return $this->hasMany(RiderPayoutRequest::class);
     }
 
+    public function remittances()
+    {
+        return $this->hasMany(RiderRemittance::class);
+    }
+
     public function isApproved(): bool
     {
         return $this->status === 'approved';
